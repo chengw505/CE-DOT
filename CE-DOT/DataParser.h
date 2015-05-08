@@ -11,15 +11,15 @@ typedef struct
     UINT Hit_Run;
     UINT NMDOTNumber;
     UINT CADNumber;
-    CTime CrashDate;
-    CTime MilitaryTime;
+    CString CrashDate;
+    CString MilitaryTime;
     UINT County;
     CString City;
     CString TribalJurisdiction;
     CString WeekDay;
     CString STREETA;
     CString INTERSECTING_STREETB;
-    CString Measurement;
+    UINT Measurement;
     CString MeasurementUnit;
     CString DirectionFromLandmark;
     CString Landmark;
@@ -36,7 +36,36 @@ typedef struct
 
     void Reset()
     {
+        Agency.Empty();
         UCRNumber = 0;
+        UCRNumber = 0;
+        PrivateProperty = 0;
+        Fatal_Injury = 0;
+        Hit_Run = 0;
+        NMDOTNumber = 0;
+        CADNumber = 0;
+        CrashDate.Empty();
+        MilitaryTime.Empty();
+        County = 0;
+        City.Empty();
+        TribalJurisdiction.Empty();
+        WeekDay.Empty();
+        STREETA.Empty();
+        INTERSECTING_STREETB.Empty();
+        Measurement = 0;
+        MeasurementUnit.Empty();
+        DirectionFromLandmark.Empty();
+        Landmark.Empty();
+        Milepost.Empty();
+        Latitude.Empty();
+        Longitude.Empty();
+        CRASHOCCURRENCE.Empty();
+        CrashClassification.Empty();
+        AnalysisCode.Empty();
+        Lighting.Empty();
+        WEATHER.Empty();
+        RoadCharacter.Empty();
+        RoadGrade.Empty();
     }
 }T_Summary;
 
@@ -45,6 +74,13 @@ typedef struct
     CString LiteralDescription;
     CString XCoordinate;
     CString YCoordinate;
+
+    void Reset()
+    {
+        LiteralDescription.Empty();
+        XCoordinate.Empty();
+        YCoordinate.Empty();
+    }
 }T_Location;
 
 typedef struct
@@ -68,12 +104,12 @@ typedef struct
     CString DLStatus;
     CString DLRestrictions;
     CString DLEndorsements;
-    CTime DLExpires;
+    CString DLExpires;
     CString DRCITY;
     CString DRSTATE;
     UINT DRZIP;
     UINT DRPHONE;
-    CTime DLDoB;
+    CString DLDoB;
 
     struct  
     {
@@ -90,6 +126,23 @@ typedef struct
         CString DrEjected;
         CString DrEMSNum;
         CString DrMedTrans;
+
+        void Reset()
+        {
+            DrOccupation.Empty();
+            DRSeatPos.Empty();
+            DRSSN.Empty();
+            DrAge = 0;
+            DrSex.Empty();
+            DrRace.Empty();
+            DrInjuryCode.Empty();
+            DROPCODE.Empty();
+            DrOPProperlyUsed.Empty();
+            DrAirbagDeployed.Empty();
+            DrEjected.Empty();
+            DrEMSNum.Empty();
+            DrMedTrans.Empty();
+        }
     }Driver;
 
     struct
@@ -112,6 +165,28 @@ typedef struct
         CString oCity;
         CString oState;
         CString oZip;
+
+        void Reset()
+        {
+            oSeatPos.Empty();
+            oLastName.Empty();
+            oFirstName.Empty();
+            oMiddleName.Empty();
+            oAge = 0;
+            oSex.Empty();
+            oRace.Empty();
+            oInjuryCode.Empty();
+            OOPPROPERLYUSED.Empty();
+            oOPCode.Empty();
+            oAirBagDeploy.Empty();
+            oEjected.Empty();
+            oEMSNum.Empty();
+            oMedTrans.Empty();
+            oAddress.Empty();
+            oCity.Empty();
+            oState.Empty();
+            oZip.Empty();
+        }
     }Occupant[MAX_XML_ITEM_NUM];
 
     struct
@@ -139,6 +214,33 @@ typedef struct
         UINT VeDamageTop;
         UINT VeDamageUndercarriage;
         UINT VeDamageNone;
+
+        void Reset()
+        {
+            veYear = 0;
+            VeMake.Empty();
+            VeColor.Empty();
+            VeBodystyle.Empty();
+            VeCargoBody.Empty();
+            VeUse1.Empty();
+            VeUse2.Empty();
+            ICCCarrierCode.Empty();
+            VELICPLATEREGYR.Empty();
+            VELICPLATESTATE.Empty();
+            VELICPLATENUM.Empty();
+            veVin.Empty();
+            VeTowed.Empty();
+            veTowedBy.Empty();
+            veTowedTo.Empty();
+            VeTowedDisabled.Empty();
+            VeDamageSeverity.Empty();
+            VeDamageExtent.Empty();
+            memset(VeDamage, 0, sizeof(VeDamage));
+            VeDamageAll = 0;
+            VeDamageTop = 0;
+            VeDamageUndercarriage = 0;
+            VeDamageNone = 0;
+        }
     }Vehicle;
 
     CString GrossVehicleWeight;
@@ -162,6 +264,19 @@ typedef struct
         CString OWNERSPHONE;
         CString InsuredBy;
         CString PolicyNumber;
+
+        void Reset()
+        {
+            OwnersFirstName.Empty();
+            OwnersLastName.Empty();
+            OwnersMiddleName.Empty();
+            OwnersCompany.Empty();
+            OwnersAddress.Empty();
+            OwnersZip = 0;
+            OWNERSPHONE.Empty();
+            InsuredBy.Empty();
+            PolicyNumber.Empty();
+        }
     }Owner;
 
     struct {
@@ -171,7 +286,69 @@ typedef struct
         CString LicYear;
         CString LicState;
         CString LicNumber;
+
+        void Reset()
+        {
+            Type.Empty();
+            Year.Empty();
+            Make.Empty();
+            LicYear.Empty();
+            LicState.Empty();
+            LicNumber.Empty();
+        }
     }Trailer[MAX_XML_ITEM_NUM];
+
+    void Reset()
+    {
+        vVehNo = 0;
+        DrSex.Empty();
+        DrRace.Empty();
+        VehDirection.Empty();
+        StreetOn.Empty();
+        LeftScene.Empty();
+        UnitType.Empty();
+        PostedSpeed = 0;
+        SafeSpeed = 0;
+        DRFIRSTNAME.Empty();
+        DRLASTNAME.Empty();
+        DRMIDDLENAME.Empty();
+        DRADDRESS.Empty();
+        DLNUMBER.Empty();
+        DLState.Empty();
+        DLType.Empty();
+        DLStatus.Empty();
+        DLRestrictions.Empty();
+        DLEndorsements.Empty();
+        DLExpires;
+        DRCITY.Empty();
+        DRSTATE.Empty();
+        DRZIP = 0;
+        DRPHONE = 0;
+        DLDoB.Empty();
+
+        Driver.Reset();
+        Vehicle.Reset();
+
+        GrossVehicleWeight.Empty();
+        HazmatPlacard.Empty();
+        HazmatReleased.Empty();
+        USDOTNum = 0;
+        InterstateCarrier.Empty();
+        NumberofAxles.Empty();
+        HazmatName.Empty();
+        CarrierName.Empty();
+        CarrierAddress.Empty();
+        CarrierZip = 0;
+
+        Owner.Reset();
+
+        for (int i = 0; i < MAX_XML_ITEM_NUM; ++i)
+        {
+            Occupant[i].Reset();
+            Trailer[i].Reset();
+        }
+    }
+
 }T_Vehicle;
 
 typedef struct
@@ -269,11 +446,114 @@ typedef struct
     UINT SobrietyTestRefused;
     UINT SobrietyUnknown;
     UINT SobrietyBreathTest;
+
+    void Reset()
+    {
+        RoadConditionsVe.Empty();
+        RoadSurfaceVe.Empty();
+        TrafficControlDevice.Empty();
+        RoadDesignLanes.Empty();
+        RoadDesignDivider.Empty();
+        RoadDesign.Empty();
+        ACFAvoidNoContactOther = 0;
+        ACFAvoidNoContactVe = 0;
+        ACFCellPhone = 0;
+        ACFDefectiveSteering = 0;
+        ACFDefectiveTires = 0;
+        ACFDisregardedTrafficSignal = 0;
+        ACFDriverInattention = 0;
+        ACFDriverlessMovingVe = 0;
+        ACFDroveLeftOfCenter = 0;
+        ACFExcessiveSpeed = 0;
+        ACFFailedToYieldEmgcyVe = 0;
+        ACFFailedToYieldPoliceVe = 0;
+        ACFFailedToYieldRightOfWay = 0;
+        ACFFollowingTooClosely = 0;
+        ACFHighSpeedPursuit = 0;
+        ACFImproperBacking = 0;
+        ACFImproperLaneChange = 0;
+        ACFImproperOvertaking = 0;
+        ACFInadequateBrakes = 0;
+        ACFLowVisibilityDueToSmoke = 0;
+        ACFMadeImproperTurn = 0;
+        ACFNone = 0;
+        ACFOtherImproperDriving = 0;
+        ACFOtherMechanicalDefect = 0;
+        ACFOtherNoDriverError = 0;
+        ACFPassedStopSign = 0;
+        ACFPedestrianError = 0;
+        ACFRoadDefect = 0;
+        ACFSpeed2FastForConditions = 0;
+        ACFTexting = 0;
+        ACFTrafficControlInopMissing = 0;
+        ACFUnderInflOfDrugs = 0;
+        ACFUnderInfluenceOfAlcohol = 0;
+        ACFVeSkiddedBeforeBrk = 0;
+        DABacking = 0;
+        DAGoingStraight = 0;
+        DALeftTurn = 0;
+        DAOther = 0;
+        DAOvertakingPassing = 0;
+        DAParked = 0;
+        DARightTurn = 0;
+        DASlowing = 0;
+        DAStartFromPark = 0;
+        DAStartInTrafficLane = 0;
+        DAStoppedForSignsSignal = 0;
+        DAStoppedForTraffic = 0;
+        DAUnknown = 0;
+        DAUturn = 0;
+        SequenceEvent1 = 0;
+        SequenceEvent2 = 0;
+        SequenceEvent3 = 0;
+        SequenceEvent4 = 0;
+        PedAtIntAgainstSignal = 0;
+        PedAtIntDiagonal = 0;
+        PedAtIntNoSignal = 0;
+        PedAtIntWithSignal = 0;
+        PedNotIntCrosswalk = 0;
+        PedNotIntFromBehindObstruct = 0;
+        PedNotIntNoCrosswalk = 0;
+        PedNotIntOther = 0;
+        PedNotIntPlayinginRoad = 0;
+        PedNotIntPushWorkOnVe = 0;
+        PedNotIntStanding = 0;
+        PedNotIntWalkAgainstTraffic = 0;
+        PedNotIntWalkWithTraffic = 0;
+        PedNotIntOtherText = 0;
+        ConditionAmputee = 0;
+        ConditionEyesightImpaired = 0;
+        ConditionFatiguedAsleep = 0;
+        ConditionHearingImpaired = 0;
+        ConditionIllness = 0;
+        ConditionMedsDrugsAlcohol = 0;
+        ConditionNoAppDefects = 0;
+        ConditionOther = 0;
+        ConditionUnknown = 0;
+        ConditionOtherText = 0;
+        SobrietyBAC = 0;
+        SobrietyBloodTest = 0;
+        SobrietyConsumeAlcohol = 0;
+        SobrietyConsumeCtrlSubtance = 0;
+        SobrietyConsumeMeds = 0;
+        SobrietyFieldSobrietyTest = 0;
+        SobrietyNotConsumeAlcohol = 0;
+        SobrietyTestByInst = 0;
+        SobrietyTestRefused = 0;
+        SobrietyUnknown = 0;
+        SobrietyBreathTest = 0;
+    }
+
 }T_Conditions;
 
 typedef struct
 {
     CString Narrative;
+
+    void Reset()
+    {
+        Narrative.Empty();
+    }
 }T_Narrative;
 
 typedef struct
@@ -288,6 +568,21 @@ typedef struct
     CString pState;
     UINT pZip;
     CString pPhone;
+
+    void Reset()
+    {
+        pType.Empty();
+        pDesc.Empty();
+        pLastName.Empty();
+        pFirstName.Empty();
+        pMiddleName.Empty();
+        pAddress.Empty();
+        pCity.Empty();
+        pState.Empty();
+        pZip = 0;
+        pPhone.Empty();
+    }
+
 }T_Property;
 
 typedef struct
@@ -297,18 +592,40 @@ typedef struct
     CString vMiddleName;
     CString vAction;
     CString vViolation;
+
+    void Reset()
+    {
+        vLastName.Empty();
+        vFirstName.Empty();
+        vMiddleName.Empty();
+        vAction.Empty();
+        vViolation.Empty();
+    }
+
 }T_Violation;
 
 typedef struct
 {
-    CTime TimeNotified;
-    CTime TimeArrived;
+    CString TimeNotified;
+    CString TimeArrived;
     CString NotifiedBy;
     CString SupervisorOnScene;
     CString Checkedby;
     UINT OfficersSignaturePresent;
     UINT District;
-    CTime ReportDate;
+    CString ReportDate;
+
+    void Reset()
+    {
+        TimeNotified.Empty();
+        TimeArrived.Empty();
+        NotifiedBy.Empty();
+        SupervisorOnScene.Empty();
+        Checkedby.Empty();
+        OfficersSignaturePresent = 0;
+        District = 0;
+        ReportDate.Empty();
+    }
 }T_Conclusion;
 
 typedef struct
@@ -354,6 +671,20 @@ typedef struct
         NumberofDrawings = 0;
         PropertyDamage = 0;
         WitnessPresent = 0;
+
+        summary.Reset();
+        location.Reset();
+        narrative.Reset();
+        conclusion.Reset();
+        diagram.Reset();
+
+        for (int i = 0; i < MAX_XML_ITEM_NUM; ++i)
+        {
+            vehicles[i].Reset();
+            conditions[i].Reset();
+            properties[i].Reset();
+            violations[i].Reset();
+        }
     }
 
     BOOL IsValid()
@@ -375,6 +706,10 @@ public:
 
     void Reset();
     int Parse(CString& strLocalFileName);
+    int GetUCRNumber(UINT& ucrNumber);
+    int GetSQL_crash(CString& strSql);
+    int GetSQL_occupant(CString& strSql);
+    int GetSQL_vehicle(CString& strSql);
 
 private:
     int IsKeyElement(const char* key);
@@ -398,7 +733,5 @@ private:
     int FillDiagram(const char* key, const char* value);
     int FillLocation(TiXmlNode* root);
     int FillLocation(const char* key, const char* value);
-
-    int String2CTime(const char* value, CTime& time);
+    int Rollback(UINT urcNumber);
 };
-

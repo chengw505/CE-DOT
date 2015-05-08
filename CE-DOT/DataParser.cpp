@@ -39,13 +39,13 @@ CDataParser::~CDataParser()
 
 void CDataParser::Reset()
 {
+    m_fileContent.Reset();
+    m_strFileName.Empty();
 }
-
 
 int CDataParser::Parse(CString& strLocalFileName)
 {
     Reset();
-    m_strFileName = strLocalFileName;
 
     // load file
     char fileName[MAX_PATH];
@@ -83,6 +83,7 @@ int CDataParser::Parse(CString& strLocalFileName)
         child = child->NextSibling();
     }
 
+    m_strFileName = strLocalFileName;
     return 0;
 }
 
@@ -256,11 +257,11 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "CrashDate"))
     {
-        String2CTime(value, m_fileContent.summary.CrashDate);
+        m_fileContent.summary.CrashDate = value;
     }
     else if (!_stricmp(key, "MilitaryTime"))
     {
-        String2CTime(value, m_fileContent.summary.MilitaryTime);
+        m_fileContent.summary.MilitaryTime = value;
     }
     else if (!_stricmp(key, "County"))
     {
@@ -288,7 +289,7 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "Measurement"))
     {
-        m_fileContent.summary.Measurement = value;
+        m_fileContent.summary.Measurement = atoi(value);
     }
     else if (!_stricmp(key, "MeasurementUnit"))
     {
@@ -497,7 +498,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("DLExpires")] == '_');
         int i = atoi(&key[strlen("DLExpires") + 1]) - 1;
-        String2CTime(value, m_fileContent.vehicles[i].DLExpires);
+        m_fileContent.vehicles[i].DLExpires = value;
     }
     else if (!_strnicmp(key, "DRCITY", strlen("DRCITY")))
     {
@@ -527,7 +528,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("DLDoB")] == '_');
         int i = atoi(&key[strlen("DLDoB") + 1]) - 1;
-        String2CTime(value, m_fileContent.vehicles[i].DLDoB);
+        m_fileContent.vehicles[i].DLDoB = value;
     }
     else if (!_strnicmp(key, "DrOccupation", strlen("DrOccupation")))
     {
@@ -1991,11 +1992,11 @@ int CDataParser::FillConclusion(const char* key, const char* value)
 {
     if (!_stricmp(key, "TimeNotified"))
     {
-        String2CTime(value, m_fileContent.conclusion.TimeNotified);
+        m_fileContent.conclusion.TimeNotified = value;
     }
     else if (!_stricmp(key, "TimeArrived"))
     {
-        String2CTime(value, m_fileContent.conclusion.TimeArrived);
+        m_fileContent.conclusion.TimeArrived = value;
     }
     else if (!_stricmp(key, "NotifiedBy"))
     {
@@ -2019,7 +2020,7 @@ int CDataParser::FillConclusion(const char* key, const char* value)
     }
     else if (!_stricmp(key, "ReportDate"))
     {
-        String2CTime(value, m_fileContent.conclusion.ReportDate);
+        m_fileContent.conclusion.ReportDate = value;
     }
     else
     {
@@ -2122,7 +2123,363 @@ int CDataParser::FillLocation(const char* key, const char* value)
     return 0;
 }
 
-int CDataParser::String2CTime(const char* value, CTime& time)
+int CDataParser::GetUCRNumber(UINT& ucrNumber)
+{
+    if (!m_strFileName.IsEmpty())
+    {
+        ucrNumber = m_fileContent.summary.UCRNumber;
+        return 0;
+    }
+
+    return 1;
+}
+
+int CDataParser::GetSQL_crash(CString& strSql)
+{
+    strSql.Format(_T("INSERT INTO [dbo].[Acrash2012] ")
+        _T("([ucrnumber]                       ")
+        _T(",[crashdate]                       ")
+        _T(",[militarytime]                    ")
+        _T(",[reportdate]                      ")
+        _T(",[date_time]                       ")
+        _T(",[ucrorig]                         ")
+        _T(",[accdateorig]                     ")
+        _T(",[agency]                          ")
+        _T(",[agencyid]                        ")
+        _T(",[analysiscode]                    ")
+        _T(",[analysis]                        ")
+        _T(",[batchnumber]                     ")
+        _T(",[astreet]                         ")
+        _T(",[bstreet]                         ")
+        _T(",[landmark]                        ")
+        _T(",[milepostKofax]                   ")
+        _T(",[cadnumber]                       ")
+        _T(",[casenumber]                      ")
+        _T(",[checkedby]                       ")
+        _T(",[city]                            ")
+        _T(",[county]                          ")
+        _T(",[urbnrurl]                        ")
+        _T(",[Classification_Result]           ")
+        _T(",[CrashClassification]             ")
+        _T(",[CrashOccurrence]                 ")
+        _T(",[DirectionFromLandmark]           ")
+        _T(",[District]                        ")
+        _T(",[Fatal_Injury]                    ")
+        _T(",[FormID]                          ")
+        _T(",[FormMethod]                      ")
+        _T(",[HitRun]                          ")
+        _T(",[Latitude]                        ")
+        _T(",[Lighting]                        ")
+        _T(",[Longitude]                       ")
+        _T(",[Measurement]                     ")
+        _T(",[MeasurementsTakenBy]             ")
+        _T(",[MeasurementUnit]                 ")
+        _T(",[NMDOTNumber]                     ")
+        _T(",[NotifiedBy]                      ")
+        _T(",[NumberofDrawings]                ")
+        _T(",[DrawingsBy]                      ")
+        _T(",[NumberofVehicles]                ")
+        _T(",[OfficerAtScene]                  ")
+        _T(",[OfficersSignaturePresent]        ")
+        _T(",[PrivateProperty]                 ")
+        _T(",[PropertyDamage]                  ")
+        _T(",[RoadCharacter]                   ")
+        _T(",[RoadGrade]                       ")
+        _T(",[StationReport]                   ")
+        _T(",[SupervisorOnScene]               ")
+        _T(",[TimeArrived]                     ")
+        _T(",[TimeNotified]                    ")
+        _T(",[TribalJurisdiction]              ")
+        _T(",[Weather]                         ")
+        _T(",[WeekDay]                         ")
+        _T(",[WitnessPresent]                  ")
+        _T(",[pDesc]                           ")
+        _T(",[pType]                           ")
+        _T(",[pAddress]                        ")
+        _T(",[pCity]                           ")
+        _T(",[pState]                          ")
+        _T(",[pZip]                            ")
+        _T(",[pPhone]                          ")
+        _T(",[pFirstName]                      ")
+        _T(",[pLastName]                       ")
+        _T(",[pMiddleName]                     ")
+        _T(",[FormIDKofax]                     ")
+        _T(",[Year]                            ")
+        _T(",[Month]                           ")
+        _T(",[Hour]                            ")
+        _T(",[nVeh]                            ")
+        _T(",[Severity]                        ")
+        _T(",[System]                          ")
+        _T(",[topcfacc]                        ")
+        _T(",[Alcinv]                          ")
+        _T(",[Druginv]                         ")
+        _T(",[MCinv]                           ")
+        _T(",[PDinv]                           ")
+        _T(",[PCinv]                           ")
+        _T(",[TRKinv]                          ")
+        _T(",[HZinv]                           ")
+        _T(",[MotorVeh]                        ")
+        _T(",[Killed]                          ")
+        _T(",[Injured]                         ")
+        _T(",[ClassA]                          ")
+        _T(",[ClassB]                          ")
+        _T(",[ClassC]                          ")
+        _T(",[Unhurt]                          ")
+        _T(",[Total]                           ")
+        _T(",[Motorists]                       ")
+        _T(",[NonMotorists]                    ")
+        _T(",[GIS_Astreet]                     ")
+        _T(",[GIS_Bstreet]                     ")
+        _T(",[GIS_Location]                    ")
+        _T(",[GIS_Route]                       ")
+        _T(",[GIS_Milepost]                    ")
+        _T(",[GIS_UrbanRural]                  ")
+        _T(",[GIS_County]                      ")
+        _T(",[GIS_CityE911]                    ")
+        _T(",[GIS_CityUSCensus]                ")
+        _T(",[GIS_NatAmer_USCensus]            ")
+        _T(",[GIS_TransDist]                   ")
+        _T(",[GIS_MaintDist]                   ")
+        _T(",[GIS_UTM_X]                       ")
+        _T(",[GIS_UTM_Y]                       ")
+        _T(",[GIS_LAT]                         ")
+        _T(",[GIS_LONG]                        ")
+        _T(",[source]                          ")
+        _T(",[NMDOTID]                         ")
+        _T(",[SysBatchNumber]                  ")
+        _T(",[SysScanDate])                    ")
+
+        _T("VALUES "),
+        _T("(%d")    //<ucrnumber, float, >
+        _T(",'%s'")  //<crashdate, nvarchar(255), >
+        _T(",'%s'")  //<militarytime, nvarchar(255), >
+        _T(",'%s'")  //<reportdate, nvarchar(255), >
+        _T(",'%s'")  //<date_time, nvarchar(255), >
+        _T(",'%s'")  //<ucrorig, nvarchar(max), >
+        _T(",'%s'")  //<accdateorig, nvarchar(255), >
+        _T(",'%s'")  //<agency, nvarchar(max), >
+        _T(",'%d'")  //<agencyid, nvarchar(max), >
+        _T(",'%s'")  //<analysiscode, nvarchar(max), >
+        _T(",'%s'")  //<analysis, nvarchar(max), >
+        _T(",'%s'")  //<batchnumber, nvarchar(max), >
+        _T(",'%s'")  //<astreet, nvarchar(max), >
+        _T(",'%s'")  //<bstreet, nvarchar(max), >
+        _T(",'%s'")  //<landmark, nvarchar(max), >
+        _T(",'%s'")  //<milepostKofax, nvarchar(max), >
+        _T(",'%d'")  //<cadnumber, nvarchar(max), >
+        _T(",'%d'")  //<casenumber, nvarchar(max), >
+        _T(",'%s'")  //<checkedby, nvarchar(max), >
+        _T(",'%s'")  //<city, nvarchar(max), >
+        _T(",'%d'")  //<county, nvarchar(max), >
+        _T(",'%s'")  //<urbnrurl, nvarchar(max),>     
+        _T(",'%s'")  //<Classification_Result, nvarchar(m")
+        _T(",'%s'")  //<CrashClassification, nvarchar(max")
+        _T(",'%s'")  //<CrashOccurrence, nvarchar(max),> ")
+        _T(",'%s'")  //<DirectionFromLandmark, nvarchar(m")
+        _T(",'%s'")  //<District, nvarchar(max),>        ")
+        _T(",'%s'")  //<Fatal_Injury, nvarchar(max),>    ")
+        _T(",'%s'")  //<FormID, nvarchar(max),>          ")
+        _T(",'%s'")  //<FormMethod, nvarchar(max),>      ")
+        _T(",'%s'")  //<HitRun, nvarchar(max),>          ")
+        _T(",'%s'")  //<Latitude, nvarchar(max),>        ")
+        _T(",'%s'")  //<Lighting, nvarchar(max),>        ")
+        _T(",'%s'")  //<Longitude, nvarchar(max),>       ")
+        _T(",%d")  //<Measurement, float,>             ")
+        _T(",'%s'")  //<MeasurementsTakenBy, nvarchar(max")
+        _T(",'%s'")  //<MeasurementUnit, nvarchar(max),> ")
+        _T(",'%s'")  //<NMDOTNumber, nvarchar(max),>     ")
+        _T(",'%s'")  //<NotifiedBy, nvarchar(max),>      ")
+        _T(",'%s'")  //<NumberofDrawings, nvarchar(max),>")
+        _T(",'%s'")  //<DrawingsBy, nvarchar(max),>      ")
+        _T(",%d")  //<NumberofVehicles, float,>        ")
+        _T(",'%s'")  //<OfficerAtScene, nvarchar(max),>  ")
+        _T(",'%s'")  //<OfficersSignaturePresent, nvarcha")
+        _T(",'%d'")  //<PrivateProperty, nvarchar(max),> ")
+        _T(",'%s'")  //<PropertyDamage, nvarchar(max),>  ")
+        _T(",'%s'")  //<RoadCharacter, nvarchar(max),>   ")
+        _T(",'%s'")  //<RoadGrade, nvarchar(max),>       ")
+        _T(",'%s'")  //<StationReport, nvarchar(max),>   ")
+        _T(",'%s'")  //<SupervisorOnScene, nvarchar(max),")
+        _T(",'%s'")  //<TimeArrived, nvarchar(255),>     ")
+        _T(",'%s'")  //<TimeNotified, nvarchar(255),>    ")
+        _T(",'%s'")  //<TribalJurisdiction, nvarchar(max)")
+        _T(",'%s'")  //<Weather, nvarchar(max),>         ")
+        _T(",'%s'")  //<WeekDay, float,>                 ")
+        _T(",'%s'")  //<WitnessPresent, nvarchar(max),>  ")
+        _T(",'%s'")  //<pDesc, nvarchar(max),>           ")
+        _T(",'%s'")  //<pType, nvarchar(max),>           ")
+        _T(",'%s'")  //<pAddress, nvarchar(max),>        ")
+        _T(",'%s'")  //<pCity, nvarchar(max),>           ")
+        _T(",'%s'")  //<pState, nvarchar(max),>          ")
+        _T(",%d")  //<pZip, float,>                    ")
+        _T(",'%s'")  //<pPhone, nvarchar(max),>          ")
+        _T(",'%s'")  //<pFirstName, nvarchar(max),>      ")
+        _T(",'%s'")  //<pLastName, nvarchar(max),>       ")
+        _T(",'%s'")  //<pMiddleName, nvarchar(max),>     ")
+        _T(",'%s'")  //<FormIDKofax, nvarchar(max),>     ")
+        _T(",%d")  //<Year, float,>                    ")
+        _T(",%d")  //<Month, float,>                   ")
+        _T(",%d")  //<Hour, float,>                    ")
+        _T(",%d")  //<nVeh, float,>                    ")
+        _T(",%d")  //<Severity, float,>                ")
+        _T(",%d")  //<System, float,>                  ")
+        _T(",%d")  //<topcfacc, float,>                ")
+        _T(",%d")  //<Alcinv, float,>                  ")
+        _T(",%d")  //<Druginv, float,>                 ")
+        _T(",%d")  //<MCinv, float,>                   ")
+        _T(",%d")  //<PDinv, float,>                   ")
+        _T(",%d")  //<PCinv, float,>                   ")
+        _T(",%d")  //<TRKinv, float,>                  ")
+        _T(",%d")  //<HZinv, float,>                   ")
+        _T(",%d")  //<MotorVeh, float,>                ")
+        _T(",%d")  //<Killed, float,>                  ")
+        _T(",%d")  //<Injured, float,>                 ")
+        _T(",%d")  //<ClassA, float,>                  ")
+        _T(",%d")  //<ClassB, float,>                  ")
+        _T(",%d")  //<ClassC, float,>                  ")
+        _T(",%d")  //<Unhurt, float,>                  ")
+        _T(",%d")  //<Total, float,>                   ")
+        _T(",%d")  //<Motorists, float,>               ")
+        _T(",%d")  //<NonMotorists, float,>            ")
+        _T(",'%s'")  //<GIS_Astreet, nvarchar(max),>     ")
+        _T(",'%s'")  //<GIS_Bstreet, nvarchar(max),>     ")
+        _T(",'%s'")  //<GIS_Location, nvarchar(max),>    ")
+        _T(",'%s'")  //<GIS_Route, nvarchar(max),>       ")
+        _T(",'%s'")  //<GIS_Milepost, nvarchar(max),>    ")
+        _T(",'%s'")  //<GIS_UrbanRural, nvarchar(max),>  ")
+        _T(",'%s'")  //<GIS_County, nvarchar(max),>      ")
+        _T(",'%s'")  //<GIS_CityE911, nvarchar(max),>    ")
+        _T(",'%s'")  //<GIS_CityUSCensus, nvarchar(max),>")
+        _T(",'%s'")  //<GIS_NatAmer_USCensus, nvarchar(ma")
+        _T(",%d")  //<GIS_TransDist, float,>           ")
+        _T(",%d")  //<GIS_MaintDist, float,>           ")
+        _T(",%d")  //<GIS_UTM_X, float,>               ")
+        _T(",%d")  //<GIS_UTM_Y, float,>               ")
+        _T(",%d")  //<GIS_LAT, float,>                 ")
+        _T(",%d")  //<GIS_LONG, float,>                ")
+        _T(",%d")  //<source, nvarchar(max),>          ")
+        _T(",%d")  //<NMDOTID, float,>                 ")
+        _T(",'%s'")  //<SysBatchNumber, nvarchar(max),>  ")
+        _T(",'%s'"), //<SysScanDate, nvarchar(255),>)    "), 
+        m_fileContent.summary.UCRNumber,
+        m_fileContent.summary.CrashDate,
+        m_fileContent.summary.MilitaryTime,
+        m_fileContent.conclusion.ReportDate,
+        "", // date_time
+        "", // ucrorig
+        "", // accdateorig
+        m_fileContent.summary.Agency,
+        m_fileContent.Agency,
+        m_fileContent.summary.AnalysisCode,
+        "", // analysis
+        "", // batchnumber
+        m_fileContent.summary.STREETA,
+        m_fileContent.summary.INTERSECTING_STREETB,
+        m_fileContent.summary.Landmark,
+        m_fileContent.summary.Milepost,
+        m_fileContent.summary.CADNumber,
+        m_fileContent.CaseNumber,
+        m_fileContent.conclusion.Checkedby,
+        m_fileContent.summary.City,
+        m_fileContent.summary.County,
+        "", // urbnrurl
+        "", // Classification_Result
+        m_fileContent.summary.CrashClassification,
+        m_fileContent.summary.CRASHOCCURRENCE,
+        m_fileContent.summary.DirectionFromLandmark,
+        m_fileContent.conclusion.District,
+        m_fileContent.summary.Fatal_Injury,
+        "", // FormID
+        "", // FormMethod, 
+        m_fileContent.summary.Hit_Run,
+        m_fileContent.summary.Landmark,
+        m_fileContent.summary.Lighting,
+        m_fileContent.summary.Longitude,
+        m_fileContent.summary.Measurement,
+        m_fileContent.diagram.MeasurementsTakenBy,
+        m_fileContent.summary.MeasurementUnit,
+        m_fileContent.summary.NMDOTNumber,
+        m_fileContent.diagram.DrawingsBy,
+        m_fileContent.NumberofVehicles,
+        m_fileContent.OfficerAtScene,
+        m_fileContent.conclusion.OfficersSignaturePresent,
+        m_fileContent.summary.PrivateProperty,
+        m_fileContent.properties,
+        m_fileContent.summary.RoadCharacter,
+        m_fileContent.summary.RoadGrade,
+        "", // StationReport
+        m_fileContent.conclusion.SupervisorOnScene,
+        m_fileContent.conclusion.TimeArrived,
+        m_fileContent.conclusion.TimeNotified,
+        m_fileContent.summary.TribalJurisdiction,
+        m_fileContent.summary.WEATHER,
+        m_fileContent.summary.WeekDay,
+        m_fileContent.WitnessPresent,
+        m_fileContent.properties[0].pDesc,
+        m_fileContent.properties[0].pType,
+        m_fileContent.properties[0].pAddress,
+        m_fileContent.properties[0].pCity,
+        m_fileContent.properties[0].pState,
+        m_fileContent.properties[0].pZip,
+        m_fileContent.properties[0].pPhone,
+        m_fileContent.properties[0].pFirstName,
+        m_fileContent.properties[0].pLastName,
+        m_fileContent.properties[0].pMiddleName,
+        "", // FormIDKofax
+        0,  // year
+        0,  // month 
+        0,  // hour 
+        0,  // nVeh 
+        0,  // severity 
+        0,  // topcfacc 
+        0,  // alcinv 
+        0,  // druginv 
+        0,  // mcinv 
+        0,  // pdinv 
+        0,  // pcinv
+        0,  // trkinv
+        0,  // hzinv
+        0,  // motorveh 
+        0,  // killed 
+        0,  // injured 
+        0,  // classA
+        0,  // classB 
+        0,  // classC 
+        0,  // unhurt
+        0,  // total 
+        0,  // motorists 
+        0,  // nonmotorists
+        "", //<GIS_Astreet, nvarcha        );
+        "", //<GIS_Bstreet, nvarcha
+        "", //<GIS_Location, nvarch    return 0;
+        "", //<GIS_Route, nvarchar(}
+        "", //<GIS_Milepost, nvarch
+        "", //<GIS_UrbanRural, nvarint CDataParser::GetSQL_occupant(CString& strSql)
+        "", //<GIS_County, nvarchar{
+        "", //<GIS_CityE911, nvarch    return 0;
+        "", //<GIS_CityUSCensus, nv}
+        "", //<GIS_NatAmer_USCensus
+        "", //<GIS_TransDist, float,>int CDataParser::GetSQL_vehicle(CString& strSql)
+        "", //<GIS_MaintDist, float,>{
+        "", //<GIS_UTM_X, float,>        return 0;
+        "", //<GIS_UTM_Y, float,>    }
+        "", //<GIS_LAT, float,>      
+        "", //<GIS_LONG, float,>     
+        "", //<source, nvarchar(max),
+        "", //<NMDOTID, float,>      
+        "", //<SysBatchNumber, nvar
+        "" //<SysScanDate, nvarcha
+        );
+
+    return 0;
+}
+
+int CDataParser::GetSQL_occupant(CString& strSql)
+{
+    return 0;
+}
+
+int CDataParser::GetSQL_vehicle(CString& strSql)
 {
     return 0;
 }

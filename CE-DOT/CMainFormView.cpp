@@ -88,6 +88,7 @@ void CMainFormView::OnInitialUpdate()
     FillFtpFileView();
 
     InitialAdoInstance();
+    ConnectDB();
 }
 
 void CMainFormView::OnRButtonUp(UINT /* nFlags */, CPoint point)
@@ -181,10 +182,11 @@ int CMainFormView::FinalizeAdoInstance()
 int CMainFormView::ConnectDB()
 {
     CString strConnect = _T("Provider=SQLOLEDB; \
-                            Data Source=CHENGW\\SQLEXPRESS;\
-                            Initial Catalog= DataChecker; \
+                            Data Source=LOCALHOST\\SQLEXPRESS;\
+                            Initial Catalog= DOT; \
                             integrated security=SSPI");
-    try {
+    try 
+    {
         m_pConnection->Open((_bstr_t)strConnect, "", "", adModeUnknown);
 
     }
@@ -343,8 +345,73 @@ void CMainFormView::OnBnClickedBtnCheckContent()
             {
                 if (!m_dataParser.Parse(strLocalFileName))
                 {
+                    UINT urcNumber;
+                    m_dataParser.GetUCRNumber(urcNumber);
+
+                    CString strSql;
+                    if (!m_dataParser.GetSQL_crash(strSql))
+                    {
+                        if (!ExecuteSQL(strSql))
+                        {
+                            strSql.Empty();
+                            if (!m_dataParser.GetSQL_occupant(strSql))
+                            {
+                                if (!ExecuteSQL(strSql))
+                                {
+                                    strSql.Empty();
+                                    if (!m_dataParser.GetSQL_vehicle(strSql))
+                                    {
+                                        if (!ExecuteSQL(strSql))
+                                        {
+                                            // success
+                                        }
+                                        else
+                                        {
+                                            // TODO rollback crash data, and occupant data
+                                            Rollback(urcNumber);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // TODO rollback crash data, and occupant data
+                                        Rollback(urcNumber);
+                                    }
+                                }
+                                else
+                                {
+                                    // TODO rollback crash data
+                                    Rollback(urcNumber);
+                                }
+                            }
+                            else
+                            {
+                                // TODO rollback crash data
+                                Rollback(urcNumber);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // TODO
                 }
             }
         }
     }
+}
+
+int CMainFormView::Rollback(UINT urcNumber)
+{
+    CString strSql;
+
+    strSql.Format(_T("DELETE FROM [dbo].[Acrash2012] WHERE ucrnumber = %d"), urcNumber);
+    ExecuteSQL(strSql);
+
+    strSql.Format(_T("DELETE FROM [dbo].[Aoccupant2012] WHERE ucrnumber = %d"), urcNumber);
+    ExecuteSQL(strSql);
+
+    strSql.Format(_T("DELETE FROM [dbo].[Avehicle2012] WHERE ucrnumber = %d"), urcNumber);
+    ExecuteSQL(strSql);
+
+    return 0;
 }

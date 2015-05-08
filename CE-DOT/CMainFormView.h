@@ -86,6 +86,7 @@ public:
     int DownloadFile(CString& remoteFilename, CString& localFilename);
     afx_msg void OnBnClickedBtnDisplayContent();
     afx_msg void OnBnClickedBtnCheckContent();
+    int Rollback(UINT urcNumber);
 };
 
 #ifndef _DEBUG  // debug version in CMainFormView.cpp
