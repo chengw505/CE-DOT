@@ -53,7 +53,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,6 +102,7 @@
     <ClInclude Include="CE-DOT.h" />
     <ClInclude Include="CE-DOTDoc.h" />
     <ClInclude Include="CMainFormView.h" />
+    <ClInclude Include="DataParser.h" />
     <ClInclude Include="FileView.h" />
     <ClInclude Include="FtpClient\BlockingSocket.h" />
     <ClInclude Include="FtpClient\Definements.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="CE-DOT.cpp" />
     <ClCompile Include="CE-DOTDoc.cpp" />
     <ClCompile Include="CMainFormView.cpp" />
+    <ClCompile Include="DataParser.cpp" />
     <ClCompile Include="FileView.cpp" />
     <ClCompile Include="FtpClient\BlockingSocket.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

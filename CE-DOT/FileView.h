@@ -28,10 +28,6 @@ protected:
 	CImageList m_FileViewImages;
 	CFileViewToolBar m_wndToolBar;
 
-protected:
-    void GetDirectoryListing(CFTPClient* ftpClient, HTREEITEM hItem, TFTPFileStatusShPtrVec& vFileList) const;
-    CString GetFullPath(HTREEITEM hItem) const;
-
 public:
     struct SRootInfo
     {
@@ -45,6 +41,10 @@ public:
 public:
 	virtual ~CFileView();
     void ResetFileList(CFTPClient* ftpClient, CLogonInfo* ftpLogonInfo);
+    void GetDirectoryListing(CFTPClient* ftpClient, HTREEITEM hItem, TFTPFileStatusShPtrVec& vFileList) const;
+    CString GetFullPath(HTREEITEM hItem) const;
+    HTREEITEM GetSelectedItem();
+    CString GetFileName(HTREEITEM hSelected);
 
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

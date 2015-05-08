@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "afxwinappex.h"
 #include "afxdialogex.h"
+#include "DataParser.h"
 #include "CE-DOT.h"
 #include "MainFrm.h"
 #include "FtpSetting.h"

@@ -293,11 +293,21 @@ CString CFileView::GetFullPath(HTREEITEM hItem) const
 }
 
 
-LRESULT CFileView::OnFtpFileDoubleClick(WPARAM w, LPARAM l)
+LRESULT CFileView::OnFtpFileDoubleClick(WPARAM /*w*/, LPARAM /*l*/)
 {
     CString strFullPath = GetFullPath(m_wndFileView.GetSelectedItem());
     CString strFileName = m_wndFileView.GetItemText(m_wndFileView.GetSelectedItem());
     (((CMainFrame*)AfxGetMainWnd())->GetActiveView())->SendMessage(CUSTOM_WM_MESSAGE, (WPARAM)&strFullPath, (LPARAM)&strFileName);
 
     return (LRESULT)0;
+}
+
+HTREEITEM CFileView::GetSelectedItem()
+{
+    return m_wndFileView.GetSelectedItem();
+}
+
+CString CFileView::GetFileName(HTREEITEM hSelected)
+{
+    return m_wndFileView.GetItemText(m_wndFileView.GetSelectedItem());
 }

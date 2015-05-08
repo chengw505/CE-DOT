@@ -84,6 +84,9 @@
     <ClInclude Include="FtpClient\Definements.h">
       <Filter>FtpClient</Filter>
     </ClInclude>
+    <ClInclude Include="DataParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CE-DOT.cpp">
@@ -142,6 +145,9 @@
     </ClCompile>
     <ClCompile Include="FtpClient\FTPClient.cpp">
       <Filter>FtpClient</Filter>
+    </ClCompile>
+    <ClCompile Include="DataParser.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

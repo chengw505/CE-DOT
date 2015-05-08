@@ -67,6 +67,8 @@ public:
     CLogonInfo  m_ftpLogonInfo;
     CFTPClient  m_ftpClient;
 
+    CDataParser m_dataParser;
+
     _ConnectionPtr  m_pConnection;
     _RecordsetPtr   m_pRecordset;
 
@@ -82,6 +84,8 @@ public:
     void FillFtpFileView();
 
     int DownloadFile(CString& remoteFilename, CString& localFilename);
+    afx_msg void OnBnClickedBtnDisplayContent();
+    afx_msg void OnBnClickedBtnCheckContent();
 };
 
 #ifndef _DEBUG  // debug version in CMainFormView.cpp

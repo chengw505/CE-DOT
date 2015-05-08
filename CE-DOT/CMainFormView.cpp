@@ -9,10 +9,11 @@
 #include "CE-DOT.h"
 #endif
 
-#include "FtpSetting.h"
-#include "SqlSetting.h"
 #include "CE-DOTDoc.h"
 #include "MainFrm.h"
+#include "FtpSetting.h"
+#include "SqlSetting.h"
+#include "DataParser.h"
 #include "CMainFormView.h"
 
 #ifdef _DEBUG
@@ -30,6 +31,8 @@ BEGIN_MESSAGE_MAP(CMainFormView, CFormView)
     ON_BN_CLICKED(IDC_BTN_SETUP_FTP_ACCOUNT, &CMainFormView::OnBnClickedBtnSetupFtpAccount)
     ON_BN_CLICKED(IDC_BTN_SETUP_DB_ACCOUNT, &CMainFormView::OnBnClickedBtnSetupDbAccount)
     ON_MESSAGE(CUSTOM_WM_MESSAGE, OnFtpFileDoubleClick)
+    ON_BN_CLICKED(IDC_BTN_DISPLAY_CONTENT, &CMainFormView::OnBnClickedBtnDisplayContent)
+    ON_BN_CLICKED(IDC_BTN_CHECK_CONTENT, &CMainFormView::OnBnClickedBtnCheckContent)
 END_MESSAGE_MAP()
 
 // CMainFormView construction/destruction
@@ -310,4 +313,38 @@ LRESULT CMainFormView::OnFtpFileDoubleClick(WPARAM w, LPARAM l)
     }
 
     return (LRESULT)0;
+}
+
+
+void CMainFormView::OnBnClickedBtnDisplayContent()
+{
+    CMainFrame *pMainWnd = (CMainFrame *)AfxGetMainWnd();
+    if (NULL != pMainWnd)
+    {
+        CFileView* fileView = (CFileView*)pMainWnd->GetFileView();
+        fileView->SendMessage(CUSTOM_WM_MESSAGE, 0, 0);
+    }
+}
+
+
+void CMainFormView::OnBnClickedBtnCheckContent()
+{
+    CMainFrame *pMainWnd = (CMainFrame *)AfxGetMainWnd();
+    if (NULL != pMainWnd)
+    {
+        CFileView* fileView = (CFileView*)pMainWnd->GetFileView();
+        HTREEITEM hSelected = fileView->GetSelectedItem();
+        if (hSelected)
+        {
+            CString strLocalFileName = fileView->GetFileName(hSelected);
+            CString strRemoteFullPath = fileView->GetFullPath(hSelected);
+
+            if (!DownloadFile(strRemoteFullPath, strLocalFileName))
+            {
+                if (!m_dataParser.Parse(strLocalFileName))
+                {
+                }
+            }
+        }
+    }
 }
