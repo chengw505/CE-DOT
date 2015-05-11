@@ -277,7 +277,7 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "WeekDay"))
     {
-        m_fileContent.summary.WeekDay = value;
+        WeekDayString2Int(value, m_fileContent.summary.WeekDay);
     }
     else if (!_stricmp(key, "STREETA"))
     {
@@ -522,7 +522,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("DRPHONE")] == '_');
         int i = atoi(&key[strlen("DRPHONE") + 1]) - 1;
-        m_fileContent.vehicles[i].DRPHONE = atoi(value);
+        m_fileContent.vehicles[i].DRPHONE = value;
     }
     else if (!_strnicmp(key, "DLDoB", strlen("DLDoB")))
     {
@@ -2136,7 +2136,8 @@ int CDataParser::GetUCRNumber(UINT& ucrNumber)
 
 int CDataParser::GetSQL_crash(CString& strSql)
 {
-    strSql.Format(_T("INSERT INTO [dbo].[Acrash2012] ")
+    strSql.Format(
+        _T("INSERT INTO [dbo].[Acrash2012]     ")
         _T("([ucrnumber]                       ")
         _T(",[crashdate]                       ")
         _T(",[militarytime]                    ")
@@ -2248,8 +2249,9 @@ int CDataParser::GetSQL_crash(CString& strSql)
         _T(",[NMDOTID]                         ")
         _T(",[SysBatchNumber]                  ")
         _T(",[SysScanDate])                    ")
-
-        _T("VALUES "),
+        _T("VALUES ")
+        
+        
         _T("(%d")    //<ucrnumber, float, >
         _T(",'%s'")  //<crashdate, nvarchar(255), >
         _T(",'%s'")  //<militarytime, nvarchar(255), >
@@ -2271,31 +2273,31 @@ int CDataParser::GetSQL_crash(CString& strSql)
         _T(",'%s'")  //<checkedby, nvarchar(max), >
         _T(",'%s'")  //<city, nvarchar(max), >
         _T(",'%d'")  //<county, nvarchar(max), >
-        _T(",'%s'")  //<urbnrurl, nvarchar(max),>     
+        _T(",'%s'")  //<urbnrurl, nvarchar(max),>
         _T(",'%s'")  //<Classification_Result, nvarchar(m")
         _T(",'%s'")  //<CrashClassification, nvarchar(max")
         _T(",'%s'")  //<CrashOccurrence, nvarchar(max),> ")
         _T(",'%s'")  //<DirectionFromLandmark, nvarchar(m")
-        _T(",'%s'")  //<District, nvarchar(max),>        ")
-        _T(",'%s'")  //<Fatal_Injury, nvarchar(max),>    ")
+        _T(",'%d'")  //<District, nvarchar(max),>        ")
+        _T(",'%d'")  //<Fatal_Injury, nvarchar(max),>    ")
         _T(",'%s'")  //<FormID, nvarchar(max),>          ")
         _T(",'%s'")  //<FormMethod, nvarchar(max),>      ")
-        _T(",'%s'")  //<HitRun, nvarchar(max),>          ")
+        _T(",'%d'")  //<HitRun, nvarchar(max),>          ")
         _T(",'%s'")  //<Latitude, nvarchar(max),>        ")
         _T(",'%s'")  //<Lighting, nvarchar(max),>        ")
         _T(",'%s'")  //<Longitude, nvarchar(max),>       ")
         _T(",%d")  //<Measurement, float,>             ")
         _T(",'%s'")  //<MeasurementsTakenBy, nvarchar(max")
         _T(",'%s'")  //<MeasurementUnit, nvarchar(max),> ")
-        _T(",'%s'")  //<NMDOTNumber, nvarchar(max),>     ")
+        _T(",'%d'")  //<NMDOTNumber, nvarchar(max),>     ")
         _T(",'%s'")  //<NotifiedBy, nvarchar(max),>      ")
-        _T(",'%s'")  //<NumberofDrawings, nvarchar(max),>")
+        _T(",'%d'")  //<NumberofDrawings, nvarchar(max),>")
         _T(",'%s'")  //<DrawingsBy, nvarchar(max),>      ")
         _T(",%d")  //<NumberofVehicles, float,>        ")
         _T(",'%s'")  //<OfficerAtScene, nvarchar(max),>  ")
-        _T(",'%s'")  //<OfficersSignaturePresent, nvarcha")
+        _T(",'%d'")  //<OfficersSignaturePresent, nvarcha")
         _T(",'%d'")  //<PrivateProperty, nvarchar(max),> ")
-        _T(",'%s'")  //<PropertyDamage, nvarchar(max),>  ")
+        _T(",'%d'")  //<PropertyDamage, nvarchar(max),>  ")
         _T(",'%s'")  //<RoadCharacter, nvarchar(max),>   ")
         _T(",'%s'")  //<RoadGrade, nvarchar(max),>       ")
         _T(",'%s'")  //<StationReport, nvarchar(max),>   ")
@@ -2304,8 +2306,8 @@ int CDataParser::GetSQL_crash(CString& strSql)
         _T(",'%s'")  //<TimeNotified, nvarchar(255),>    ")
         _T(",'%s'")  //<TribalJurisdiction, nvarchar(max)")
         _T(",'%s'")  //<Weather, nvarchar(max),>         ")
-        _T(",'%s'")  //<WeekDay, float,>                 ")
-        _T(",'%s'")  //<WitnessPresent, nvarchar(max),>  ")
+        _T(",%d")  //<WeekDay, float,>                 ")
+        _T(",'%d'")  //<WitnessPresent, nvarchar(max),>  ")
         _T(",'%s'")  //<pDesc, nvarchar(max),>           ")
         _T(",'%s'")  //<pType, nvarchar(max),>           ")
         _T(",'%s'")  //<pAddress, nvarchar(max),>        ")
@@ -2360,19 +2362,20 @@ int CDataParser::GetSQL_crash(CString& strSql)
         _T(",%d")  //<source, nvarchar(max),>          ")
         _T(",%d")  //<NMDOTID, float,>                 ")
         _T(",'%s'")  //<SysBatchNumber, nvarchar(max),>  ")
-        _T(",'%s'"), //<SysScanDate, nvarchar(255),>)    "), 
+        _T(",'%s')"), //<SysScanDate, nvarchar(255),>)    "), 
+
         m_fileContent.summary.UCRNumber,
         m_fileContent.summary.CrashDate,
         m_fileContent.summary.MilitaryTime,
         m_fileContent.conclusion.ReportDate,
-        "", // date_time
-        "", // ucrorig
-        "", // accdateorig
+        _T(""), // date_time
+        _T(""), // ucrorig
+        _T(""), // accdateorig
         m_fileContent.summary.Agency,
         m_fileContent.Agency,
         m_fileContent.summary.AnalysisCode,
-        "", // analysis
-        "", // batchnumber
+        _T(""), // analysis
+        _T(""), // batchnumber
         m_fileContent.summary.STREETA,
         m_fileContent.summary.INTERSECTING_STREETB,
         m_fileContent.summary.Landmark,
@@ -2382,15 +2385,15 @@ int CDataParser::GetSQL_crash(CString& strSql)
         m_fileContent.conclusion.Checkedby,
         m_fileContent.summary.City,
         m_fileContent.summary.County,
-        "", // urbnrurl
-        "", // Classification_Result
+        _T(""), // urbnrurl
+        _T(""), // Classification_Result
         m_fileContent.summary.CrashClassification,
         m_fileContent.summary.CRASHOCCURRENCE,
         m_fileContent.summary.DirectionFromLandmark,
         m_fileContent.conclusion.District,
         m_fileContent.summary.Fatal_Injury,
-        "", // FormID
-        "", // FormMethod, 
+        _T(""), // FormID
+        _T(""), // FormMethod, 
         m_fileContent.summary.Hit_Run,
         m_fileContent.summary.Landmark,
         m_fileContent.summary.Lighting,
@@ -2399,15 +2402,17 @@ int CDataParser::GetSQL_crash(CString& strSql)
         m_fileContent.diagram.MeasurementsTakenBy,
         m_fileContent.summary.MeasurementUnit,
         m_fileContent.summary.NMDOTNumber,
+        m_fileContent.conclusion.NotifiedBy, 
+        m_fileContent.NumberofDrawings, 
         m_fileContent.diagram.DrawingsBy,
         m_fileContent.NumberofVehicles,
         m_fileContent.OfficerAtScene,
         m_fileContent.conclusion.OfficersSignaturePresent,
         m_fileContent.summary.PrivateProperty,
-        m_fileContent.properties,
+        m_fileContent.PropertyDamage,
         m_fileContent.summary.RoadCharacter,
         m_fileContent.summary.RoadGrade,
-        "", // StationReport
+        _T(""), // StationReport
         m_fileContent.conclusion.SupervisorOnScene,
         m_fileContent.conclusion.TimeArrived,
         m_fileContent.conclusion.TimeNotified,
@@ -2425,12 +2430,13 @@ int CDataParser::GetSQL_crash(CString& strSql)
         m_fileContent.properties[0].pFirstName,
         m_fileContent.properties[0].pLastName,
         m_fileContent.properties[0].pMiddleName,
-        "", // FormIDKofax
+        _T(""), // FormIDKofax
         0,  // year
         0,  // month 
         0,  // hour 
         0,  // nVeh 
         0,  // severity 
+        0,  // System
         0,  // topcfacc 
         0,  // alcinv 
         0,  // druginv 
@@ -2449,37 +2455,817 @@ int CDataParser::GetSQL_crash(CString& strSql)
         0,  // total 
         0,  // motorists 
         0,  // nonmotorists
-        "", //<GIS_Astreet, nvarcha        );
-        "", //<GIS_Bstreet, nvarcha
-        "", //<GIS_Location, nvarch    return 0;
-        "", //<GIS_Route, nvarchar(}
-        "", //<GIS_Milepost, nvarch
-        "", //<GIS_UrbanRural, nvarint CDataParser::GetSQL_occupant(CString& strSql)
-        "", //<GIS_County, nvarchar{
-        "", //<GIS_CityE911, nvarch    return 0;
-        "", //<GIS_CityUSCensus, nv}
-        "", //<GIS_NatAmer_USCensus
-        "", //<GIS_TransDist, float,>int CDataParser::GetSQL_vehicle(CString& strSql)
-        "", //<GIS_MaintDist, float,>{
-        "", //<GIS_UTM_X, float,>        return 0;
-        "", //<GIS_UTM_Y, float,>    }
-        "", //<GIS_LAT, float,>      
-        "", //<GIS_LONG, float,>     
-        "", //<source, nvarchar(max),
-        "", //<NMDOTID, float,>      
-        "", //<SysBatchNumber, nvar
-        "" //<SysScanDate, nvarcha
+        _T(""), //<GIS_Astreet, nvarcha        );
+        _T(""), //<GIS_Bstreet, nvarcha
+        _T(""), //<GIS_Location, nvarch    return 0;
+        _T(""), //<GIS_Route, nvarchar(}
+        _T(""), //<GIS_Milepost, nvarch
+        _T(""), //<GIS_UrbanRural, nvarint CDataParser::GetSQL_occupant(CString& strSql)
+        _T(""), //<GIS_County, nvarchar{
+        _T(""), //<GIS_CityE911, nvarch    return 0;
+        _T(""), //<GIS_CityUSCensus, nv}
+        _T(""), //<GIS_NatAmer_USCensus
+        _T(""), //<GIS_TransDist, float,>int CDataParser::GetSQL_vehicle(CString& strSql)
+        _T(""), //<GIS_MaintDist, float,>{
+        _T(""), //<GIS_UTM_X, float,>        return 0;
+        _T(""), //<GIS_UTM_Y, float,>    }
+        _T(""), //<GIS_LAT, float,>      
+        _T(""), //<GIS_LONG, float,>     
+        _T(""), //<source, nvarchar(max),
+        _T(""), //<NMDOTID, float,>      
+        _T(""), //<SysBatchNumber, nvar
+        _T("") //<SysScanDate, nvarcha
         );
+
+#ifdef DEBUG
+    OutputDebugString(strSql.GetString());
+#endif
 
     return 0;
 }
 
 int CDataParser::GetSQL_occupant(CString& strSql)
 {
+    for (UINT i = 0; i < m_fileContent.NumberofVehicles; ++i)
+    {
+        UINT j = 0;
+        while (!m_fileContent.vehicles[i].Occupant[j].oSeatPos.IsEmpty())
+        {
+            CString strOccupant;
+            strOccupant.Format(
+                _T("INSERT INTO [dbo].[Aoccupant2012]")
+                _T("([UCRVehnoPosFNLNAgeSexCity] ")
+                _T(",[ucrnumber]                 ")
+                _T(",[crashdate]                 ")
+                _T(",[vehno]                     ")
+                _T(",[oSeatPos]                  ")
+                _T(",[oFirstName]                ")
+                _T(",[oLastName]                 ")
+                _T(",[oMiddleName]               ")
+                _T(",[oAge]                      ")
+                _T(",[oSex]                      ")
+                _T(",[oRace]                     ")
+                _T(",[oInjuryCode]               ")
+                _T(",[oOPCode]                   ")
+                _T(",[oOPProperlyUsed]           ")
+                _T(",[oAirbagDeployed]           ")
+                _T(",[oEjected]                  ")
+                _T(",[oEMSNum]                   ")
+                _T(",[oMedTrans]                 ")
+                _T(",[oAddress]                  ")
+                _T(",[oCity]                     ")
+                _T(",[oState]                    ")
+                _T(",[oZip])                     ")
+                _T("VALUES")
+                _T("('%s'")	    // <UCRVehnoPosFNLNAgeSexCity, nvarchar(max),>
+                _T(",%d")	    // <ucrnumber, float,>
+                _T(",'%s'")	    // <crashdate, nvarchar(255),>
+                _T(",%d")	    // <vehno, float,>
+                _T(",'%s'")	    // <oSeatPos, nvarchar(max),>
+                _T(",'%s'")	    // <oFirstName, nvarchar(max),>
+                _T(",'%s'")	    // <oLastName, nvarchar(max),>
+                _T(",'%s'")	    // <oMiddleName, nvarchar(max),>
+                _T(",%d")	    // <oAge, float,>
+                _T(",'%s'")	    // <oSex, nvarchar(max),>
+                _T(",'%s'")	    // <oRace, nvarchar(max),>
+                _T(",'%s'")	    // <oInjuryCode, nvarchar(max),>
+                _T(",'%s'")	    // <oOPCode, nvarchar(max),>
+                _T(",'%s'")	    // <oOPProperlyUsed, nvarchar(max),>
+                _T(",'%s'")	    // <oAirbagDeployed, nvarchar(max),>
+                _T(",'%s'")	    // <oEjected, nvarchar(max),>
+                _T(",'%s'")	    // <oEMSNum, nvarchar(max),>
+                _T(",'%s'")	    // <oMedTrans, nvarchar(max),>
+                _T(",'%s'")	    // <oAddress, nvarchar(max),>
+                _T(",'%s'")	    // <oCity, nvarchar(max),>
+                _T(",'%s'")	    // <oState, nvarchar(max),>
+                _T(",'%s'"), 	// <oZip, nvarchar(max),>)
+
+                MakeOccupantKey(m_fileContent.summary.UCRNumber,
+                                m_fileContent.vehicles[i].vVehNo,
+                                m_fileContent.vehicles[i].Occupant[j].oSeatPos,
+                                m_fileContent.vehicles[i].Occupant[j].oFirstName,
+                                m_fileContent.vehicles[i].Occupant[j].oLastName,
+                                m_fileContent.vehicles[i].Occupant[j].oAge,
+                                m_fileContent.vehicles[i].Occupant[j].oSex,
+                                m_fileContent.vehicles[i].Occupant[j].oCity),
+                m_fileContent.summary.UCRNumber,
+                m_fileContent.summary.CrashDate,
+                m_fileContent.vehicles[i].vVehNo,
+                m_fileContent.vehicles[i].Occupant[j].oSeatPos,
+                m_fileContent.vehicles[i].Occupant[j].oFirstName,
+                m_fileContent.vehicles[i].Occupant[j].oLastName,
+                m_fileContent.vehicles[i].Occupant[j].oMiddleName,
+                m_fileContent.vehicles[i].Occupant[j].oAge,
+                m_fileContent.vehicles[i].Occupant[j].oSex,
+                m_fileContent.vehicles[i].Occupant[j].oRace,
+                m_fileContent.vehicles[i].Occupant[j].oInjuryCode,
+                m_fileContent.vehicles[i].Occupant[j].oOPCode,
+                m_fileContent.vehicles[i].Occupant[j].OOPPROPERLYUSED,
+                m_fileContent.vehicles[i].Occupant[j].oAirBagDeploy,
+                m_fileContent.vehicles[i].Occupant[j].oEjected,
+                m_fileContent.vehicles[i].Occupant[j].oEMSNum,
+                m_fileContent.vehicles[i].Occupant[j].oMedTrans,
+                m_fileContent.vehicles[i].Occupant[j].oAddress,
+                m_fileContent.vehicles[i].Occupant[j].oCity,
+                m_fileContent.vehicles[i].Occupant[j].oState,
+                m_fileContent.vehicles[i].Occupant[j].oZip
+                );
+        
+            strSql += strOccupant + _T("; ");
+            ++j;
+        }
+    }
+
     return 0;
 }
 
 int CDataParser::GetSQL_vehicle(CString& strSql)
 {
+    for (UINT i = 0; i < m_fileContent.NumberofVehicles; ++i)
+    {
+        CString strVeh;
+        strVeh.Format(
+            _T("INSERT INTO [dbo].[Avehicle2012]")
+            _T("([ucrnumber]                    ")
+            _T(",[vehno]                        ")
+            _T(",[crashdate]                    ")
+            _T(",[source]                       ")
+            _T(",[DALC]                         ")
+            _T(",[DRUG]                         ")
+            _T(",[topcfcar]                     ")
+            _T(",[typev]                        ")
+            _T(",[dresid]                       ")
+            _T(",[ACFAvoidNoContactOther]       ")
+            _T(",[ACFAvoidNoContactVe]          ")
+            _T(",[ACFCellPhone]                 ")
+            _T(",[ACFDefectiveSteering]         ")
+            _T(",[ACFDefectiveTires]            ")
+            _T(",[ACFDisregardedTrafficSignal]  ")
+            _T(",[ACFDriverInattention]         ")
+            _T(",[ACFDriverlessMovingVe]        ")
+            _T(",[ACFDroveLeftOfCenter]         ")
+            _T(",[ACFExcessiveSpeed]            ")
+            _T(",[ACFFailedToYieldEmgcyVe]      ")
+            _T(",[ACFFailedToYieldPoliceVe]     ")
+            _T(",[ACFFailedToYieldRightOfWay]   ")
+            _T(",[ACFFollowingTooClosely]       ")
+            _T(",[ACFHighSpeedPursuit]          ")
+            _T(",[ACFImproperBacking]           ")
+            _T(",[ACFImproperLaneChange]        ")
+            _T(",[ACFImproperOvertaking]        ")
+            _T(",[ACFInadequateBrakes]          ")
+            _T(",[ACFLowVisibilityDueToSmoke]   ")
+            _T(",[ACFMadeImproperTurn]          ")
+            _T(",[ACFNone]                      ")
+            _T(",[ACFOtherImproperDriving]      ")
+            _T(",[ACFOtherMechanicalDefect]     ")
+            _T(",[ACFOtherNoDriverError]        ")
+            _T(",[ACFPassedStopSign]            ")
+            _T(",[ACFPedestrianError]           ")
+            _T(",[ACFRoadDefect]                ")
+            _T(",[ACFSpeed2FastForConditions]   ")
+            _T(",[ACFTexting]                   ")
+            _T(",[ACFTrafficControlInopMissing] ")
+            _T(",[ACFUnderInflOfDrugs]          ")
+            _T(",[ACFUnderInfluenceOfAlcohol]   ")
+            _T(",[ACFVeSkiddedBeforeBrk]        ")
+            _T(",[CarrierAddress]               ")
+            _T(",[CarrierName]                  ")
+            _T(",[CarrierZip]                   ")
+            _T(",[ConditionAmputee]             ")
+            _T(",[ConditionEyesightImpaired]    ")
+            _T(",[ConditionFatiguedAsleep]      ")
+            _T(",[ConditionHearingImpaired]     ")
+            _T(",[ConditionIllness]             ")
+            _T(",[ConditionMedsDrugsAlcohol]    ")
+            _T(",[ConditionNoAppDefects]        ")
+            _T(",[ConditionOtherText]           ")
+            _T(",[ConditionOther]               ")
+            _T(",[ConditionUnknown]             ")
+            _T(",[DABacking]                    ")
+            _T(",[DAGoingStraight]              ")
+            _T(",[DALeftTurn]                   ")
+            _T(",[DAOther]                      ")
+            _T(",[DAOvertakingPassing]          ")
+            _T(",[DAParked]                     ")
+            _T(",[DARightTurn]                  ")
+            _T(",[DASlowing]                    ")
+            _T(",[DAStartFromPark]              ")
+            _T(",[DAStartInTrafficLane]         ")
+            _T(",[DAStoppedForSignsSignal]      ")
+            _T(",[DAStoppedForTraffic]          ")
+            _T(",[DAUnknown]                    ")
+            _T(",[DAUturn]                      ")
+            _T(",[DLDoB]                        ")
+            _T(",[DLEndorsements]               ")
+            _T(",[DLExpires]                    ")
+            _T(",[DLNumber]                     ")
+            _T(",[DLRestrictions]               ")
+            _T(",[DLState]                      ")
+            _T(",[DLStatus]                     ")
+            _T(",[DLType]                       ")
+            _T(",[DrFirstName]                  ")
+            _T(",[DrLastName]                   ")
+            _T(",[DrSeatPos]                    ")
+            _T(",[DrAge]                        ")
+            _T(",[DrSex]                        ")
+            _T(",[DrRace]                       ")
+            _T(",[DrInjuryCode]                 ")
+            _T(",[DrOPCode]                     ")
+            _T(",[DrOPProperlyUsed]             ")
+            _T(",[DrAirbagDeployed]             ")
+            _T(",[DrEjected]                    ")
+            _T(",[DrEMSNum]                     ")
+            _T(",[DrMedTrans]                   ")
+            _T(",[DrOccupation]                 ")
+            _T(",[DrPhone]                      ")
+            _T(",[DrMiddleName]                 ")
+            _T(",[DrAddress]                    ")
+            _T(",[DrCity]                       ")
+            _T(",[DrZip]                        ")
+            _T(",[GrossVehicleWeight]           ")
+            _T(",[HazmatName]                   ")
+            _T(",[HazmatPlacard]                ")
+            _T(",[HazmatReleased]               ")
+            _T(",[ICCCarrierCode]               ")
+            _T(",[InsuredBy]                    ")
+            _T(",[InterLock]                    ")
+            _T(",[InterstateCarrier]            ")
+            _T(",[LeftScene]                    ")
+            _T(",[LiabilityInsurance]           ")
+            _T(",[NumberofAxles]                ")
+            _T(",[OwnersAddress]                ")
+            _T(",[OwnersCompany]                ")
+            _T(",[OwnersName]                   ")
+            _T(",[OwnersPhone]                  ")
+            _T(",[OwnersZip]                    ")
+            _T(",[PedAtIntAgainstSignal]        ")
+            _T(",[PedAtIntDiagonal]             ")
+            _T(",[PedAtIntNoSignal]             ")
+            _T(",[PedAtIntWithSignal]           ")
+            _T(",[PedNotIntCrosswalk]           ")
+            _T(",[PedNotIntFromBehindObstruct]  ")
+            _T(",[PedNotIntNoCrosswalk]         ")
+            _T(",[PedNotIntOtherText]           ")
+            _T(",[PedNotIntOther]               ")
+            _T(",[PedNotIntPlayinginRoad]       ")
+            _T(",[PedNotIntPushWorkOnVe]        ")
+            _T(",[PedNotIntStanding]            ")
+            _T(",[PedNotIntWalkAgainstTraffic]  ")
+            _T(",[PedNotIntWalkWithTraffic]     ")
+            _T(",[PolicyNumber]                 ")
+            _T(",[PostedSpeed]                  ")
+            _T(",[RoadConditionsVe]             ")
+            _T(",[RoadDesignDivider]            ")
+            _T(",[RoadDesignLanes]              ")
+            _T(",[RoadDesign]                   ")
+            _T(",[RoadSurfaceVe]                ")
+            _T(",[SafeSpeed]                    ")
+            _T(",[SequenceEvent1]               ")
+            _T(",[SequenceEvent2]               ")
+            _T(",[SequenceEvent3]               ")
+            _T(",[SequenceEvent4]               ")
+            _T(",[SobrietyBAC]                  ")
+            _T(",[SobrietyBloodTest]            ")
+            _T(",[SobrietyBreathTest]           ")
+            _T(",[SobrietyConsumeAlcohol]       ")
+            _T(",[SobrietyConsumeCtrlSubtance]  ")
+            _T(",[SobrietyConsumeMeds]          ")
+            _T(",[SobrietyFieldSobrietyTest]    ")
+            _T(",[SobrietyNotConsumeAlcohol]    ")
+            _T(",[SobrietyTestByInst]           ")
+            _T(",[SobrietyTestRefused]          ")
+            _T(",[SobrietyUnknown]              ")
+            _T(",[StreetOn]                     ")
+            _T(",[TrafficControlDevice]         ")
+            _T(",[Trailer1LicNumber]            ")
+            _T(",[Trailer1LicYear]              ")
+            _T(",[Trailer1Make]                 ")
+            _T(",[Trailer1Type]                 ")
+            _T(",[Trailer1Year]                 ")
+            _T(",[Trailer2LicNumber]            ")
+            _T(",[Trailer2LicYear]              ")
+            _T(",[Trailer2Make]                 ")
+            _T(",[Trailer2Type]                 ")
+            _T(",[Trailer2Year]                 ")
+            _T(",[Trailer3LicNumber]            ")
+            _T(",[Trailer3LicYear]              ")
+            _T(",[Trailer3Make]                 ")
+            _T(",[Trailer3Type]                 ")
+            _T(",[Trailer3Year]                 ")
+            _T(",[USDOTNum]                     ")
+            _T(",[vVehNo]                       ")
+            _T(",[vLastName]                    ")
+            _T(",[vFirstName]                   ")
+            _T(",[vMiddleName]                  ")
+            _T(",[vViolation]                   ")
+            _T(",[vAction]                      ")
+            _T(",[VeBodystyle]                  ")
+            _T(",[VeCargoBody]                  ")
+            _T(",[VeColor]                      ")
+            _T(",[VeDamage10]                   ")
+            _T(",[VeDamage11]                   ")
+            _T(",[VeDamage12]                   ")
+            _T(",[VeDamage1]                    ")
+            _T(",[VeDamage2]                    ")
+            _T(",[VeDamage3]                    ")
+            _T(",[VeDamage4]                    ")
+            _T(",[VeDamage5]                    ")
+            _T(",[VeDamage6]                    ")
+            _T(",[VeDamage7]                    ")
+            _T(",[VeDamage8]                    ")
+            _T(",[VeDamage9]                    ")
+            _T(",[VeDamageAll]                  ")
+            _T(",[VeDamageExtent]               ")
+            _T(",[VeDamageNone]                 ")
+            _T(",[VeDamageSeverity]             ")
+            _T(",[VeDamageTop]                  ")
+            _T(",[VeDamageUndercarriage]        ")
+            _T(",[VeLicPlateNum]                ")
+            _T(",[VeLicPlateRegYr]              ")
+            _T(",[VeLicPlateState]              ")
+            _T(",[VeMake]                       ")
+            _T(",[VeTowedDisabled]              ")
+            _T(",[VeTowed]                      ")
+            _T(",[VeUse1]                       ")
+            _T(",[VeUse2]                       ")
+            _T(",[VehDirection]                 ")
+            _T(",[veTowedBy]                    ")
+            _T(",[veTowedTo]                    ")
+            _T(",[veVin]                        ")
+            _T(",[veYear])                      ")
+            _T("VALUES")
+            _T("(%d")		// <ucrnumber, float,>
+            _T(",%d")		// <vehno, float,>
+            _T(",'%s'")		// <crashdate, nvarchar(255),>
+            _T(",'%s'")		// <source, nvarchar(max),>
+            _T(",%d")		// <DALC, float,>
+            _T(",%d")		// <DRUG, float,>
+            _T(",%d")		// <topcfcar, float,>
+            _T(",%d")		// <typev, float,>
+            _T(",'%s'")		// <dresid, nvarchar(max),>
+            _T(",%d")		// <ACFAvoidNoContactOther, float,>
+            _T(",%d")		// <ACFAvoidNoContactVe, float,>
+            _T(",%d")		// <ACFCellPhone, float,>
+            _T(",%d")		// <ACFDefectiveSteering, float,>
+            _T(",%d")		// <ACFDefectiveTires, float,>
+            _T(",%d")		// <ACFDisregardedTrafficSignal, float
+            _T(",%d")		// <ACFDriverInattention, float,>
+            _T(",%d")		// <ACFDriverlessMovingVe, float,>
+            _T(",%d")		// <ACFDroveLeftOfCenter, float,>
+            _T(",%d")		// <ACFExcessiveSpeed, float,>
+            _T(",%d")		// <ACFFailedToYieldEmgcyVe, float,>
+            _T(",%d")		// <ACFFailedToYieldPoliceVe, float,>
+            _T(",%d")		// <ACFFailedToYieldRightOfWay, float,
+            _T(",%d")		// <ACFFollowingTooClosely, float,>
+            _T(",%d")		// <ACFHighSpeedPursuit, float,>
+            _T(",%d")		// <ACFImproperBacking, float,>
+            _T(",%d")		// <ACFImproperLaneChange, float,>
+            _T(",%d")		// <ACFImproperOvertaking, float,>
+            _T(",%d")		// <ACFInadequateBrakes, float,>
+            _T(",%d")		// <ACFLowVisibilityDueToSmoke, float,
+            _T(",%d")		// <ACFMadeImproperTurn, float,>
+            _T(",%d")		// <ACFNone, float,>
+            _T(",%d")		// <ACFOtherImproperDriving, float,>
+            _T(",%d")		// <ACFOtherMechanicalDefect, float,>
+            _T(",%d")		// <ACFOtherNoDriverError, float,>
+            _T(",%d")		// <ACFPassedStopSign, float,>
+            _T(",%d")		// <ACFPedestrianError, float,>
+            _T(",%d")		// <ACFRoadDefect, float,>
+            _T(",%d")		// <ACFSpeed2FastForConditions, float,
+            _T(",%d")		// <ACFTexting, float,>
+            _T(",%d")		// <ACFTrafficControlInopMissing, floa
+            _T(",%d")		// <ACFUnderInflOfDrugs, float,>
+            _T(",%d")		// <ACFUnderInfluenceOfAlcohol, float,
+            _T(",%d")		// <ACFVeSkiddedBeforeBrk, float,>
+            _T(",'%s'")		// <CarrierAddress, nvarchar(max),>
+            _T(",'%s'")		// <CarrierName, nvarchar(max),>
+            _T(",'%d'")		// <CarrierZip, nvarchar(max),>
+            _T(",%d")		// <ConditionAmputee, float,>
+            _T(",%d")		// <ConditionEyesightImpaired, float,>
+            _T(",%d")		// <ConditionFatiguedAsleep, float,>
+            _T(",%d")		// <ConditionHearingImpaired, float,>
+            _T(",%d")		// <ConditionIllness, float,>
+            _T(",%d")		// <ConditionMedsDrugsAlcohol, float,>
+            _T(",%d")		// <ConditionNoAppDefects, float,>
+            _T(",'%d'")		// <ConditionOtherText, nvarchar(max),
+            _T(",%d")		// <ConditionOther, float,>
+            _T(",%d")		// <ConditionUnknown, float,>
+            _T(",%d")		// <DABacking, float,>
+            _T(",%d")		// <DAGoingStraight, float,>
+            _T(",%d")		// <DALeftTurn, float,>
+            _T(",%d")		// <DAOther, float,>
+            _T(",%d")		// <DAOvertakingPassing, float,>
+            _T(",%d")		// <DAParked, float,>
+            _T(",%d")		// <DARightTurn, float,>
+            _T(",%d")		// <DASlowing, float,>
+            _T(",%d")		// <DAStartFromPark, float,>
+            _T(",%d")		// <DAStartInTrafficLane, float,>
+            _T(",%d")		// <DAStoppedForSignsSignal, float,>
+            _T(",%d")		// <DAStoppedForTraffic, float,>
+            _T(",%d")		// <DAUnknown, float,>
+            _T(",%d")		// <DAUturn, float,>
+            _T(",'%s'")		// <DLDoB, nvarchar(255),>
+            _T(",'%s'")		// <DLEndorsements, nvarchar(max),>
+            _T(",'%s'")		// <DLExpires, nvarchar(max),>
+            _T(",'%s'")		// <DLNumber, nvarchar(max),>
+            _T(",'%s'")		// <DLRestrictions, nvarchar(max),>
+            _T(",'%s'")		// <DLState, nvarchar(max),>
+            _T(",'%s'")		// <DLStatus, nvarchar(max),>
+            _T(",'%s'")		// <DLType, nvarchar(max),>
+            _T(",'%s'")		// <DrFirstName, nvarchar(max),>
+            _T(",'%s'")		// <DrLastName, nvarchar(max),>
+            _T(",'%s'")		// <DrSeatPos, nvarchar(max),>
+            _T(",%d")		// <DrAge, float,>
+            _T(",'%s'")		// <DrSex, nvarchar(max),>
+            _T(",'%s'")		// <DrRace, nvarchar(max),>
+            _T(",'%s'")		// <DrInjuryCode, nvarchar(max),>
+            _T(",'%s'")		// <DrOPCode, nvarchar(max),>
+            _T(",'%s'")		// <DrOPProperlyUsed, nvarchar(max),>
+            _T(",'%s'")		// <DrAirbagDeployed, nvarchar(max),>
+            _T(",'%s'")		// <DrEjected, nvarchar(max),>
+            _T(",'%s'")		// <DrEMSNum, nvarchar(max),>
+            _T(",'%s'")		// <DrMedTrans, nvarchar(max),>
+            _T(",'%s'")		// <DrOccupation, nvarchar(max),>
+            _T(",'%s'")		// <DrPhone, nvarchar(max),>
+            _T(",'%s'")		// <DrMiddleName, nvarchar(max),>
+            _T(",'%s'")		// <DrAddress, nvarchar(max),>
+            _T(",'%s'")		// <DrCity, nvarchar(max),>
+            _T(",'%d'")		// <DrZip, nvarchar(max),>
+            _T(",'%s'")		// <GrossVehicleWeight, nvarchar(max),
+            _T(",'%s'")		// <HazmatName, nvarchar(max),>
+            _T(",'%s'")		// <HazmatPlacard, nvarchar(max),>
+            _T(",'%s'")		// <HazmatReleased, nvarchar(max),>
+            _T(",'%s'")		// <ICCCarrierCode, nvarchar(max),>
+            _T(",'%s'")		// <InsuredBy, nvarchar(max),>
+            _T(",'%s'")		// <InterLock, nvarchar(max),>
+            _T(",'%s'")		// <InterstateCarrier, nvarchar(max),>
+            _T(",'%s'")		// <LeftScene, nvarchar(max),>
+            _T(",'%s'")		// <LiabilityInsurance, nvarchar(max),
+            _T(",'%s'")		// <NumberofAxles, nvarchar(max),>
+            _T(",'%s'")		// <OwnersAddress, nvarchar(max),>
+            _T(",'%s'")		// <OwnersCompany, nvarchar(max),>
+            _T(",'%s'")		// <OwnersName, nvarchar(max),>
+            _T(",'%s'")		// <OwnersPhone, nvarchar(max),>
+            _T(",'%d'")		// <OwnersZip, nvarchar(max),>
+            _T(",%d")		// <PedAtIntAgainstSignal, float,>
+            _T(",%d")		// <PedAtIntDiagonal, float,>
+            _T(",%d")		// <PedAtIntNoSignal, float,>
+            _T(",%d")		// <PedAtIntWithSignal, float,>
+            _T(",%d")		// <PedNotIntCrosswalk, float,>
+            _T(",%d")		// <PedNotIntFromBehindObstruct, float
+            _T(",%d")		// <PedNotIntNoCrosswalk, float,>
+            _T(",%d")		// <PedNotIntOtherText, nvarchar(max),
+            _T(",%d")		// <PedNotIntOther, float,>
+            _T(",%d")		// <PedNotIntPlayinginRoad, float,>
+            _T(",%d")		// <PedNotIntPushWorkOnVe, float,>
+            _T(",%d")		// <PedNotIntStanding, float,>
+            _T(",%d")		// <PedNotIntWalkAgainstTraffic, float
+            _T(",%d")		// <PedNotIntWalkWithTraffic, float,>
+            _T(",'%s'")		// <PolicyNumber, nvarchar(max),>
+            _T(",'%d'")		// <PostedSpeed, nvarchar(max),>
+            _T(",'%s'")		// <RoadConditionsVe, nvarchar(max),>
+            _T(",'%s'")		// <RoadDesignDivider, nvarchar(max),>
+            _T(",'%s'")		// <RoadDesignLanes, nvarchar(max),>
+            _T(",'%s'")		// <RoadDesign, nvarchar(max),>
+            _T(",'%s'")		// <RoadSurfaceVe, nvarchar(max),>
+            _T(",'%d'")		// <SafeSpeed, nvarchar(max),>
+            _T(",'%d'")		// <SequenceEvent1, nvarchar(max),>
+            _T(",'%d'")		// <SequenceEvent2, nvarchar(max),>
+            _T(",'%d'")		// <SequenceEvent3, nvarchar(max),>
+            _T(",'%d'")		// <SequenceEvent4, nvarchar(max),>
+            _T(",'%d'")		// <SobrietyBAC, nvarchar(max),>
+            _T(",%d")		// <SobrietyBloodTest, float,>
+            _T(",%d")		// <SobrietyBreathTest, float,>
+            _T(",%d")		// <SobrietyConsumeAlcohol, float,>
+            _T(",%d")		// <SobrietyConsumeCtrlSubtance, float
+            _T(",%d")		// <SobrietyConsumeMeds, float,>
+            _T(",%d")		// <SobrietyFieldSobrietyTest, float,>
+            _T(",%d")		// <SobrietyNotConsumeAlcohol, float,>
+            _T(",%d")		// <SobrietyTestByInst, float,>
+            _T(",%d")		// <SobrietyTestRefused, float,>
+            _T(",%d")		// <SobrietyUnknown, float,>
+            _T(",'%s'")		// <StreetOn, nvarchar(max),>
+            _T(",'%s'")		// <TrafficControlDevice, nvarchar(max
+            _T(",'%s'")		// <Trailer1LicNumber, nvarchar(max),>
+            _T(",'%s'")		// <Trailer1LicYear, nvarchar(max),>
+            _T(",'%s'")		// <Trailer1Make, nvarchar(max),>
+            _T(",'%s'")		// <Trailer1Type, nvarchar(max),>
+            _T(",'%s'")		// <Trailer1Year, nvarchar(max),>
+            _T(",'%s'")		// <Trailer2LicNumber, nvarchar(max),>
+            _T(",'%s'")		// <Trailer2LicYear, nvarchar(max),>
+            _T(",'%s'")		// <Trailer2Make, nvarchar(max),>
+            _T(",'%s'")		// <Trailer2Type, nvarchar(max),>
+            _T(",'%s'")		// <Trailer2Year, nvarchar(max),>
+            _T(",'%s'")		// <Trailer3LicNumber, nvarchar(max),>
+            _T(",'%s'")		// <Trailer3LicYear, nvarchar(max),>
+            _T(",'%s'")		// <Trailer3Make, nvarchar(max),>
+            _T(",'%s'")		// <Trailer3Type, nvarchar(max),>
+            _T(",'%s'")		// <Trailer3Year, nvarchar(max),>
+            _T(",'%d'")		// <USDOTNum, nvarchar(max),>
+            _T(",'%d'")		// <vVehNo, nvarchar(max),>
+            _T(",'%s'")		// <vLastName, nvarchar(max),>
+            _T(",'%s'")		// <vFirstName, nvarchar(max),>
+            _T(",'%s'")		// <vMiddleName, nvarchar(max),>
+            _T(",'%s'")		// <vViolation, nvarchar(max),>
+            _T(",'%s'")		// <vAction, nvarchar(max),>
+            _T(",'%s'")		// <VeBodystyle, nvarchar(max),>
+            _T(",'%s'")		// <VeCargoBody, nvarchar(max),>
+            _T(",'%s'")		// <VeColor, nvarchar(max),>
+            _T(",%d")		// <VeDamage10, float,>
+            _T(",%d")		// <VeDamage11, float,>
+            _T(",%d")		// <VeDamage12, float,>
+            _T(",%d")		// <VeDamage1, float,>
+            _T(",%d")		// <VeDamage2, float,>
+            _T(",%d")		// <VeDamage3, float,>
+            _T(",%d")		// <VeDamage4, float,>
+            _T(",%d")		// <VeDamage5, float,>
+            _T(",%d")		// <VeDamage6, float,>
+            _T(",%d")		// <VeDamage7, float,>
+            _T(",%d")		// <VeDamage8, float,>
+            _T(",%d")		// <VeDamage9, float,>
+            _T(",%d")		// <VeDamageAll, float,>
+            _T(",'%s'")		// <VeDamageExtent, nvarchar(max),>
+            _T(",%d")		// <VeDamageNone, float,>
+            _T(",'%s'")		// <VeDamageSeverity, nvarchar(max),>
+            _T(",%d")		// <VeDamageTop, float,>
+            _T(",%d")		// <VeDamageUndercarriage, float,>
+            _T(",'%s'")		// <VeLicPlateNum, nvarchar(max),>
+            _T(",%d")		// <VeLicPlateRegYr, float,>
+            _T(",'%s'")		// <VeLicPlateState, nvarchar(max),>
+            _T(",'%s'")		// <VeMake, nvarchar(max),>
+            _T(",'%s'")		// <VeTowedDisabled, nvarchar(max),>
+            _T(",'%s'")		// <VeTowed, nvarchar(max),>
+            _T(",'%s'")		// <VeUse1, nvarchar(max),>
+            _T(",'%s'")		// <VeUse2, nvarchar(max),>
+            _T(",'%s'")		// <VehDirection, nvarchar(max),>
+            _T(",'%s'")		// <veTowedBy, nvarchar(max),>
+            _T(",'%s'")		// <veTowedTo, nvarchar(max),>
+            _T(",'%s'")		// <veVin, nvarchar(max),>
+           _T(",%d)"), 		// <veYear, float,>)
+
+            m_fileContent.summary.UCRNumber, 
+            m_fileContent.vehicles[i].vVehNo, 
+            m_fileContent.summary.CrashDate, 
+            _T(""),     // source
+            0,          // TODO DALC
+            0,          // TODO DRUG
+            0,          // TODO topcfcar
+            0,          // TODO typev
+            _T(""),     // TODO dressid
+            m_fileContent.conditions[i].ACFAvoidNoContactOther, 
+            m_fileContent.conditions[i].ACFAvoidNoContactVe, 
+            m_fileContent.conditions[i].ACFCellPhone, 
+            m_fileContent.conditions[i].ACFDefectiveSteering, 
+            m_fileContent.conditions[i].ACFDefectiveTires, 
+            m_fileContent.conditions[i].ACFDisregardedTrafficSignal, 
+            m_fileContent.conditions[i].ACFDriverInattention, 
+            m_fileContent.conditions[i].ACFDriverlessMovingVe, 
+            m_fileContent.conditions[i].ACFDroveLeftOfCenter, 
+            m_fileContent.conditions[i].ACFExcessiveSpeed, 
+            m_fileContent.conditions[i].ACFFailedToYieldEmgcyVe, 
+            m_fileContent.conditions[i].ACFFailedToYieldPoliceVe, 
+            m_fileContent.conditions[i].ACFFailedToYieldRightOfWay, 
+            m_fileContent.conditions[i].ACFFollowingTooClosely, 
+            m_fileContent.conditions[i].ACFHighSpeedPursuit, 
+            m_fileContent.conditions[i].ACFImproperBacking, 
+            m_fileContent.conditions[i].ACFImproperLaneChange, 
+            m_fileContent.conditions[i].ACFImproperOvertaking, 
+            m_fileContent.conditions[i].ACFInadequateBrakes, 
+            m_fileContent.conditions[i].ACFLowVisibilityDueToSmoke, 
+            m_fileContent.conditions[i].ACFMadeImproperTurn, 
+            m_fileContent.conditions[i].ACFNone, 
+            m_fileContent.conditions[i].ACFOtherImproperDriving, 
+            m_fileContent.conditions[i].ACFOtherMechanicalDefect, 
+            m_fileContent.conditions[i].ACFOtherNoDriverError, 
+            m_fileContent.conditions[i].ACFPassedStopSign, 
+            m_fileContent.conditions[i].ACFPedestrianError, 
+            m_fileContent.conditions[i].ACFRoadDefect, 
+            m_fileContent.conditions[i].ACFSpeed2FastForConditions, 
+            m_fileContent.conditions[i].ACFTexting, 
+            m_fileContent.conditions[i].ACFTrafficControlInopMissing, 
+            m_fileContent.conditions[i].ACFUnderInflOfDrugs, 
+            m_fileContent.conditions[i].ACFUnderInfluenceOfAlcohol, 
+            m_fileContent.conditions[i].ACFVeSkiddedBeforeBrk, 
+            m_fileContent.vehicles[i].CarrierAddress, 
+            m_fileContent.vehicles[i].CarrierName, 
+            m_fileContent.vehicles[i].CarrierZip, 
+            m_fileContent.conditions[i].ConditionAmputee, 
+            m_fileContent.conditions[i].ConditionEyesightImpaired, 
+            m_fileContent.conditions[i].ConditionFatiguedAsleep, 
+            m_fileContent.conditions[i].ConditionHearingImpaired, 
+            m_fileContent.conditions[i].ConditionIllness, 
+            m_fileContent.conditions[i].ConditionMedsDrugsAlcohol, 
+            m_fileContent.conditions[i].ConditionNoAppDefects, 
+            m_fileContent.conditions[i].ConditionOtherText, 
+            m_fileContent.conditions[i].ConditionOther, 
+            m_fileContent.conditions[i].ConditionUnknown, 
+            m_fileContent.conditions[i].DABacking, 
+            m_fileContent.conditions[i].DAGoingStraight, 
+            m_fileContent.conditions[i].DALeftTurn, 
+            m_fileContent.conditions[i].DAOther, 
+            m_fileContent.conditions[i].DAOvertakingPassing, 
+            m_fileContent.conditions[i].DAParked, 
+            m_fileContent.conditions[i].DARightTurn, 
+            m_fileContent.conditions[i].DASlowing, 
+            m_fileContent.conditions[i].DAStartFromPark, 
+            m_fileContent.conditions[i].DAStartInTrafficLane, 
+            m_fileContent.conditions[i].DAStoppedForSignsSignal, 
+            m_fileContent.conditions[i].DAStoppedForTraffic, 
+            m_fileContent.conditions[i].DAUnknown, 
+            m_fileContent.conditions[i].DAUturn, 
+            m_fileContent.vehicles[i].DLDoB, 
+            m_fileContent.vehicles[i].DLEndorsements, 
+            m_fileContent.vehicles[i].DLExpires, 
+            m_fileContent.vehicles[i].DLNUMBER, 
+            m_fileContent.vehicles[i].DLRestrictions, 
+            m_fileContent.vehicles[i].DLState, 
+            m_fileContent.vehicles[i].DLStatus, 
+            m_fileContent.vehicles[i].DLType, 
+            m_fileContent.vehicles[i].DRFIRSTNAME, 
+            m_fileContent.vehicles[i].DRLASTNAME, 
+            m_fileContent.vehicles[i].Driver.DRSeatPos, 
+            m_fileContent.vehicles[i].Driver.DrAge, 
+            m_fileContent.vehicles[i].Driver.DrSex, 
+            m_fileContent.vehicles[i].Driver.DrRace, 
+            m_fileContent.vehicles[i].Driver.DrInjuryCode, 
+            m_fileContent.vehicles[i].Driver.DROPCODE, 
+            m_fileContent.vehicles[i].Driver.DrOPProperlyUsed, 
+            m_fileContent.vehicles[i].Driver.DrAirbagDeployed, 
+            m_fileContent.vehicles[i].Driver.DrEjected, 
+            m_fileContent.vehicles[i].Driver.DrEMSNum, 
+            m_fileContent.vehicles[i].Driver.DrMedTrans, 
+            m_fileContent.vehicles[i].Driver.DrOccupation, 
+            m_fileContent.vehicles[i].DRPHONE, 
+            m_fileContent.vehicles[i].DRMIDDLENAME, 
+            m_fileContent.vehicles[i].DRADDRESS, 
+            m_fileContent.vehicles[i].DRCITY, 
+            m_fileContent.vehicles[i].DRZIP, 
+            m_fileContent.vehicles[i].GrossVehicleWeight, 
+            m_fileContent.vehicles[i].HazmatName, 
+            m_fileContent.vehicles[i].HazmatPlacard, 
+            m_fileContent.vehicles[i].HazmatReleased, 
+            m_fileContent.vehicles[i].Vehicle.ICCCarrierCode, 
+            m_fileContent.vehicles[i].Owner.InsuredBy, 
+            _T(""),         // InterLock
+            m_fileContent.vehicles[i].InterstateCarrier, 
+            m_fileContent.vehicles[i].LeftScene, 
+            _T(""),         // LiabilityInsurance
+            m_fileContent.vehicles[i].NumberofAxles, 
+            m_fileContent.vehicles[i].Owner.OwnersAddress, 
+            m_fileContent.vehicles[i].Owner.OwnersCompany, 
+            m_fileContent.vehicles[i].Owner.OwnersFirstName + m_fileContent.vehicles[i].Owner.OwnersMiddleName + m_fileContent.vehicles[i].Owner.OwnersLastName, 
+            m_fileContent.vehicles[i].Owner.OWNERSPHONE, 
+            m_fileContent.vehicles[i].Owner.OwnersZip, 
+            m_fileContent.conditions[i].PedAtIntAgainstSignal, 
+            m_fileContent.conditions[i].PedAtIntDiagonal, 
+            m_fileContent.conditions[i].PedAtIntNoSignal, 
+            m_fileContent.conditions[i].PedAtIntWithSignal, 
+            m_fileContent.conditions[i].PedNotIntCrosswalk, 
+            m_fileContent.conditions[i].PedNotIntFromBehindObstruct, 
+            m_fileContent.conditions[i].PedNotIntNoCrosswalk, 
+            m_fileContent.conditions[i].PedNotIntOtherText, 
+            m_fileContent.conditions[i].PedNotIntOther, 
+            m_fileContent.conditions[i].PedNotIntPlayinginRoad, 
+            m_fileContent.conditions[i].PedNotIntPushWorkOnVe, 
+            m_fileContent.conditions[i].PedNotIntStanding, 
+            m_fileContent.conditions[i].PedNotIntWalkAgainstTraffic, 
+            m_fileContent.conditions[i].PedNotIntWalkWithTraffic, 
+            m_fileContent.vehicles[i].Owner.PolicyNumber, 
+            m_fileContent.vehicles[i].PostedSpeed, 
+
+            m_fileContent.conditions[i].RoadConditionsVe, 
+            m_fileContent.conditions[i].RoadDesignDivider, 
+            m_fileContent.conditions[i].RoadDesignLanes, 
+            m_fileContent.conditions[i].RoadDesign, 
+            m_fileContent.conditions[i].RoadSurfaceVe, 
+            m_fileContent.vehicles[i].SafeSpeed, 
+            m_fileContent.conditions[i].SequenceEvent1, 
+            m_fileContent.conditions[i].SequenceEvent2,
+            m_fileContent.conditions[i].SequenceEvent3,
+            m_fileContent.conditions[i].SequenceEvent4,
+            m_fileContent.conditions[i].SobrietyBAC, 
+            m_fileContent.conditions[i].SobrietyBloodTest, 
+            m_fileContent.conditions[i].SobrietyBreathTest, 
+            m_fileContent.conditions[i].SobrietyConsumeAlcohol, 
+            m_fileContent.conditions[i].SobrietyConsumeCtrlSubtance, 
+            m_fileContent.conditions[i].SobrietyConsumeMeds, 
+            m_fileContent.conditions[i].SobrietyFieldSobrietyTest, 
+            m_fileContent.conditions[i].SobrietyNotConsumeAlcohol,
+            m_fileContent.conditions[i].SobrietyTestByInst, 
+            m_fileContent.conditions[i].SobrietyTestRefused, 
+            m_fileContent.conditions[i].SobrietyUnknown, 
+            m_fileContent.vehicles[i].StreetOn, 
+            m_fileContent.conditions[i].TrafficControlDevice,
+            m_fileContent.vehicles[i].Trailer[0].LicNumber,
+            m_fileContent.vehicles[i].Trailer[0].LicYear,
+            m_fileContent.vehicles[i].Trailer[0].Make,
+            m_fileContent.vehicles[i].Trailer[0].Type,
+            m_fileContent.vehicles[i].Trailer[0].Year,
+            m_fileContent.vehicles[i].Trailer[1].LicNumber,
+            m_fileContent.vehicles[i].Trailer[1].LicYear,
+            m_fileContent.vehicles[i].Trailer[1].Make,
+            m_fileContent.vehicles[i].Trailer[1].Type,
+            m_fileContent.vehicles[i].Trailer[1].Year,
+            m_fileContent.vehicles[i].Trailer[2].LicNumber,
+            m_fileContent.vehicles[i].Trailer[2].LicYear,
+            m_fileContent.vehicles[i].Trailer[2].Make,
+            m_fileContent.vehicles[i].Trailer[2].Type,
+            m_fileContent.vehicles[i].Trailer[2].Year,
+            m_fileContent.vehicles[i].USDOTNum, 
+            m_fileContent.vehicles[i].vVehNo, 
+            m_fileContent.violations[0].vLastName, 
+            m_fileContent.violations[0].vFirstName,
+            m_fileContent.violations[0].vMiddleName, 
+            m_fileContent.violations[0].vViolation, 
+            m_fileContent.violations[0].vAction, 
+            m_fileContent.vehicles[i].Vehicle.VeBodystyle, 
+            m_fileContent.vehicles[i].Vehicle.VeCargoBody, 
+            m_fileContent.vehicles[i].Vehicle.VeColor, 
+            m_fileContent.vehicles[i].Vehicle.VeDamage[9],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[10],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[11],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[0],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[1],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[2],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[3],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[4],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[5],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[6],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[7],
+            m_fileContent.vehicles[i].Vehicle.VeDamage[8],
+            m_fileContent.vehicles[i].Vehicle.VeDamageAll, 
+            m_fileContent.vehicles[i].Vehicle.VeDamageExtent, 
+            m_fileContent.vehicles[i].Vehicle.VeDamageNone, 
+            m_fileContent.vehicles[i].Vehicle.VeDamageSeverity, 
+            m_fileContent.vehicles[i].Vehicle.VeDamageTop, 
+            m_fileContent.vehicles[i].Vehicle.VeDamageUndercarriage, 
+            m_fileContent.vehicles[i].Vehicle.VELICPLATENUM, 
+            m_fileContent.vehicles[i].Vehicle.VELICPLATEREGYR, 
+            m_fileContent.vehicles[i].Vehicle.VELICPLATESTATE, 
+            m_fileContent.vehicles[i].Vehicle.VeMake, 
+            m_fileContent.vehicles[i].Vehicle.VeTowedDisabled, 
+            m_fileContent.vehicles[i].Vehicle.VeTowed, 
+            m_fileContent.vehicles[i].Vehicle.VeUse1, 
+            m_fileContent.vehicles[i].Vehicle.VeUse2, 
+            m_fileContent.vehicles[i].VehDirection, 
+            m_fileContent.vehicles[i].Vehicle.veTowedBy, 
+            m_fileContent.vehicles[i].Vehicle.veTowedTo, 
+            m_fileContent.vehicles[i].Vehicle.veVin, 
+            m_fileContent.vehicles[i].Vehicle.veYear
+            );
+
+            strSql += strVeh + _T(";");
+#ifdef DEBUG
+            OutputDebugString(strSql.GetString());
+#endif
+    }
+
     return 0;
+}
+
+int CDataParser::WeekDayString2Int(const char* value, UINT& WeekDay)
+{
+    if (!_strnicmp(value, "Mon", strlen("Mon")))
+    {
+        WeekDay = 1;
+    }
+    else if (!_strnicmp(value, "Tues", strlen("Tues")))
+    {
+        WeekDay = 2;
+    }
+    else if (!_strnicmp(value, "Wed", strlen("Wed")))
+    {
+        WeekDay = 3;
+    }
+    else if (!_strnicmp(value, "Thur", strlen("Thur")))
+    {
+        WeekDay = 4;
+    }
+    else if (!_strnicmp(value, "Fri", strlen("Fri")))
+    {
+        WeekDay = 5;
+    }
+    else if (!_strnicmp(value, "Sat", strlen("Sat")))
+    {
+        WeekDay = 6;
+    }
+    else if (!_strnicmp(value, "Sun", strlen("Sun")))
+    {
+        WeekDay = 7;
+    }
+    else
+    {
+        ASSERT(0);
+    }
+
+    return 0;
+}
+
+CString CDataParser::MakeOccupantKey(UINT ucrNumber, UINT vehNo, CString& seatPos, CString& firstName, CString& lastName, UINT age, CString& sex, CString& city)
+{
+    CString key;
+    key.Format(_T("%d%d%s%s%s%d%s%s"), ucrNumber, vehNo, seatPos, firstName, lastName, age, sex, city);
+
+    return key;
 }

@@ -46,7 +46,7 @@ BOOL CViewTree::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 void CViewTree::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 {
     TRACE(_T("double click... %s\n"), GetItemText((GetSelectedItem())));
-    (((CMainFrame*)AfxGetMainWnd())->GetFileView())->SendMessage(CUSTOM_WM_MESSAGE, 0, 0);
+    (((CMainFrame*)AfxGetMainWnd())->GetFileView())->SendMessage(WM_DOUBLE_CLICK_FTP_FILE, 0, 0);
 
     *pResult = 0;
 }

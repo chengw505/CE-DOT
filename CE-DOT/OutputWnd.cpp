@@ -53,9 +53,6 @@ int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	bNameValid = strTabName.LoadString(IDS_DEBUG_TAB);
 	ASSERT(bNameValid);
 
-	// Fill output tabs with some dummy text (nothing magic here)
-	FillDebugWindow();
-
 	return 0;
 }
 
@@ -86,11 +83,12 @@ void COutputWnd::AdjustHorzScroll(CListBox& wndListBox)
 	dc.SelectObject(pOldFont);
 }
 
-void COutputWnd::FillDebugWindow()
+void COutputWnd::FillOutputWindow(CString& str)
 {
-	m_wndOutputDebug.AddString(_T("Debug output is being displayed here."));
-	m_wndOutputDebug.AddString(_T("The output is being displayed in rows of a list view"));
-	m_wndOutputDebug.AddString(_T("but you can change the way it is displayed as you wish..."));
+    if (!str.IsEmpty())
+    {
+        m_wndOutputDebug.InsertString(0, str);
+    }
 }
 
 void COutputWnd::UpdateFonts()

@@ -16,7 +16,7 @@ typedef struct
     UINT County;
     CString City;
     CString TribalJurisdiction;
-    CString WeekDay;
+    UINT WeekDay;
     CString STREETA;
     CString INTERSECTING_STREETB;
     UINT Measurement;
@@ -49,7 +49,7 @@ typedef struct
         County = 0;
         City.Empty();
         TribalJurisdiction.Empty();
-        WeekDay.Empty();
+        WeekDay = 0;
         STREETA.Empty();
         INTERSECTING_STREETB.Empty();
         Measurement = 0;
@@ -108,7 +108,7 @@ typedef struct
     CString DRCITY;
     CString DRSTATE;
     UINT DRZIP;
-    UINT DRPHONE;
+    CString DRPHONE;
     CString DLDoB;
 
     struct  
@@ -323,7 +323,7 @@ typedef struct
         DRCITY.Empty();
         DRSTATE.Empty();
         DRZIP = 0;
-        DRPHONE = 0;
+        DRPHONE.Empty();
         DLDoB.Empty();
 
         Driver.Reset();
@@ -680,7 +680,7 @@ typedef struct
 
         for (int i = 0; i < MAX_XML_ITEM_NUM; ++i)
         {
-            vehicles[i].Reset();
+            //vehicles[i].Reset();
             conditions[i].Reset();
             properties[i].Reset();
             violations[i].Reset();
@@ -734,4 +734,6 @@ private:
     int FillLocation(TiXmlNode* root);
     int FillLocation(const char* key, const char* value);
     int Rollback(UINT urcNumber);
+    int WeekDayString2Int(const char* value, UINT& WeekDay);
+    CString MakeOccupantKey(UINT ucrNumber, UINT vehNo, CString& seatPos, CString& firstName, CString& lastName, UINT age, CString& sex, CString& city);
 };

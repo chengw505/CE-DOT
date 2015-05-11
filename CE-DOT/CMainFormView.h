@@ -51,7 +51,7 @@ protected:
     afx_msg void OnBnClickedBtnSetupFtpAccount();
     afx_msg void OnBnClickedBtnSetupDbAccount();
     afx_msg LRESULT OnFtpFileDoubleClick(WPARAM w, LPARAM l);
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 
 public:
     UINT m_iPeriodNum;
@@ -71,6 +71,7 @@ public:
 
     _ConnectionPtr  m_pConnection;
     _RecordsetPtr   m_pRecordset;
+    CString         m_strOutputMessage;
 
     int InitialAdoInstance();
     int FinalizeAdoInstance();
@@ -84,9 +85,14 @@ public:
     void FillFtpFileView();
 
     int DownloadFile(CString& remoteFilename, CString& localFilename);
+    int Rollback(UINT urcNumber);
+    void UpdateModeUI();
     afx_msg void OnBnClickedBtnDisplayContent();
     afx_msg void OnBnClickedBtnCheckContent();
-    int Rollback(UINT urcNumber);
+    afx_msg void OnBnClickedManualMode();
+    afx_msg void OnBnClickedAutoMode();
+    afx_msg void OnBnClickedAutoPeriod();
+    void SendOutputMessage(CString& strText);
 };
 
 #ifndef _DEBUG  // debug version in CMainFormView.cpp

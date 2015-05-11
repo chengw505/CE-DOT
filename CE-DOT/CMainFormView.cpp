@@ -30,9 +30,12 @@ BEGIN_MESSAGE_MAP(CMainFormView, CFormView)
     ON_WM_RBUTTONUP()
     ON_BN_CLICKED(IDC_BTN_SETUP_FTP_ACCOUNT, &CMainFormView::OnBnClickedBtnSetupFtpAccount)
     ON_BN_CLICKED(IDC_BTN_SETUP_DB_ACCOUNT, &CMainFormView::OnBnClickedBtnSetupDbAccount)
-    ON_MESSAGE(CUSTOM_WM_MESSAGE, OnFtpFileDoubleClick)
     ON_BN_CLICKED(IDC_BTN_DISPLAY_CONTENT, &CMainFormView::OnBnClickedBtnDisplayContent)
     ON_BN_CLICKED(IDC_BTN_CHECK_CONTENT, &CMainFormView::OnBnClickedBtnCheckContent)
+    ON_BN_CLICKED(IDC_MANUAL_MODE, &CMainFormView::OnBnClickedManualMode)
+    ON_BN_CLICKED(IDC_AUTO_MODE, &CMainFormView::OnBnClickedAutoMode)
+    ON_BN_CLICKED(IDC_AUTO_PERIOD, &CMainFormView::OnBnClickedAutoPeriod)
+    ON_MESSAGE(WM_DOUBLE_CLICK_FTP_FILE, &CMainFormView::OnFtpFileDoubleClick)
 END_MESSAGE_MAP()
 
 // CMainFormView construction/destruction
@@ -81,6 +84,8 @@ void CMainFormView::OnInitialUpdate()
     CFormView::OnInitialUpdate();
     GetParentFrame()->RecalcLayout();
     ResizeParentToFit();
+
+    UpdateModeUI();
 
     LoadFtpSettings();
     LoadSqlSettings();
@@ -279,6 +284,10 @@ int CMainFormView::DownloadFile(CString& remoteFilename, CString& localFilename)
 {
     int err = 1;
 
+    CString strText;
+    strText.Format(_T("Downlaoding file %s ..."), remoteFilename);
+    SendOutputMessage(strText);
+
     TCHAR currentDir[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, currentDir);
     CString strLocalFile = currentDir + CString(_T("\\Data\\"));
@@ -324,7 +333,7 @@ void CMainFormView::OnBnClickedBtnDisplayContent()
     if (NULL != pMainWnd)
     {
         CFileView* fileView = (CFileView*)pMainWnd->GetFileView();
-        fileView->SendMessage(CUSTOM_WM_MESSAGE, 0, 0);
+        fileView->SendMessage(WM_DOUBLE_CLICK_FTP_FILE, 0, 0);
     }
 }
 
@@ -354,46 +363,49 @@ void CMainFormView::OnBnClickedBtnCheckContent()
                         if (!ExecuteSQL(strSql))
                         {
                             strSql.Empty();
-                            if (!m_dataParser.GetSQL_occupant(strSql))
+                            if (!m_dataParser.GetSQL_vehicle(strSql))
                             {
                                 if (!ExecuteSQL(strSql))
                                 {
                                     strSql.Empty();
-                                    if (!m_dataParser.GetSQL_vehicle(strSql))
+                                    if (!m_dataParser.GetSQL_occupant(strSql))
                                     {
-                                        if (!ExecuteSQL(strSql))
-                                        {
-                                            // success
-                                        }
-                                        else
-                                        {
-                                            // TODO rollback crash data, and occupant data
-                                            Rollback(urcNumber);
-                                        }
+                                        ExecuteSQL(strSql);
                                     }
                                     else
                                     {
-                                        // TODO rollback crash data, and occupant data
-                                        Rollback(urcNumber);
+                                        // sometimes, we don't have occupant in vehicle
                                     }
+
+                                    // success
+                                    CString strText;
+                                    strText.Format(_T("SUCCESS: file %s imported"), strLocalFileName);
+                                    SendOutputMessage(strText);
                                 }
                                 else
                                 {
-                                    // TODO rollback crash data
                                     Rollback(urcNumber);
                                 }
                             }
                             else
                             {
-                                // TODO rollback crash data
                                 Rollback(urcNumber);
                             }
+                        }
+                        else
+                        {
+                            CString strText;
+                            strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+                            SendOutputMessage(strText);
                         }
                     }
                 }
                 else
                 {
-                    // TODO
+                    // TODO download file failed
+                    CString strText;
+                    strText.Format(_T("FAILURE: download file %s from FTP failed"), strRemoteFullPath);
+                    SendOutputMessage(strText);
                 }
             }
         }
@@ -414,4 +426,72 @@ int CMainFormView::Rollback(UINT urcNumber)
     ExecuteSQL(strSql);
 
     return 0;
+}
+
+
+void CMainFormView::OnBnClickedManualMode()
+{
+    UpdateModeUI();
+}
+
+
+void CMainFormView::OnBnClickedAutoMode()
+{
+    UpdateModeUI();
+}
+
+void CMainFormView::UpdateModeUI()
+{
+    UpdateData(TRUE);
+    if (m_iManualMode)
+    {
+        m_btnDispContent.EnableWindow(TRUE);
+        m_btnCheckContent.EnableWindow(TRUE);
+
+        GetDlgItem(IDC_EXECUTE_TIME)->EnableWindow(FALSE);
+        m_btnPeriod.EnableWindow(FALSE);
+        GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(FALSE);
+    }
+    else
+    {
+        m_btnDispContent.EnableWindow(FALSE);
+        m_btnCheckContent.EnableWindow(FALSE);
+
+        GetDlgItem(IDC_EXECUTE_TIME)->EnableWindow(TRUE);
+        m_btnPeriod.EnableWindow(TRUE);
+        if (m_btnPeriod.GetCheck())
+        {
+            GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(TRUE);
+        }
+        else
+        {
+            GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(FALSE);
+        }
+    }
+}
+
+void CMainFormView::OnBnClickedAutoPeriod()
+{
+    UpdateData(FALSE);
+    if (m_btnPeriod.GetCheck())
+    {
+        GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(TRUE);
+    }
+    else
+    {
+        GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(FALSE);
+    }
+}
+
+void CMainFormView::SendOutputMessage(CString& strText)
+{
+    m_strOutputMessage = strText;
+
+    CMainFrame *pMainWnd = (CMainFrame *)AfxGetMainWnd();
+    if (NULL != pMainWnd)
+    {
+        pMainWnd->SendMessage(WM_FILL_OUTPUT_WND, (WPARAM)&m_strOutputMessage);
+    }
+
+    // TODO store the result into log file
 }

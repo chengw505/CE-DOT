@@ -39,7 +39,6 @@
 #include <afxoledb.h>
 #include <atlplus.h>
 
-
 #include "tinyxml.h"
 #include "FTPClient.h"
 using namespace nsFTP;
@@ -49,7 +48,8 @@ using namespace nsFTP;
 #define DLG_RESULT_ERROR  2  
 #define DLG_RESULT_CANCEL 3 
 
-#define CUSTOM_WM_MESSAGE (WM_APP + 1)
+#define WM_DOUBLE_CLICK_FTP_FILE (WM_APP + 1)
+#define WM_FILL_OUTPUT_WND (WM_APP + 2)
 
 #ifdef _UNICODE
 #if defined _M_IX86

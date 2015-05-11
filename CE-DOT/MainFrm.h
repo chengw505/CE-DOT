@@ -43,8 +43,9 @@ protected:  // control bar embedded members
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnViewCustomize();
+    afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
 	afx_msg LRESULT OnToolbarCreateNew(WPARAM wp, LPARAM lp);
-	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
+    afx_msg LRESULT OnFillOutputWindow(WPARAM w, LPARAM l);
 	DECLARE_MESSAGE_MAP()
 
 	BOOL CreateDockingWindows();
@@ -52,6 +53,7 @@ protected:
 
 public:
     CFileView* GetFileView();
+    COutputWnd* GetOutputView();
 };
 
 

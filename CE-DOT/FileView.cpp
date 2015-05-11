@@ -35,7 +35,7 @@ BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
-    ON_MESSAGE(CUSTOM_WM_MESSAGE, OnFtpFileDoubleClick)
+    ON_MESSAGE(WM_DOUBLE_CLICK_FTP_FILE, OnFtpFileDoubleClick)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	rectDummy.SetRectEmpty();
 
 	// Create view:
-	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS;
+    const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS;
 
 	if (!m_wndFileView.Create(dwViewStyle, rectDummy, this, 4))
 	{
@@ -252,7 +252,7 @@ void CFileView::ResetFileList(CFTPClient* ftpClient, CLogonInfo* ftpLogonInfo)
         }
         m_wndFileView.Expand(hRoot, TVE_EXPAND);
 
-        ftpClient->Logout();
+        //ftpClient->Logout();
     }
 }
 
@@ -297,7 +297,7 @@ LRESULT CFileView::OnFtpFileDoubleClick(WPARAM /*w*/, LPARAM /*l*/)
 {
     CString strFullPath = GetFullPath(m_wndFileView.GetSelectedItem());
     CString strFileName = m_wndFileView.GetItemText(m_wndFileView.GetSelectedItem());
-    (((CMainFrame*)AfxGetMainWnd())->GetActiveView())->SendMessage(CUSTOM_WM_MESSAGE, (WPARAM)&strFullPath, (LPARAM)&strFileName);
+    (((CMainFrame*)AfxGetMainWnd())->GetActiveView())->SendMessage(WM_DOUBLE_CLICK_FTP_FILE, (WPARAM)&strFullPath, (LPARAM)&strFileName);
 
     return (LRESULT)0;
 }

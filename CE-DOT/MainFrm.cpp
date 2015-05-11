@@ -19,7 +19,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
-	ON_WM_SETTINGCHANGE()
+    ON_MESSAGE(WM_FILL_OUTPUT_WND, &CMainFrame::OnFillOutputWindow)
+    ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -249,4 +250,19 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 CFileView* CMainFrame::GetFileView()
 {
     return &m_wndFileView;
+}
+
+
+COutputWnd* CMainFrame::GetOutputView()
+{
+    return &m_wndOutput;
+}
+
+
+LRESULT CMainFrame::OnFillOutputWindow(WPARAM w, LPARAM /*l*/)
+{
+    CString& strText = *(CString*)w;
+    m_wndOutput.FillOutputWindow(strText);
+
+    return (LRESULT)0;
 }
