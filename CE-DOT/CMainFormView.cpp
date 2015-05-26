@@ -36,6 +36,8 @@ BEGIN_MESSAGE_MAP(CMainFormView, CFormView)
     ON_BN_CLICKED(IDC_AUTO_MODE, &CMainFormView::OnBnClickedAutoMode)
     ON_BN_CLICKED(IDC_AUTO_PERIOD, &CMainFormView::OnBnClickedAutoPeriod)
     ON_MESSAGE(WM_DOUBLE_CLICK_FTP_FILE, &CMainFormView::OnFtpFileDoubleClick)
+    ON_BN_CLICKED(IDC_BTN_CONFIRM_SCHEDULE, &CMainFormView::OnBnClickedBtnConfirmSchedule)
+    ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CMainFormView construction/destruction
@@ -43,13 +45,10 @@ END_MESSAGE_MAP()
 CMainFormView::CMainFormView()
                 : CFormView(CMainFormView::IDD)
                 , m_ftpClient(nsSocket::CreateDefaultBlockingSocketInstance(), 30)
-                , m_iPeriodNum(7)
                 , m_strHintText(_T(""))
                 , m_executeTime(0)
                 , m_iManualMode(0)
 {
-    // TODO: add construction code here
-
 }
 
 CMainFormView::~CMainFormView()
@@ -61,14 +60,12 @@ CMainFormView::~CMainFormView()
 void CMainFormView::DoDataExchange(CDataExchange* pDX)
 {
     CFormView::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_PERIOD_NUM, m_iPeriodNum);
-    DDV_MinMaxUInt(pDX, m_iPeriodNum, 1, 366);
     DDX_Text(pDX, IDC_HINT_TEXT, m_strHintText);
     DDX_DateTimeCtrl(pDX, IDC_EXECUTE_TIME, m_executeTime);
     DDX_Control(pDX, IDC_BTN_CHECK_CONTENT, m_btnCheckContent);
     DDX_Control(pDX, IDC_BTN_DISPLAY_CONTENT, m_btnDispContent);
     DDX_Radio(pDX, IDC_AUTO_MODE, m_iManualMode);
-    DDX_Control(pDX, IDC_AUTO_PERIOD, m_btnPeriod);
+    DDX_Control(pDX, IDC_AUTO_PERIOD, m_btnRepeat);
 }
 
 BOOL CMainFormView::PreCreateWindow(CREATESTRUCT& cs)
@@ -138,7 +135,7 @@ void CMainFormView::Initialize()
 {
     if (m_iManualMode)
     {
-        m_btnPeriod.EnableWindow(FALSE);
+        m_btnRepeat.EnableWindow(FALSE);
     }
     m_btnCheckContent.EnableWindow(FALSE);
     m_btnDispContent.EnableWindow(FALSE);
@@ -239,7 +236,10 @@ void CMainFormView::OnBnClickedBtnSetupFtpAccount()
 {
     if (IDOK == m_ftpSettingDlg.DoModal()) 
     {
-        m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName), static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), static_cast<LPCTSTR>(m_ftpSettingDlg.m_passwd));
+        m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName), 
+            static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), 
+            static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), 
+            static_cast<LPCTSTR>(m_ftpSettingDlg.m_passwd));
     }
 }
 
@@ -248,7 +248,10 @@ void CMainFormView::OnBnClickedBtnSetupDbAccount()
 {
     if (IDOK == m_sqlSettingDlg.DoModal())
     {
-        m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName), static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), static_cast<LPCTSTR>(m_ftpSettingDlg.m_passwd));
+        m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName), 
+            static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), 
+            static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), 
+            static_cast<LPCTSTR>(m_ftpSettingDlg.m_passwd));
     }
 }
 
@@ -431,13 +434,20 @@ int CMainFormView::Rollback(UINT urcNumber)
 
 void CMainFormView::OnBnClickedManualMode()
 {
+    StoptSchedule(0);
     UpdateModeUI();
+
+    m_strHintText = _T("Under Manual Mode");
+    UpdateData(FALSE);
 }
 
 
 void CMainFormView::OnBnClickedAutoMode()
 {
     UpdateModeUI();
+
+    m_strHintText = _T("Under Auto Mode");
+    UpdateData(FALSE);
 }
 
 void CMainFormView::UpdateModeUI()
@@ -449,8 +459,7 @@ void CMainFormView::UpdateModeUI()
         m_btnCheckContent.EnableWindow(TRUE);
 
         GetDlgItem(IDC_EXECUTE_TIME)->EnableWindow(FALSE);
-        m_btnPeriod.EnableWindow(FALSE);
-        GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(FALSE);
+        m_btnRepeat.EnableWindow(FALSE);
     }
     else
     {
@@ -458,22 +467,14 @@ void CMainFormView::UpdateModeUI()
         m_btnCheckContent.EnableWindow(FALSE);
 
         GetDlgItem(IDC_EXECUTE_TIME)->EnableWindow(TRUE);
-        m_btnPeriod.EnableWindow(TRUE);
-        if (m_btnPeriod.GetCheck())
-        {
-            GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(TRUE);
-        }
-        else
-        {
-            GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(FALSE);
-        }
+        m_btnRepeat.EnableWindow(TRUE);
     }
 }
 
 void CMainFormView::OnBnClickedAutoPeriod()
 {
     UpdateData(FALSE);
-    if (m_btnPeriod.GetCheck())
+    if (m_btnRepeat.GetCheck())
     {
         GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(TRUE);
     }
@@ -494,4 +495,219 @@ void CMainFormView::SendOutputMessage(CString& strText)
     }
 
     // TODO store the result into log file
+}
+
+
+int CMainFormView::StartSchedule()
+{
+    StoptSchedule(0);
+    
+    SYSTEMTIME currentLocalTime;
+    GetLocalTime(&currentLocalTime);
+
+    UpdateData(TRUE);
+    UINT nCurrent = currentLocalTime.wDayOfWeek * 24 * 3600 
+        + currentLocalTime.wHour * 3600 
+        + currentLocalTime.wMinute * 60 
+        + currentLocalTime.wSecond;
+
+    UINT nSchedule = m_executeTime.GetHour() * 3600 
+        + m_executeTime.GetMinute() * 60 
+        + m_executeTime.GetSecond();
+
+    UINT nElapse;
+
+    enum MyEnum
+    {
+        E_SUN = 0, 
+        E_MON, 
+        E_TUE, 
+        E_WED, 
+        E_THU, 
+        E_FRI, 
+        E_SAT
+    };
+    if (((CButton*)GetDlgItem(IDC_MON))->GetCheck())
+    {
+        nSchedule += E_MON * 24 * 3600;
+        if (currentLocalTime.wDayOfWeek > E_MON || nCurrent > nSchedule)
+        {
+            nSchedule += 7 * 24 * 3600;
+        }
+
+        nElapse = nSchedule - nCurrent;
+
+        SetTimer(IDT_TIMER_MON, nElapse, NULL);
+    }
+
+    if (((CButton*)GetDlgItem(IDC_TUE))->GetCheck())
+    {
+        nSchedule += E_TUE * 24 * 3600;
+        if (currentLocalTime.wDayOfWeek > E_TUE || nCurrent > nSchedule)
+        {
+            nSchedule += 7 * 24 * 3600;
+        }
+
+        nElapse = nSchedule - nCurrent;
+
+        SetTimer(IDT_TIMER_TUE, nElapse, NULL);
+    }
+
+    if (((CButton*)GetDlgItem(IDC_WED))->GetCheck())
+    {
+        nSchedule += E_WED * 24 * 3600;
+        if (currentLocalTime.wDayOfWeek > E_WED || nCurrent > nSchedule)
+        {
+            nSchedule += 7 * 24 * 3600;
+        }
+
+        nElapse = nSchedule - nCurrent;
+
+        SetTimer(IDT_TIMER_WED, nElapse, NULL);
+    }
+
+    if (((CButton*)GetDlgItem(IDC_THU))->GetCheck())
+    {
+        nSchedule += E_THU * 24 * 3600;
+        if (currentLocalTime.wDayOfWeek > E_THU || nCurrent > nSchedule)
+        {
+            nSchedule += 7 * 24 * 3600;
+        }
+
+        nElapse = nSchedule - nCurrent;
+
+        SetTimer(IDT_TIMER_THU, nElapse, NULL);
+    }
+
+    if (((CButton*)GetDlgItem(IDC_FRI))->GetCheck())
+    {
+        nSchedule += E_FRI * 24 * 3600;
+        if (currentLocalTime.wDayOfWeek > E_FRI || nCurrent > nSchedule)
+        {
+            nSchedule += 7 * 24 * 3600;
+        }
+
+        nElapse = nSchedule - nCurrent;
+
+        SetTimer(IDT_TIMER_FRI, nElapse, NULL);
+    }
+
+    if (((CButton*)GetDlgItem(IDC_SAT))->GetCheck())
+    {
+        nSchedule += E_SAT * 24 * 3600;
+        if (currentLocalTime.wDayOfWeek > E_SAT || nCurrent > nSchedule)
+        {
+            nSchedule += 7 * 24 * 3600;
+        }
+
+        nElapse = nSchedule - nCurrent;
+
+        SetTimer(IDT_TIMER_SAT, nElapse, NULL);
+    }
+
+    if (((CButton*)GetDlgItem(IDC_SUN))->GetCheck())
+    {
+        nSchedule += E_SUN * 24 * 3600;
+        if (currentLocalTime.wDayOfWeek > E_SUN || nCurrent > nSchedule)
+        {
+            nSchedule += 7 * 24 * 3600;
+        }
+
+        nElapse = nSchedule - nCurrent;
+
+        SetTimer(IDT_TIMER_SUN, nElapse, NULL);
+    }
+
+    return 0;
+}
+
+
+int CMainFormView::StoptSchedule(UINT nIDEvent)
+{
+    switch (nIDEvent)
+    {
+    case IDT_TIMER_MON:
+        KillTimer(IDT_TIMER_MON);
+        break;
+
+    case IDT_TIMER_TUE:
+        KillTimer(IDT_TIMER_TUE);
+        break;
+
+    case IDT_TIMER_WED:
+        KillTimer(IDT_TIMER_WED);
+        break;
+
+    case IDT_TIMER_THU:
+        KillTimer(IDT_TIMER_THU);
+        break;
+
+    case IDT_TIMER_FRI:
+        KillTimer(IDT_TIMER_FRI);
+        break;
+
+    case IDT_TIMER_SAT:
+        KillTimer(IDT_TIMER_SAT);
+        break;
+
+    case IDT_TIMER_SUN:
+        KillTimer(IDT_TIMER_SUN);
+        break;
+
+    default:
+        KillTimer(IDT_TIMER_MON);
+        KillTimer(IDT_TIMER_TUE);
+        KillTimer(IDT_TIMER_WED);
+        KillTimer(IDT_TIMER_THU);
+        KillTimer(IDT_TIMER_FRI);
+        KillTimer(IDT_TIMER_SAT);
+        KillTimer(IDT_TIMER_SUN);
+        break;
+    }
+
+    return 0;
+}
+
+
+int CMainFormView::ScheduleProc()
+{
+    TRACE(_T("Schedule Proc Fired\n"));
+
+    return 0;
+}
+
+
+void CMainFormView::OnBnClickedBtnConfirmSchedule()
+{
+    MessageBox(_T("Schedule Confirmed"), _T("Notice"), MB_OK | MB_ICONINFORMATION);
+    StartSchedule();
+}
+
+
+void CMainFormView::OnTimer(UINT_PTR nIDEvent)
+{
+    switch (nIDEvent)
+    {
+    case IDT_TIMER_MON:
+    case IDT_TIMER_TUE:
+    case IDT_TIMER_WED:
+    case IDT_TIMER_THU:
+    case IDT_TIMER_FRI:
+    case IDT_TIMER_SAT:
+    case IDT_TIMER_SUN:
+        ScheduleProc();
+
+        StoptSchedule(nIDEvent);
+        if (m_btnRepeat.GetCheck())
+        {
+            TRACE(_T("Re-Schedule Proc %d\n"), nIDEvent);
+            SetTimer(nIDEvent, 7 * 24 * 3600, NULL);
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    CFormView::OnTimer(nIDEvent);
 }

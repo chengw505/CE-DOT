@@ -8,6 +8,13 @@
 #include "atltime.h"
 #include "afxwin.h"
 
+#define IDT_TIMER_MON   100
+#define IDT_TIMER_TUE   101
+#define IDT_TIMER_WED   102
+#define IDT_TIMER_THU   103
+#define IDT_TIMER_FRI   104
+#define IDT_TIMER_SAT   105
+#define IDT_TIMER_SUN   106
 
 class CMainFormView : public CFormView
 {
@@ -54,13 +61,12 @@ protected:
     DECLARE_MESSAGE_MAP()
 
 public:
-    UINT m_iPeriodNum;
     CString m_strHintText;
     CTime m_executeTime;
     CButton m_btnCheckContent;
     CButton m_btnDispContent;
     int m_iManualMode;
-    CButton m_btnPeriod;
+    CButton m_btnRepeat;
 
     CFtpSetting m_ftpSettingDlg;
     CSqlSetting m_sqlSettingDlg;
@@ -92,7 +98,12 @@ public:
     afx_msg void OnBnClickedManualMode();
     afx_msg void OnBnClickedAutoMode();
     afx_msg void OnBnClickedAutoPeriod();
+    afx_msg void OnBnClickedBtnConfirmSchedule();
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
     void SendOutputMessage(CString& strText);
+    int StartSchedule();
+    int StoptSchedule(UINT nIDEvent);
+    int ScheduleProc();
 };
 
 #ifndef _DEBUG  // debug version in CMainFormView.cpp

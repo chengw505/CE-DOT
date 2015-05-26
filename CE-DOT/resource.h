@@ -70,7 +70,9 @@
 #define IDC_AUTO_PERIOD                 1002
 #define IDC_PERIOD_NUM                  1003
 #define IDC_HOST_NAME                   1003
+#define IDC_MON                         1003
 #define IDC_PORT_NUMBER                 1004
+#define IDC_TUE                         1004
 #define IDC_MANUAL_MODE                 1005
 #define IDC_USER_NAME                   1005
 #define IDC_BTN_DISPLAY_CONTENT         1006
@@ -79,6 +81,14 @@
 #define IDC_BTN_SETUP_FTP_ACCOUNT       1008
 #define IDC_BTN_SETUP_DB_ACCOUNT        1009
 #define IDC_HINT_TEXT                   1010
+#define IDC_BTN_CONFIRM_SCHEDULE        1011
+#define IDC_BTN_CANCEL_SCHEDULE         1012
+#define IDC_WED                         1013
+#define IDC_THU                         1014
+#define IDC_FRI                         1015
+#define IDC_SAT                         1016
+#define IDC_AUTO_PERIOD8                1017
+#define IDC_SUN                         1017
 
 // Next default values for new objects
 // 

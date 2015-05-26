@@ -114,6 +114,7 @@
     <ClInclude Include="FtpSetting.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OutputWnd.h" />
+    <ClInclude Include="PJRegistry\PJRegistry.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SqlSetting.h" />
     <ClInclude Include="stdafx.h" />
@@ -146,6 +147,7 @@
     <ClCompile Include="FtpSetting.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
+    <ClCompile Include="PJRegistry\PJRegistry.cpp" />
     <ClCompile Include="SqlSetting.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

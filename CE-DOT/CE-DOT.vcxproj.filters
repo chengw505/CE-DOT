@@ -19,6 +19,9 @@
     <Filter Include="FtpClient">
       <UniqueIdentifier>{2f6232e1-610a-4ed3-a843-be38d2c103a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PJRegistry">
+      <UniqueIdentifier>{5c6e57eb-93bd-48a5-bba4-331139bd4e02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CE-DOT.h">
@@ -87,6 +90,9 @@
     <ClInclude Include="DataParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PJRegistry\PJRegistry.h">
+      <Filter>PJRegistry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CE-DOT.cpp">
@@ -148,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="DataParser.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PJRegistry\PJRegistry.cpp">
+      <Filter>PJRegistry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
