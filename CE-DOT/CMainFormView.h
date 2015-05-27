@@ -16,6 +16,29 @@
 #define IDT_TIMER_SAT   105
 #define IDT_TIMER_SUN   106
 
+#define REG_SECTION     _T("Settings")
+#define REG_MANUAL_MODE _T("Manual Mode")
+#define REG_AUTO_TIME_HH   _T("Auto Time HH")
+#define REG_AUTO_TIME_MM   _T("Auto Time MM")
+#define REG_AUTO_TIME_SS   _T("Auto Time SS")
+#define REG_AUTO_MON    _T("Mon")
+#define REG_AUTO_TUE    _T("Tue")
+#define REG_AUTO_WED    _T("Wed")
+#define REG_AUTO_THU    _T("Thu")
+#define REG_AUTO_FRI    _T("Fri")
+#define REG_AUTO_SAT    _T("Sat")
+#define REG_AUTO_SUN    _T("Sun")
+#define REG_AUTO_REPEAT _T("Repeat")
+#define REG_FTP_HOST    _T("FTP Host")
+#define REG_FTP_ANONY   _T("FTP Anonoymous")
+#define REG_FTP_USER    _T("FTP User Name")
+#define REG_FTP_PASSWD  _T("FTP Password")
+#define REG_FTP_PORT    _T("FTP Port")
+#define REG_DB_HOST     _T("DB Host")
+#define REG_DB_USER     _T("DB User Name")
+#define REG_DB_PASSWD   _T("DB Password")
+#define REG_DB_WIN_AUTH _T("DB Windows Auth")
+
 class CMainFormView : public CFormView
 {
 protected: // create from serialization only
@@ -62,10 +85,18 @@ protected:
 
 public:
     CString m_strHintText;
-    CTime m_executeTime;
     CButton m_btnCheckContent;
     CButton m_btnDispContent;
     int m_iManualMode;
+    CTime m_executeTime;
+    BOOL m_bMonday;
+    BOOL m_bTuesday;
+    BOOL m_bWednesday;
+    BOOL m_bThursday;
+    BOOL m_bFriday;
+    BOOL m_bSaturday;
+    BOOL m_bSunday;
+    BOOL m_bRepeat;
     CButton m_btnRepeat;
 
     CFtpSetting m_ftpSettingDlg;
@@ -97,13 +128,15 @@ public:
     afx_msg void OnBnClickedBtnCheckContent();
     afx_msg void OnBnClickedManualMode();
     afx_msg void OnBnClickedAutoMode();
-    afx_msg void OnBnClickedAutoPeriod();
+//    afx_msg void OnBnClickedAutoPeriod();
     afx_msg void OnBnClickedBtnConfirmSchedule();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     void SendOutputMessage(CString& strText);
+    int CheckContent(CString& strRemoteFullPath, CString& strLocalFileName);
     int StartSchedule();
     int StoptSchedule(UINT nIDEvent);
     int ScheduleProc();
+    int GetSetSettings(BOOL bLoad = TRUE);
 };
 
 #ifndef _DEBUG  // debug version in CMainFormView.cpp

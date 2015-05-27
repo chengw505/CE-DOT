@@ -84,19 +84,23 @@
 #define IDC_BTN_CONFIRM_SCHEDULE        1011
 #define IDC_BTN_CANCEL_SCHEDULE         1012
 #define IDC_WED                         1013
+#define IDC_COMBO1                      1013
+#define IDC_DB_AUTH                     1013
 #define IDC_THU                         1014
+#define IDC_DB_SERVER_NAME              1014
 #define IDC_FRI                         1015
+#define IDC_DB_USER_NAME                1015
 #define IDC_SAT                         1016
-#define IDC_AUTO_PERIOD8                1017
+#define IDC_DB_USER_PASSWD              1016
 #define IDC_SUN                         1017
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        311
+#define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

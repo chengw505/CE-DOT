@@ -152,8 +152,10 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if( !CFrameWndEx::PreCreateWindow(cs) )
 		return FALSE;
+
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
+    cs.style &= ~(LONG)FWS_ADDTOTITLE;
 
 	return TRUE;
 }

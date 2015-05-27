@@ -29,10 +29,6 @@ BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_COMMAND(ID_PROPERTIES, OnProperties)
 	ON_COMMAND(ID_OPEN, OnFileOpen)
 	ON_COMMAND(ID_OPEN_WITH, OnFileOpenWith)
-	ON_COMMAND(ID_DUMMY_COMPILE, OnDummyCompile)
-	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
-	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
-	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
     ON_MESSAGE(WM_DOUBLE_CLICK_FTP_FILE, OnFtpFileDoubleClick)
@@ -149,21 +145,6 @@ void CFileView::OnFileOpenWith()
 }
 
 void CFileView::OnDummyCompile()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditCut()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditCopy()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditClear()
 {
 	// TODO: Add your command handler code here
 }

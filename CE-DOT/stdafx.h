@@ -41,7 +41,7 @@
 
 #include "tinyxml.h"
 #include "FTPClient.h"
-using namespace nsFTP;
+#include "PJRegistry.h"
 
 #import "c:\program files\common files\system\ado\msado15.dll" no_namespace rename("EOF","adoEOF")  
 #define DLG_RESULT_OK     1  
@@ -50,6 +50,8 @@ using namespace nsFTP;
 
 #define WM_DOUBLE_CLICK_FTP_FILE (WM_APP + 1)
 #define WM_FILL_OUTPUT_WND (WM_APP + 2)
+
+using namespace nsFTP;
 
 #ifdef _UNICODE
 #if defined _M_IX86

@@ -34,7 +34,6 @@ BEGIN_MESSAGE_MAP(CMainFormView, CFormView)
     ON_BN_CLICKED(IDC_BTN_CHECK_CONTENT, &CMainFormView::OnBnClickedBtnCheckContent)
     ON_BN_CLICKED(IDC_MANUAL_MODE, &CMainFormView::OnBnClickedManualMode)
     ON_BN_CLICKED(IDC_AUTO_MODE, &CMainFormView::OnBnClickedAutoMode)
-    ON_BN_CLICKED(IDC_AUTO_PERIOD, &CMainFormView::OnBnClickedAutoPeriod)
     ON_MESSAGE(WM_DOUBLE_CLICK_FTP_FILE, &CMainFormView::OnFtpFileDoubleClick)
     ON_BN_CLICKED(IDC_BTN_CONFIRM_SCHEDULE, &CMainFormView::OnBnClickedBtnConfirmSchedule)
     ON_WM_TIMER()
@@ -46,15 +45,64 @@ CMainFormView::CMainFormView()
                 : CFormView(CMainFormView::IDD)
                 , m_ftpClient(nsSocket::CreateDefaultBlockingSocketInstance(), 30)
                 , m_strHintText(_T(""))
-                , m_executeTime(0)
-                , m_iManualMode(0)
+                , m_iManualMode(1)
+                , m_bRepeat(TRUE)
+                , m_bMonday(FALSE)
+                , m_bTuesday(FALSE)
+                , m_bWednesday(FALSE)
+                , m_bThursday(FALSE)
+                , m_bFriday(FALSE)
+                , m_bSaturday(FALSE)
+                , m_bSunday(FALSE)
 {
+    GetSetSettings();
 }
 
 CMainFormView::~CMainFormView()
 {
     FinalizeAdoInstance();
     CloseDB();
+
+    GetSetSettings(FALSE);
+}
+
+int CMainFormView::GetSetSettings(BOOL bLoad/* = TRUE*/)
+{
+    CPJRegistry reg((CWinApp*)AfxGetApp(), bLoad);
+    reg.Section(REG_SECTION);
+
+    reg.Profile(REG_MANUAL_MODE, m_iManualMode);
+    reg.Profile(REG_AUTO_MON, m_bMonday);
+    reg.Profile(REG_AUTO_TUE, m_bTuesday);
+    reg.Profile(REG_AUTO_WED, m_bWednesday);
+    reg.Profile(REG_AUTO_THU, m_bThursday);
+    reg.Profile(REG_AUTO_FRI, m_bFriday);
+    reg.Profile(REG_AUTO_SAT, m_bSaturday);
+    reg.Profile(REG_AUTO_SUN, m_bSunday);
+    reg.Profile(REG_AUTO_REPEAT, m_bRepeat);
+
+    int hh = m_executeTime.GetHour();
+    int mm = m_executeTime.GetMinute();
+    int ss = m_executeTime.GetSecond();
+    reg.Profile(REG_AUTO_TIME_HH, hh);
+    reg.Profile(REG_AUTO_TIME_MM, mm);
+    reg.Profile(REG_AUTO_TIME_SS, ss);
+
+    CTime now = CTime::GetCurrentTime();
+    m_executeTime = CTime(now.GetYear(), now.GetMonth(), now.GetDay(), hh, mm, ss);
+
+    reg.Profile(REG_FTP_HOST, m_ftpSettingDlg.m_hostName);
+    reg.Profile(REG_FTP_ANONY, m_ftpSettingDlg.m_bAnonymous);
+    reg.Profile(REG_FTP_USER, m_ftpSettingDlg.m_userName);
+    reg.Profile(REG_FTP_PASSWD, m_ftpSettingDlg.m_passwd);
+    reg.Profile(REG_FTP_PORT, m_ftpSettingDlg.m_portNumber);
+
+    // sql settings
+    reg.Profile(REG_DB_HOST, m_sqlSettingDlg.m_strDbServerName);
+    reg.Profile(REG_DB_USER, m_sqlSettingDlg.m_strDbUserName);
+    reg.Profile(REG_DB_PASSWD, m_sqlSettingDlg.m_strDbUserPasswd);
+
+    return 0;
 }
 
 void CMainFormView::DoDataExchange(CDataExchange* pDX)
@@ -66,6 +114,14 @@ void CMainFormView::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_BTN_DISPLAY_CONTENT, m_btnDispContent);
     DDX_Radio(pDX, IDC_AUTO_MODE, m_iManualMode);
     DDX_Control(pDX, IDC_AUTO_PERIOD, m_btnRepeat);
+    DDX_Check(pDX, IDC_MON, m_bMonday);
+    DDX_Check(pDX, IDC_AUTO_PERIOD, m_bRepeat);
+    DDX_Check(pDX, IDC_TUE, m_bTuesday);
+    DDX_Check(pDX, IDC_WED, m_bWednesday);
+    DDX_Check(pDX, IDC_THU, m_bThursday);
+    DDX_Check(pDX, IDC_FRI, m_bFriday);
+    DDX_Check(pDX, IDC_SAT, m_bSaturday);
+    DDX_Check(pDX, IDC_SUN, m_bSunday);
 }
 
 BOOL CMainFormView::PreCreateWindow(CREATESTRUCT& cs)
@@ -133,14 +189,13 @@ CCEDOTDoc* CMainFormView::GetDocument() const // non-debug version is inline
 
 void CMainFormView::Initialize()
 {
-    if (m_iManualMode)
-    {
-        m_btnRepeat.EnableWindow(FALSE);
-    }
-    m_btnCheckContent.EnableWindow(FALSE);
-    m_btnDispContent.EnableWindow(FALSE);
-}
+    UpdateModeUI();
 
+    if (!m_iManualMode)
+    {
+        StartSchedule();
+    }
+}
 
 int CMainFormView::InitialAdoInstance()
 {
@@ -243,22 +298,15 @@ void CMainFormView::OnBnClickedBtnSetupFtpAccount()
     }
 }
 
-
 void CMainFormView::OnBnClickedBtnSetupDbAccount()
 {
     if (IDOK == m_sqlSettingDlg.DoModal())
     {
-        m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName), 
-            static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), 
-            static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), 
-            static_cast<LPCTSTR>(m_ftpSettingDlg.m_passwd));
     }
 }
 
 void CMainFormView::LoadFtpSettings()
 {
-    // TODO load value from local storage and save into m_ftpSettingDlg
-
     m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName), 
         static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), 
         static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), 
@@ -340,6 +388,97 @@ void CMainFormView::OnBnClickedBtnDisplayContent()
     }
 }
 
+int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFileName)
+{
+    int err = 1;
+
+    if (DownloadFile(strRemoteFullPath, strLocalFileName))
+    {
+        // download file failed
+        CString strText;
+        strText.Format(_T("FAILURE: download file %s from FTP failed"), strRemoteFullPath);
+        SendOutputMessage(strText);
+
+        return err;
+    }
+
+    if (m_dataParser.Parse(strLocalFileName))
+    {
+        // TODO download file failed
+        CString strText;
+        strText.Format(_T("FAILURE: fail to parse file %s"), strLocalFileName);
+        SendOutputMessage(strText);
+
+        return err;
+    }
+     
+    UINT urcNumber;
+    m_dataParser.GetUCRNumber(urcNumber);
+
+    // get crash data and import into database
+    CString strSql;
+    if (m_dataParser.GetSQL_crash(strSql))
+    {
+        CString strText;
+        strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+        SendOutputMessage(strText);
+
+        return err;
+    }
+     
+    if (ExecuteSQL(strSql))
+    {
+        CString strText;
+        strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+        SendOutputMessage(strText);
+
+        return err;
+    }
+
+    // get vehicle data and import into database
+    strSql.Empty();
+    if (m_dataParser.GetSQL_vehicle(strSql))
+    {
+        Rollback(urcNumber);
+
+        CString strText;
+        strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+        SendOutputMessage(strText);
+
+        return err;
+    }
+     
+    if (ExecuteSQL(strSql))
+    {
+        Rollback(urcNumber);
+
+        CString strText;
+        strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+        SendOutputMessage(strText);
+
+        return err;
+    }
+
+    // get occupant data and import into database
+    strSql.Empty();
+    if (!m_dataParser.GetSQL_occupant(strSql))
+    {
+        ExecuteSQL(strSql);
+    }
+    else
+    {
+        // sometimes, we don't have occupant in vehicle
+    }
+
+    err = 0;
+
+    // success
+    CString strText;
+    strText.Format(_T("SUCCESS: file %s imported"), strLocalFileName);
+    SendOutputMessage(strText);
+
+    return err;
+}
 
 void CMainFormView::OnBnClickedBtnCheckContent()
 {
@@ -353,64 +492,7 @@ void CMainFormView::OnBnClickedBtnCheckContent()
             CString strLocalFileName = fileView->GetFileName(hSelected);
             CString strRemoteFullPath = fileView->GetFullPath(hSelected);
 
-            if (!DownloadFile(strRemoteFullPath, strLocalFileName))
-            {
-                if (!m_dataParser.Parse(strLocalFileName))
-                {
-                    UINT urcNumber;
-                    m_dataParser.GetUCRNumber(urcNumber);
-
-                    CString strSql;
-                    if (!m_dataParser.GetSQL_crash(strSql))
-                    {
-                        if (!ExecuteSQL(strSql))
-                        {
-                            strSql.Empty();
-                            if (!m_dataParser.GetSQL_vehicle(strSql))
-                            {
-                                if (!ExecuteSQL(strSql))
-                                {
-                                    strSql.Empty();
-                                    if (!m_dataParser.GetSQL_occupant(strSql))
-                                    {
-                                        ExecuteSQL(strSql);
-                                    }
-                                    else
-                                    {
-                                        // sometimes, we don't have occupant in vehicle
-                                    }
-
-                                    // success
-                                    CString strText;
-                                    strText.Format(_T("SUCCESS: file %s imported"), strLocalFileName);
-                                    SendOutputMessage(strText);
-                                }
-                                else
-                                {
-                                    Rollback(urcNumber);
-                                }
-                            }
-                            else
-                            {
-                                Rollback(urcNumber);
-                            }
-                        }
-                        else
-                        {
-                            CString strText;
-                            strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
-                            SendOutputMessage(strText);
-                        }
-                    }
-                }
-                else
-                {
-                    // TODO download file failed
-                    CString strText;
-                    strText.Format(_T("FAILURE: download file %s from FTP failed"), strRemoteFullPath);
-                    SendOutputMessage(strText);
-                }
-            }
+            CheckContent(strRemoteFullPath, strLocalFileName);
         }
     }
 }
@@ -435,7 +517,18 @@ int CMainFormView::Rollback(UINT urcNumber)
 void CMainFormView::OnBnClickedManualMode()
 {
     StoptSchedule(0);
+
     UpdateModeUI();
+
+    CMainFrame *pMainWnd = (CMainFrame *)AfxGetMainWnd();
+    if (NULL != pMainWnd)
+    {
+        CFileView* fileView = (CFileView*)pMainWnd->GetFileView();
+        if (fileView->IsAutoHideMode())
+        {
+            fileView->ToggleAutoHide();
+        }
+    }
 
     m_strHintText = _T("Under Manual Mode");
     UpdateData(FALSE);
@@ -445,6 +538,15 @@ void CMainFormView::OnBnClickedManualMode()
 void CMainFormView::OnBnClickedAutoMode()
 {
     UpdateModeUI();
+    CMainFrame *pMainWnd = (CMainFrame *)AfxGetMainWnd();
+    if (NULL != pMainWnd)
+    {
+        CFileView* fileView = (CFileView*)pMainWnd->GetFileView();
+        if (!fileView->IsAutoHideMode())
+        {
+            fileView->ToggleAutoHide();
+        }
+    }
 
     m_strHintText = _T("Under Auto Mode");
     UpdateData(FALSE);
@@ -455,34 +557,46 @@ void CMainFormView::UpdateModeUI()
     UpdateData(TRUE);
     if (m_iManualMode)
     {
+        m_strHintText = _T("Under Manual Mode");
+        UpdateData(FALSE);
+
         m_btnDispContent.EnableWindow(TRUE);
         m_btnCheckContent.EnableWindow(TRUE);
 
         GetDlgItem(IDC_EXECUTE_TIME)->EnableWindow(FALSE);
+        GetDlgItem(IDC_MON)->EnableWindow(FALSE);
+        GetDlgItem(IDC_TUE)->EnableWindow(FALSE);
+        GetDlgItem(IDC_WED)->EnableWindow(FALSE);
+        GetDlgItem(IDC_THU)->EnableWindow(FALSE);
+        GetDlgItem(IDC_FRI)->EnableWindow(FALSE);
+        GetDlgItem(IDC_SAT)->EnableWindow(FALSE);
+        GetDlgItem(IDC_SUN)->EnableWindow(FALSE);
         m_btnRepeat.EnableWindow(FALSE);
+        GetDlgItem(IDC_BTN_CONFIRM_SCHEDULE)->EnableWindow(FALSE);
+        GetDlgItem(IDC_BTN_CANCEL_SCHEDULE)->EnableWindow(FALSE);
     }
     else
     {
+        m_strHintText = _T("Under Auto Mode");
+        UpdateData(FALSE);
+
         m_btnDispContent.EnableWindow(FALSE);
         m_btnCheckContent.EnableWindow(FALSE);
 
         GetDlgItem(IDC_EXECUTE_TIME)->EnableWindow(TRUE);
+        GetDlgItem(IDC_MON)->EnableWindow(TRUE);
+        GetDlgItem(IDC_TUE)->EnableWindow(TRUE);
+        GetDlgItem(IDC_WED)->EnableWindow(TRUE);
+        GetDlgItem(IDC_THU)->EnableWindow(TRUE);
+        GetDlgItem(IDC_FRI)->EnableWindow(TRUE);
+        GetDlgItem(IDC_SAT)->EnableWindow(TRUE);
+        GetDlgItem(IDC_SUN)->EnableWindow(TRUE);
         m_btnRepeat.EnableWindow(TRUE);
+        GetDlgItem(IDC_BTN_CONFIRM_SCHEDULE)->EnableWindow(TRUE);
+        GetDlgItem(IDC_BTN_CANCEL_SCHEDULE)->EnableWindow(TRUE);
     }
 }
 
-void CMainFormView::OnBnClickedAutoPeriod()
-{
-    UpdateData(FALSE);
-    if (m_btnRepeat.GetCheck())
-    {
-        GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(TRUE);
-    }
-    else
-    {
-        GetDlgItem(IDC_PERIOD_NUM)->EnableWindow(FALSE);
-    }
-}
 
 void CMainFormView::SendOutputMessage(CString& strText)
 {
@@ -500,6 +614,7 @@ void CMainFormView::SendOutputMessage(CString& strText)
 
 int CMainFormView::StartSchedule()
 {
+    // stop all previous timer
     StoptSchedule(0);
     
     SYSTEMTIME currentLocalTime;
@@ -537,7 +652,7 @@ int CMainFormView::StartSchedule()
 
         nElapse = nSchedule - nCurrent;
 
-        SetTimer(IDT_TIMER_MON, nElapse, NULL);
+        SetTimer(IDT_TIMER_MON, nElapse * 1000, NULL);
     }
 
     if (((CButton*)GetDlgItem(IDC_TUE))->GetCheck())
@@ -550,7 +665,7 @@ int CMainFormView::StartSchedule()
 
         nElapse = nSchedule - nCurrent;
 
-        SetTimer(IDT_TIMER_TUE, nElapse, NULL);
+        SetTimer(IDT_TIMER_TUE, nElapse * 1000, NULL);
     }
 
     if (((CButton*)GetDlgItem(IDC_WED))->GetCheck())
@@ -563,7 +678,7 @@ int CMainFormView::StartSchedule()
 
         nElapse = nSchedule - nCurrent;
 
-        SetTimer(IDT_TIMER_WED, nElapse, NULL);
+        SetTimer(IDT_TIMER_WED, nElapse * 1000, NULL);
     }
 
     if (((CButton*)GetDlgItem(IDC_THU))->GetCheck())
@@ -576,7 +691,7 @@ int CMainFormView::StartSchedule()
 
         nElapse = nSchedule - nCurrent;
 
-        SetTimer(IDT_TIMER_THU, nElapse, NULL);
+        SetTimer(IDT_TIMER_THU, nElapse * 1000, NULL);
     }
 
     if (((CButton*)GetDlgItem(IDC_FRI))->GetCheck())
@@ -589,7 +704,7 @@ int CMainFormView::StartSchedule()
 
         nElapse = nSchedule - nCurrent;
 
-        SetTimer(IDT_TIMER_FRI, nElapse, NULL);
+        SetTimer(IDT_TIMER_FRI, nElapse * 1000, NULL);
     }
 
     if (((CButton*)GetDlgItem(IDC_SAT))->GetCheck())
@@ -602,7 +717,7 @@ int CMainFormView::StartSchedule()
 
         nElapse = nSchedule - nCurrent;
 
-        SetTimer(IDT_TIMER_SAT, nElapse, NULL);
+        SetTimer(IDT_TIMER_SAT, nElapse * 1000, NULL);
     }
 
     if (((CButton*)GetDlgItem(IDC_SUN))->GetCheck())
@@ -615,7 +730,7 @@ int CMainFormView::StartSchedule()
 
         nElapse = nSchedule - nCurrent;
 
-        SetTimer(IDT_TIMER_SUN, nElapse, NULL);
+        SetTimer(IDT_TIMER_SUN, nElapse * 1000, NULL);
     }
 
     return 0;
@@ -673,12 +788,54 @@ int CMainFormView::ScheduleProc()
 {
     TRACE(_T("Schedule Proc Fired\n"));
 
+    CString strRoot = _T("/");
+    CString strRemoteFullPath;
+
+    if (!m_ftpClient.Login(m_ftpLogonInfo))
+    {
+        CString strText;
+        strText.Format(_T("FAILURE: fail to login ftp %s:%d"), m_ftpLogonInfo.Hostname().c_str(), m_ftpLogonInfo.Hostport());
+        SendOutputMessage(strText);
+        return 1;
+    }
+
+    TFTPFileStatusShPtrVec vFileList;
+    m_ftpClient.List(static_cast<LPCTSTR>(strRoot), vFileList);
+    std::sort(vFileList.begin(), vFileList.end(), CFTPFileStatusContainerSort(CFTPFileStatusContainerSort::CName(), true, true));
+
+    for (TFTPFileStatusShPtrVec::iterator it = vFileList.begin(); it != vFileList.end(); it++)
+    {
+        TFTPFileStatusShPtr ftpFile = *it;
+        if (ftpFile->IsDot())   continue;
+
+        CString strFileName = ftpFile->Name().c_str();
+        TRACE(_T("%s\t"), strFileName);
+
+        CString strAttr = ftpFile->Attributes().c_str();
+        BOOL isDir = strAttr[0] == 'd';
+
+        if (isDir)
+        {
+            // TODO fix me in the future!
+            continue;
+        }
+
+        strRemoteFullPath = strRoot + strFileName;
+        if (!CheckContent(strRemoteFullPath, strFileName))
+        {
+            // TODO delete file from FTP server
+        }
+    }
+
     return 0;
 }
 
 
 void CMainFormView::OnBnClickedBtnConfirmSchedule()
 {
+    UpdateData(TRUE);
+    GetSetSettings(FALSE);
+
     MessageBox(_T("Schedule Confirmed"), _T("Notice"), MB_OK | MB_ICONINFORMATION);
     StartSchedule();
 }
@@ -695,9 +852,9 @@ void CMainFormView::OnTimer(UINT_PTR nIDEvent)
     case IDT_TIMER_FRI:
     case IDT_TIMER_SAT:
     case IDT_TIMER_SUN:
+        StoptSchedule(nIDEvent);
         ScheduleProc();
 
-        StoptSchedule(nIDEvent);
         if (m_btnRepeat.GetCheck())
         {
             TRACE(_T("Re-Schedule Proc %d\n"), nIDEvent);

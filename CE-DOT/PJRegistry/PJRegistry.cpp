@@ -131,18 +131,21 @@ long CPJRegistry::Profile(LPCTSTR lpszEntry, CString& strValue)
 		lResult = ::RegQueryValueEx(m_hSectionKey, lpszEntry, NULL, &dwType, NULL, &dwBytes);
 		if (lResult == ERROR_SUCCESS)
 		{
-			CString	strTemp;
-			lpData = (LPBYTE) strTemp.GetBuffer(dwBytes+1);
+            TCHAR	strTemp[256] = {0};
+            lpData = (LPBYTE)strTemp;
 			lResult = ::RegQueryValueEx(m_hSectionKey, lpszEntry, NULL, &dwType, lpData, &dwBytes);
-			strTemp.ReleaseBuffer();
 			if ((lResult == ERROR_SUCCESS) && (dwType == REG_SZ))
 				strValue = strTemp;
 		}
 	}
 	else
 	{
-		dwBytes = strValue.GetLength()+1;
-		lpData = (LPBYTE) strValue.GetBuffer(dwBytes);
+		dwBytes = strValue.GetLength();
+#ifdef UNICODE
+        dwBytes *= 2;
+#endif // UNICODE
+        dwBytes += 1;
+		lpData = (LPBYTE) strValue.GetString();
 		lResult = ::RegSetValueEx(m_hSectionKey, lpszEntry, NULL, REG_SZ, lpData, dwBytes);			
 		m_bDirty = TRUE;
 	}

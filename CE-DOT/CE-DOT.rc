@@ -221,13 +221,8 @@ BEGIN
     POPUP "Explorer"
     BEGIN
         MENUITEM "&Open",                       ID_OPEN
-        MENUITEM "Open &With....",              ID_OPEN_WITH
         MENUITEM SEPARATOR
         MENUITEM "&Compile",                    ID_DUMMY_COMPILE
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Remove",                     ID_EDIT_CLEAR
         MENUITEM SEPARATOR
         MENUITEM "&Properties...",              ID_PROPERTIES
     END
@@ -319,7 +314,7 @@ END
 
 IDD_DLG_FTP_LOGON DIALOGEX 0, 0, 269, 136
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "FTP Server Information"
+CAPTION "FTP Server Config"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     GROUPBOX        "FTP Server",IDC_STATIC,14,7,243,95
@@ -332,17 +327,26 @@ BEGIN
     CONTROL         "Anonymous",IDC_CK_ANONYMOUS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,192,66,53,10
     LTEXT           "Password",IDC_STATIC,38,87,50,8
     EDITTEXT        IDC_USER_PASSWD,97,83,76,12,ES_PASSWORD | ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "Connect",IDOK,45,113,55,16
+    DEFPUSHBUTTON   "OK",IDOK,45,113,55,16
     PUSHBUTTON      "Cancel",IDCANCEL,196,113,55,16
 END
 
-IDD_DLG_SQL_LOGON DIALOGEX 0, 0, 309, 176
+IDD_DLG_SQL_LOGON DIALOGEX 0, 0, 251, 156
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
+CAPTION "SQL Server Config"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,198,155,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,252,155,50,14
+    DEFPUSHBUTTON   "OK",IDOK,46,135,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,165,135,50,14
+    GROUPBOX        "SQL Server",IDC_STATIC,14,9,224,115
+    LTEXT           "Server Name:",IDC_STATIC,26,27,50,8
+    EDITTEXT        IDC_DB_SERVER_NAME,85,26,127,12,ES_AUTOHSCROLL
+    LTEXT           "User Name:",IDC_STATIC,26,71,50,8
+    EDITTEXT        IDC_DB_USER_NAME,85,68,127,12,ES_AUTOHSCROLL
+    LTEXT           "Password:",IDC_STATIC,26,93,50,8
+    EDITTEXT        IDC_DB_USER_PASSWD,85,89,127,12,ES_PASSWORD | ES_AUTOHSCROLL
+    COMBOBOX        IDC_DB_AUTH,85,47,127,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Authentication:",IDC_STATIC,26,49,50,8
 END
 
 
@@ -419,12 +423,26 @@ BEGIN
     IDD_DLG_SQL_LOGON, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 302
+        RIGHTMARGIN, 244
         TOPMARGIN, 7
-        BOTTOMMARGIN, 169
+        BOTTOMMARGIN, 149
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DLG_SQL_LOGON DLGINIT
+BEGIN
+    IDC_DB_AUTH, 0x403, 23, 0
+0x6957, 0x646e, 0x776f, 0x2073, 0x7541, 0x6874, 0x6e65, 0x6974, 0x6163, 
+0x6974, 0x6e6f, "\000" 
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -18,4 +18,12 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+public:
+    CString m_strDbServerName;
+    CComboBox m_cbAuthentication;
+    CString m_strDbUserName;
+    CString m_strDbUserPasswd;
+    virtual BOOL OnInitDialog();
+    afx_msg void OnSelchangeDbAuth();
+    int m_iCurSel;
 };

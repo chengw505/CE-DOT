@@ -87,7 +87,6 @@ BOOL CCEDOTApp::InitInstance()
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 	LoadStdProfileSettings(0);  // Load standard INI file options (including MRU)
 
-
 	InitContextMenuManager();
 
 	InitKeyboardManager();
