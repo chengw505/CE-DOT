@@ -319,7 +319,7 @@ typedef struct
         DLStatus.Empty();
         DLRestrictions.Empty();
         DLEndorsements.Empty();
-        DLExpires;
+        DLExpires.Empty();
         DRCITY.Empty();
         DRSTATE.Empty();
         DRZIP = 0;
@@ -702,7 +702,7 @@ public:
     ~CDataParser();
 
     CString m_strFileName;
-    T_Form m_fileContent;
+    T_Form* m_fileContent;
 
     void Reset();
     int Parse(CString& strLocalFileName);

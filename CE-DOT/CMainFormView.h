@@ -113,6 +113,7 @@ public:
     int InitialAdoInstance();
     int FinalizeAdoInstance();
     int ConnectDB();
+    int RecordExisted(UINT urcNumber);
     int ExecuteSQL(const CString& strSql);
     int CloseDB();
 
@@ -128,7 +129,6 @@ public:
     afx_msg void OnBnClickedBtnCheckContent();
     afx_msg void OnBnClickedManualMode();
     afx_msg void OnBnClickedAutoMode();
-//    afx_msg void OnBnClickedAutoPeriod();
     afx_msg void OnBnClickedBtnConfirmSchedule();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     void SendOutputMessage(CString& strText);

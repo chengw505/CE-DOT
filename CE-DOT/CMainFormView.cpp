@@ -60,8 +60,8 @@ CMainFormView::CMainFormView()
 
 CMainFormView::~CMainFormView()
 {
-    FinalizeAdoInstance();
     CloseDB();
+    FinalizeAdoInstance();
 
     GetSetSettings(FALSE);
 }
@@ -138,15 +138,7 @@ void CMainFormView::OnInitialUpdate()
     GetParentFrame()->RecalcLayout();
     ResizeParentToFit();
 
-    UpdateModeUI();
-
-    LoadFtpSettings();
-    LoadSqlSettings();
-
-    FillFtpFileView();
-
-    InitialAdoInstance();
-    ConnectDB();
+    Initialize();
 }
 
 void CMainFormView::OnRButtonUp(UINT /* nFlags */, CPoint point)
@@ -189,12 +181,18 @@ CCEDOTDoc* CMainFormView::GetDocument() const // non-debug version is inline
 
 void CMainFormView::Initialize()
 {
-    UpdateModeUI();
+    LoadFtpSettings();
+
+    InitialAdoInstance();
+    LoadSqlSettings();
 
     if (!m_iManualMode)
     {
         StartSchedule();
     }
+
+    FillFtpFileView();
+    UpdateModeUI();
 }
 
 int CMainFormView::InitialAdoInstance()
@@ -206,7 +204,13 @@ int CMainFormView::InitialAdoInstance()
 
     try {
         m_pConnection.CreateInstance("ADODB.Connection");
+    }
+    catch (_com_error e) {
+        return -1;
+    }
 
+    try {
+        m_pRecordset.CreateInstance(__uuidof(Recordset));
     }
     catch (_com_error e) {
         return -1;
@@ -245,11 +249,10 @@ int CMainFormView::ConnectDB()
     try 
     {
         m_pConnection->Open((_bstr_t)strConnect, "", "", adModeUnknown);
-
     }
     catch (_com_error e) 
     {
-        TRACE(_T("Fail to open database: %s\n"), e.ErrorMessage());
+        TRACE(_T("Fail to open database: %s\n"), CString((LPCTSTR)e.Description()));
         return 1;
     }
 
@@ -265,7 +268,7 @@ int CMainFormView::ExecuteSQL(const CString& strSql)
     }
     catch (_com_error e) 
     {
-        TRACE(_T("execute sql error: %s\n"), e.ErrorMessage());
+        TRACE(_T("ExecuteSQL error: %s\n"), CString((LPCTSTR)e.Description()));
         return 1;
     }
 
@@ -291,10 +294,21 @@ void CMainFormView::OnBnClickedBtnSetupFtpAccount()
 {
     if (IDOK == m_ftpSettingDlg.DoModal()) 
     {
-        m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName), 
+        if (!m_ftpClient.Login(m_ftpLogonInfo))
+        {
+            CString strText;
+            strText.Format(_T("Fail to connect FTP server: %s"), m_ftpSettingDlg.m_hostName);
+            MessageBox(strText, _T("Error"), MB_OK | MB_ICONINFORMATION);
+            return;
+        }
+
+        m_ftpClient.Logout();
+        m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName),
             static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), 
             static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), 
             static_cast<LPCTSTR>(m_ftpSettingDlg.m_passwd));
+
+        FillFtpFileView();
     }
 }
 
@@ -311,11 +325,20 @@ void CMainFormView::LoadFtpSettings()
         static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), 
         static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), 
         static_cast<LPCTSTR>(m_ftpSettingDlg.m_passwd));
+
+    if (!m_ftpClient.Login(m_ftpLogonInfo))
+    {
+        CString strText;
+        strText.Format(_T("Fail to connect FTP server: %s"), m_ftpSettingDlg.m_hostName);
+        MessageBox(strText, _T("Error"), MB_OK | MB_ICONINFORMATION);
+        return;
+    }
+    m_ftpClient.Logout();
 }
 
 void CMainFormView::LoadSqlSettings()
 {
-    // TODO throw std::logic_error("The method or operation is not implemented.");
+    ConnectDB();
 }
 
 void CMainFormView::FillFtpFileView()
@@ -404,7 +427,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
 
     if (m_dataParser.Parse(strLocalFileName))
     {
-        // TODO download file failed
+        // parse file failed
         CString strText;
         strText.Format(_T("FAILURE: fail to parse file %s"), strLocalFileName);
         SendOutputMessage(strText);
@@ -414,6 +437,16 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
      
     UINT urcNumber;
     m_dataParser.GetUCRNumber(urcNumber);
+    if (RecordExisted(urcNumber))
+    {
+        // case already exists
+        CString strText;
+        strText.Format(_T("WARNING: case %d already exists"), urcNumber);
+        SendOutputMessage(strText);
+        err = 0;
+
+        return err;
+    }
 
     // get crash data and import into database
     CString strSql;
@@ -478,6 +511,30 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
     SendOutputMessage(strText);
 
     return err;
+}
+
+int CMainFormView::RecordExisted(UINT urcNumber)
+{
+    int exist = 0;
+    CString strSql;
+    strSql.Format(_T("SELECT * FROM [DOT].[dbo].[Acrash2012] WHERE ucrnumber=%d"), urcNumber);
+
+    try
+    {
+        m_pConnection->CursorLocation = adUseClient;
+        m_pRecordset->Open(strSql.GetBuffer(0), m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+        if (m_pRecordset->GetRecordCount() > 0)
+        {
+            exist = 1;
+        }
+        m_pRecordset->Close();
+    }
+    catch (_com_error e)
+    {
+        TRACE(_T("%s\n"), CString((LPCTSTR)e.Description()));
+    }
+
+    return exist;
 }
 
 void CMainFormView::OnBnClickedBtnCheckContent()

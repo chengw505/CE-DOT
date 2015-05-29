@@ -60,6 +60,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>msdasc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>0x20000</StackReserveSize>
+      <StackCommitSize>0x20000</StackCommitSize>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
