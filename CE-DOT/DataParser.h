@@ -735,5 +735,13 @@ private:
     int FillLocation(const char* key, const char* value);
     int Rollback(UINT urcNumber);
     int WeekDayString2Int(const char* value, UINT& WeekDay);
-    CString MakeOccupantKey(UINT ucrNumber, UINT vehNo, CString& seatPos, CString& firstName, CString& lastName, UINT age, CString& sex, CString& city);
+    CString MakeOccupantKey(UINT ucrNumber, 
+        UINT vehNo, 
+        CString& seatPos, 
+        CString& firstName, 
+        CString& lastName, 
+        UINT age, 
+        CString& sex, 
+        CString& city);
+    CString EscapeSQLString(const CString& strSql);
 };

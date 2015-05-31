@@ -242,10 +242,17 @@ int CMainFormView::FinalizeAdoInstance()
 
 int CMainFormView::ConnectDB()
 {
-    CString strConnect = _T("Provider=SQLOLEDB; \
-                            Data Source=LOCALHOST\\SQLEXPRESS;\
+    CloseDB();
+
+    CString strServerName;
+    strServerName = m_sqlSettingDlg.m_strDbServerName;
+    //strServerName.Replace(_T("\\"), _T("\\\\"));
+
+    CString strConnect;
+    strConnect .Format(_T("Provider=SQLOLEDB; \
+                            Data Source=%s;\
                             Initial Catalog= DOT; \
-                            integrated security=SSPI");
+                            integrated security=SSPI"), strServerName);
     try 
     {
         m_pConnection->Open((_bstr_t)strConnect, "", "", adModeUnknown);
@@ -283,7 +290,7 @@ int CMainFormView::CloseDB()
     }
     catch (_com_error e) 
     {
-        TRACE(_T("error: %s\n"), e.ErrorMessage());
+        TRACE(_T("error: %s\n"), CString((LPCTSTR)e.Description()));
         return 1;
     }
 
@@ -316,6 +323,15 @@ void CMainFormView::OnBnClickedBtnSetupDbAccount()
 {
     if (IDOK == m_sqlSettingDlg.DoModal())
     {
+        if (!ConnectDB())
+        {
+            GetSetSettings(FALSE);
+            MessageBox(_T("Setting updated"), _T("Info"), MB_OK | MB_ICONINFORMATION);
+        }
+        else
+        {
+            MessageBox(_T("Setting update failed"), _T("Error"), MB_OK | MB_ICONWARNING);
+        }
     }
 }
 

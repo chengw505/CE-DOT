@@ -3163,7 +3163,7 @@ int CDataParser::GetSQL_vehicle(CString& strSql)
             m_fileContent->conditions[i].SobrietyTestByInst, 
             m_fileContent->conditions[i].SobrietyTestRefused, 
             m_fileContent->conditions[i].SobrietyUnknown, 
-            m_fileContent->vehicles[i].StreetOn, 
+            EscapeSQLString(m_fileContent->vehicles[i].StreetOn),
             m_fileContent->conditions[i].TrafficControlDevice,
             m_fileContent->vehicles[i].Trailer[0].LicNumber,
             m_fileContent->vehicles[i].Trailer[0].LicYear,
@@ -3278,4 +3278,16 @@ CString CDataParser::MakeOccupantKey(UINT ucrNumber, UINT vehNo, CString& seatPo
     key.Format(_T("%d%d%s%s%s%d%s%s"), ucrNumber, vehNo, seatPos, firstName, lastName, age, sex, city);
 
     return key;
+}
+
+CString CDataParser::EscapeSQLString(const CString& strSql)
+{
+    static CString str;
+    
+    str = strSql;
+    str.Replace(_T("'"), _T("''"));
+
+    // and others
+
+    return str;
 }
