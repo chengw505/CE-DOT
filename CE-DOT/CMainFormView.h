@@ -99,6 +99,9 @@ public:
     BOOL m_bRepeat;
     CButton m_btnRepeat;
 
+    BOOL m_bFtpReady;
+    BOOL m_bDBReady;
+
     CFtpSetting m_ftpSettingDlg;
     CSqlSetting m_sqlSettingDlg;
     CLogonInfo  m_ftpLogonInfo;
@@ -118,8 +121,8 @@ public:
     int CloseDB();
 
     void Initialize();
-    void LoadFtpSettings();
-    void LoadSqlSettings();
+    int LoadFtpSettings();
+    int LoadSqlSettings();
     void FillFtpFileView();
 
     int DownloadFile(CString& remoteFilename, CString& localFilename);

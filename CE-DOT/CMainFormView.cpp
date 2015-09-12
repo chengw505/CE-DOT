@@ -54,6 +54,8 @@ CMainFormView::CMainFormView()
                 , m_bFriday(FALSE)
                 , m_bSaturday(FALSE)
                 , m_bSunday(FALSE)
+                , m_bFtpReady(FALSE)
+                , m_bDBReady(FALSE)
 {
     GetSetSettings();
 }
@@ -181,17 +183,27 @@ CCEDOTDoc* CMainFormView::GetDocument() const // non-debug version is inline
 
 void CMainFormView::Initialize()
 {
-    LoadFtpSettings();
+    if (LoadFtpSettings()) 
+    {
+        OnBnClickedBtnSetupFtpAccount();
+    }
 
     InitialAdoInstance();
-    LoadSqlSettings();
+    if (LoadSqlSettings())
+    {
+        OnBnClickedBtnSetupDbAccount();
+    }
 
     if (!m_iManualMode)
     {
         StartSchedule();
     }
 
-    FillFtpFileView();
+    if (m_bFtpReady)
+    {
+        FillFtpFileView();
+    }
+
     UpdateModeUI();
 }
 
@@ -299,43 +311,66 @@ int CMainFormView::CloseDB()
 
 void CMainFormView::OnBnClickedBtnSetupFtpAccount()
 {
-    if (IDOK == m_ftpSettingDlg.DoModal()) 
+    while (IDOK == m_ftpSettingDlg.DoModal()) 
     {
-        if (!m_ftpClient.Login(m_ftpLogonInfo))
-        {
-            CString strText;
-            strText.Format(_T("Fail to connect FTP server: %s"), m_ftpSettingDlg.m_hostName);
-            MessageBox(strText, _T("Error"), MB_OK | MB_ICONINFORMATION);
-            return;
-        }
-
-        m_ftpClient.Logout();
         m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName),
             static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), 
             static_cast<LPCTSTR>(m_ftpSettingDlg.m_userName), 
             static_cast<LPCTSTR>(m_ftpSettingDlg.m_passwd));
+        if (!m_ftpClient.Login(m_ftpLogonInfo))
+        {
+            CString strText;
+            strText.Format(_T("Fail to connect FTP server: %s@%s:%d, retry?"), 
+                m_ftpSettingDlg.m_userName, m_ftpSettingDlg.m_hostName, m_ftpSettingDlg.m_portNumber);
+            if (IDYES == MessageBox(strText, _T("Error"), MB_YESNO | MB_ICONINFORMATION))
+            {
+                continue;
+            }
+
+            m_bFtpReady = FALSE;
+            break;
+        }
+
+        m_bFtpReady = TRUE;
+        m_ftpClient.Logout();
 
         FillFtpFileView();
+        break;
     }
 }
 
 void CMainFormView::OnBnClickedBtnSetupDbAccount()
 {
-    if (IDOK == m_sqlSettingDlg.DoModal())
+    while (IDOK == m_sqlSettingDlg.DoModal())
     {
         if (!ConnectDB())
         {
             GetSetSettings(FALSE);
             MessageBox(_T("Setting updated"), _T("Info"), MB_OK | MB_ICONINFORMATION);
+
+            m_bDBReady = TRUE;
+            break;
         }
         else
         {
-            MessageBox(_T("Setting update failed"), _T("Error"), MB_OK | MB_ICONWARNING);
+            if (IDYES == MessageBox(_T("Setting update failed, retry?"), _T("Error"), MB_YESNO | MB_ICONWARNING))
+            {
+                continue;
+            }
+
+            m_bDBReady = FALSE;
+            break;
         }
     }
 }
 
-void CMainFormView::LoadFtpSettings()
+/*
+* This procedure tries to connect ftp server by using current settings.
+* When the application loaded, it tries to load existing user settings from register first, 
+* during the initial stage, system tries to connect ftp server, 
+* if it succeeded, system will automatically look into all files listed in ftp server.
+*/
+int CMainFormView::LoadFtpSettings()
 {
     m_ftpLogonInfo.SetHost(static_cast<LPCTSTR>(m_ftpSettingDlg.m_hostName), 
         static_cast<USHORT>(m_ftpSettingDlg.m_portNumber), 
@@ -344,17 +379,23 @@ void CMainFormView::LoadFtpSettings()
 
     if (!m_ftpClient.Login(m_ftpLogonInfo))
     {
+        m_bFtpReady = FALSE;
+
         CString strText;
         strText.Format(_T("Fail to connect FTP server: %s"), m_ftpSettingDlg.m_hostName);
         MessageBox(strText, _T("Error"), MB_OK | MB_ICONINFORMATION);
-        return;
+        return 1;
     }
+
+    m_bFtpReady = TRUE;
+
     m_ftpClient.Logout();
+    return 0;
 }
 
-void CMainFormView::LoadSqlSettings()
+int CMainFormView::LoadSqlSettings()
 {
-    ConnectDB();
+    return ConnectDB();
 }
 
 void CMainFormView::FillFtpFileView()
@@ -370,6 +411,11 @@ void CMainFormView::FillFtpFileView()
     }
 }
 
+/*
+* Download a given file from FTP server, 
+* and save it into local subdirectory, called .\Data\, 
+* each time it tries to login to the server first, and then logout after downloading.
+*/
 int CMainFormView::DownloadFile(CString& remoteFilename, CString& localFilename)
 {
     int err = 1;
@@ -403,6 +449,10 @@ int CMainFormView::DownloadFile(CString& remoteFilename, CString& localFilename)
     return err;
 }
 
+/*
+* Double clicked in FTP view, 
+* Download the clicked file and open it.
+*/
 LRESULT CMainFormView::OnFtpFileDoubleClick(WPARAM w, LPARAM l)
 {
     CString strLocalFilename = *(CString*)l;
@@ -416,7 +466,11 @@ LRESULT CMainFormView::OnFtpFileDoubleClick(WPARAM w, LPARAM l)
     return (LRESULT)0;
 }
 
-
+/*
+* For Manual Mode only, 
+* Download file from FTP server and, use local default XML edito to open that file.
+* Same thing as double click from FTP view.
+*/
 void CMainFormView::OnBnClickedBtnDisplayContent()
 {
     CMainFrame *pMainWnd = (CMainFrame *)AfxGetMainWnd();
@@ -427,6 +481,11 @@ void CMainFormView::OnBnClickedBtnDisplayContent()
     }
 }
 
+/*
+* For Manual Mode only, 
+* Download a single file from ftp server, 
+* Check its content and then import its content into the database.
+*/
 int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFileName)
 {
     int err = 1;
@@ -529,6 +588,9 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
     return err;
 }
 
+/*
+* Try to determine if the crash case exist or not by using the key ucrnumber.
+*/
 int CMainFormView::RecordExisted(UINT urcNumber)
 {
     int exist = 0;
@@ -570,6 +632,9 @@ void CMainFormView::OnBnClickedBtnCheckContent()
     }
 }
 
+/*
+* Rollback data from all the THREE tables
+*/
 int CMainFormView::Rollback(UINT urcNumber)
 {
     CString strSql;
@@ -586,7 +651,9 @@ int CMainFormView::Rollback(UINT urcNumber)
     return 0;
 }
 
-
+/*
+* Radio button, switch mode between manual mode and auto mode.
+*/
 void CMainFormView::OnBnClickedManualMode()
 {
     StoptSchedule(0);
@@ -607,7 +674,9 @@ void CMainFormView::OnBnClickedManualMode()
     UpdateData(FALSE);
 }
 
-
+/*
+* Radio button, switch mode between manual mode and auto mode.
+*/
 void CMainFormView::OnBnClickedAutoMode()
 {
     UpdateModeUI();
@@ -856,7 +925,10 @@ int CMainFormView::StoptSchedule(UINT nIDEvent)
     return 0;
 }
 
-
+/*
+* This procedure triggered by timer.
+* Currently, we execute this procedure once in each day accroding to user settings.
+*/
 int CMainFormView::ScheduleProc()
 {
     TRACE(_T("Schedule Proc Fired\n"));

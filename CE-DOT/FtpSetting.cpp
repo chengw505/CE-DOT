@@ -62,6 +62,8 @@ void CFtpSetting::OnClickedCkAnonymous()
 
 void CFtpSetting::OnBnClickedOk()
 {
+    UpdateData(TRUE);
+
     CDialogEx::OnOK();
 }
 
@@ -69,6 +71,8 @@ void CFtpSetting::OnBnClickedOk()
 BOOL CFtpSetting::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
+
+    UpdateData(FALSE);
 
     OnClickedCkAnonymous();
 
