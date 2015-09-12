@@ -84,6 +84,16 @@ protected:
     DECLARE_MESSAGE_MAP()
 
 public:
+    enum {
+        XMLDATA_OK = 0, 
+        XMLDATA_DOWNLOAD_ERR, 
+        XMLDATA_PARSE_ERR,
+        XMLDATA_URC_DUPLICATE, 
+        XMLDATA_PARSE_CRASH_DATA_ERR, 
+        XMLDATA_IMPORT_CRASH_DATA_ERR, 
+        XMLDATA_PARSE_VEH_DATA_ERR,
+        XMLDATA_IMPORT_VEH_DATA_ERR
+    };
     CString m_strHintText;
     CButton m_btnCheckContent;
     CButton m_btnDispContent;
@@ -126,6 +136,7 @@ public:
     void FillFtpFileView();
 
     int DownloadFile(CString& remoteFilename, CString& localFilename);
+    int DeleteFileFromFtp(CString& strRemoteFileFullPath);
     int Rollback(UINT urcNumber);
     void UpdateModeUI();
     afx_msg void OnBnClickedBtnDisplayContent();

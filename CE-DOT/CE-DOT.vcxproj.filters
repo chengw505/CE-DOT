@@ -22,6 +22,21 @@
     <Filter Include="PJRegistry">
       <UniqueIdentifier>{5c6e57eb-93bd-48a5-bba4-331139bd4e02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libcurl">
+      <UniqueIdentifier>{db92c06c-4fb9-4621-aeae-cde440741a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libcurl\bin">
+      <UniqueIdentifier>{9a2c7d82-fcd6-4665-bcad-c68f1022dcd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libcurl\include">
+      <UniqueIdentifier>{37490613-679d-4a2b-a4f2-e06d0201ec9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libcurl\lib">
+      <UniqueIdentifier>{247eb731-75e8-4416-8af8-5a1cd33a77c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libcurl\include\curl">
+      <UniqueIdentifier>{c99cea5c-da2c-4a21-b5dd-1df56088a6a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CE-DOT.h">
@@ -93,6 +108,36 @@
     <ClInclude Include="PJRegistry\PJRegistry.h">
       <Filter>PJRegistry</Filter>
     </ClInclude>
+    <ClInclude Include="SendEmail.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\curl.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\curlbuild.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\curlrules.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\curlver.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\easy.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\mprintf.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\multi.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\stdcheaders.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\typecheck-gcc.h">
+      <Filter>libcurl\include\curl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CE-DOT.cpp">
@@ -157,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="PJRegistry\PJRegistry.cpp">
       <Filter>PJRegistry</Filter>
+    </ClCompile>
+    <ClCompile Include="SendEmail.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -233,5 +281,23 @@
     <None Include="res\CEDOT.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="libcurl\bin\curl.exe">
+      <Filter>libcurl\bin</Filter>
+    </None>
+    <None Include="libcurl\bin\libcurl.dll">
+      <Filter>libcurl\bin</Filter>
+    </None>
+    <None Include="libcurl\bin\libeay32MD.dll">
+      <Filter>libcurl\bin</Filter>
+    </None>
+    <None Include="libcurl\bin\ssleay32MD.dll">
+      <Filter>libcurl\bin</Filter>
+    </None>
+    <None Include="curl-ca-bundle.crt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libcurl\lib\libcurl.lib">
+      <Filter>libcurl\lib</Filter>
+    </Library>
   </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@
 #include "CE-DOT.h"
 #endif
 
+#include "SendEmail.h"
 #include "CE-DOTDoc.h"
 #include "MainFrm.h"
 #include "FtpSetting.h"
@@ -488,8 +489,6 @@ void CMainFormView::OnBnClickedBtnDisplayContent()
 */
 int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFileName)
 {
-    int err = 1;
-
     if (DownloadFile(strRemoteFullPath, strLocalFileName))
     {
         // download file failed
@@ -497,7 +496,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         strText.Format(_T("FAILURE: download file %s from FTP failed"), strRemoteFullPath);
         SendOutputMessage(strText);
 
-        return err;
+        return XMLDATA_DOWNLOAD_ERR;
     }
 
     if (m_dataParser.Parse(strLocalFileName))
@@ -507,7 +506,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         strText.Format(_T("FAILURE: fail to parse file %s"), strLocalFileName);
         SendOutputMessage(strText);
 
-        return err;
+        return XMLDATA_PARSE_ERR;
     }
      
     UINT urcNumber;
@@ -518,9 +517,8 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         CString strText;
         strText.Format(_T("WARNING: case %d already exists"), urcNumber);
         SendOutputMessage(strText);
-        err = 0;
 
-        return err;
+        return XMLDATA_URC_DUPLICATE;
     }
 
     // get crash data and import into database
@@ -531,7 +529,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
         SendOutputMessage(strText);
 
-        return err;
+        return XMLDATA_PARSE_CRASH_DATA_ERR;
     }
      
     if (ExecuteSQL(strSql))
@@ -540,7 +538,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
         SendOutputMessage(strText);
 
-        return err;
+        return XMLDATA_IMPORT_CRASH_DATA_ERR;
     }
 
     // get vehicle data and import into database
@@ -553,7 +551,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
         SendOutputMessage(strText);
 
-        return err;
+        return XMLDATA_PARSE_VEH_DATA_ERR;
     }
      
     if (ExecuteSQL(strSql))
@@ -564,7 +562,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
         SendOutputMessage(strText);
 
-        return err;
+        return XMLDATA_IMPORT_VEH_DATA_ERR;
     }
 
     // get occupant data and import into database
@@ -578,18 +576,16 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         // sometimes, we don't have occupant in vehicle
     }
 
-    err = 0;
-
     // success
     CString strText;
     strText.Format(_T("SUCCESS: file %s imported"), strLocalFileName);
     SendOutputMessage(strText);
 
-    return err;
+    return XMLDATA_OK;
 }
 
 /*
-* Try to determine if the crash case exist or not by using the key ucrnumber.
+* Try to determine if the crash case exist or not by using the key ucrNumber.
 */
 int CMainFormView::RecordExisted(UINT urcNumber)
 {
@@ -927,7 +923,7 @@ int CMainFormView::StoptSchedule(UINT nIDEvent)
 
 /*
 * This procedure triggered by timer.
-* Currently, we execute this procedure once in each day accroding to user settings.
+* Currently, we execute this procedure once in each day according to user settings.
 */
 int CMainFormView::ScheduleProc()
 {
@@ -943,6 +939,9 @@ int CMainFormView::ScheduleProc()
         SendOutputMessage(strText);
         return 1;
     }
+
+    int email_body_start = 0;
+    char email_body[4096];
 
     TFTPFileStatusShPtrVec vFileList;
     m_ftpClient.List(static_cast<LPCTSTR>(strRoot), vFileList);
@@ -966,15 +965,43 @@ int CMainFormView::ScheduleProc()
         }
 
         strRemoteFullPath = strRoot + strFileName;
-        if (!CheckContent(strRemoteFullPath, strFileName))
+        if (CheckContent(strRemoteFullPath, strFileName) != XMLDATA_OK)
         {
-            // TODO delete file from FTP server
+            int len = _snprintf_c(&email_body[email_body_start], sizeof(email_body), "%s\r\n", strFileName.GetString());
+            
+            if (len < sizeof(email_body)) {
+                email_body_start = len - 1;     // remove the non-terminator
+            }
+            else 
+            {
+                // buffer overflow
+                email_body[sizeof(email_body) - 1] = 0;
+            }
         }
+
+        // delete file from FTP server
+        DeleteFileFromFtp(strRemoteFullPath);
+    }
+
+    if (email_body_start)
+    {
+        sendEmail(email_body);
     }
 
     return 0;
 }
 
+int CMainFormView::DeleteFileFromFtp(CString& strRemoteFileFullPath)
+{
+    if (m_ftpClient.Login(m_ftpLogonInfo))
+    {
+        m_ftpClient.Delete(strRemoteFileFullPath.GetString());
+
+        m_ftpClient.Logout();
+    }
+
+    return 0;
+}
 
 void CMainFormView::OnBnClickedBtnConfirmSchedule()
 {

@@ -43,11 +43,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)TinyXML;$(ProjectDir)FtpClient;$(ProjectDir)PJRegistry;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)TinyXML;$(ProjectDir)FtpClient;$(ProjectDir)PJRegistry;$(ProjectDir)libcurl\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)TinyXML;$(ProjectDir)FtpClient;$(ProjectDir)PJRegistry;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)TinyXML;$(ProjectDir)FtpClient;$(ProjectDir)PJRegistry;$(ProjectDir)libcurl\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -62,6 +62,7 @@
       <AdditionalDependencies>msdasc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>0x20000</StackReserveSize>
       <StackCommitSize>0x20000</StackCommitSize>
+      <AdditionalLibraryDirectories>$(ProjectDir)libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -88,7 +89,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>msdasc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msdasc.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)libcurl\lib</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -115,10 +117,20 @@
     <ClInclude Include="FtpClient\FTPListParse.h" />
     <ClInclude Include="FtpClient\smart_ptr.h" />
     <ClInclude Include="FtpSetting.h" />
+    <ClInclude Include="libcurl\include\curl\curl.h" />
+    <ClInclude Include="libcurl\include\curl\curlbuild.h" />
+    <ClInclude Include="libcurl\include\curl\curlrules.h" />
+    <ClInclude Include="libcurl\include\curl\curlver.h" />
+    <ClInclude Include="libcurl\include\curl\easy.h" />
+    <ClInclude Include="libcurl\include\curl\mprintf.h" />
+    <ClInclude Include="libcurl\include\curl\multi.h" />
+    <ClInclude Include="libcurl\include\curl\stdcheaders.h" />
+    <ClInclude Include="libcurl\include\curl\typecheck-gcc.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="PJRegistry\PJRegistry.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SendEmail.h" />
     <ClInclude Include="SqlSetting.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -156,6 +168,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
     <ClCompile Include="PJRegistry\PJRegistry.cpp" />
+    <ClCompile Include="SendEmail.cpp" />
     <ClCompile Include="SqlSetting.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -206,7 +219,15 @@
     <Image Include="UserImages.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="curl-ca-bundle.crt" />
+    <None Include="libcurl\bin\curl.exe" />
+    <None Include="libcurl\bin\libcurl.dll" />
+    <None Include="libcurl\bin\libeay32MD.dll" />
+    <None Include="libcurl\bin\ssleay32MD.dll" />
     <None Include="res\CEDOT.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libcurl\lib\libcurl.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
