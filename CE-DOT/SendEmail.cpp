@@ -15,7 +15,7 @@
 #define TO              FROM
 #define CC              FROM
 
-static char payload_body[1024];
+static char payload_body[4096 + 1024];
 
 static char *payload_text[] = {
     "To: " TO "\r\n",

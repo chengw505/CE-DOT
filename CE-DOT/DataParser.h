@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_XML_ITEM_NUM 5
+#define MAX_XML_ITEM_NUM 16
 
 typedef struct
 {
