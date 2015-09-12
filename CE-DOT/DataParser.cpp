@@ -1591,6 +1591,12 @@ int CDataParser::FillConditions(const char* key, const char* value)
         int i = atoi(&key[strlen("PedNotIntNoCrosswalk") + 1]) - 1;
         m_fileContent->conditions[i].PedNotIntNoCrosswalk = atoi(value);
     }
+    else if (!_strnicmp(key, "PedNotIntOtherText", strlen("PedNotIntOtherText")))
+    {
+        ASSERT(key[strlen("PedNotIntOtherText")] == '_');
+        int i = atoi(&key[strlen("PedNotIntOtherText") + 1]) - 1;
+        m_fileContent->conditions[i].PedNotIntOtherText = atoi(value);
+    }
     else if (!_strnicmp(key, "PedNotIntOther", strlen("PedNotIntOther")))
     {
         ASSERT(key[strlen("PedNotIntOther")] == '_');
@@ -1626,12 +1632,6 @@ int CDataParser::FillConditions(const char* key, const char* value)
         ASSERT(key[strlen("PedNotIntWalkWithTraffic")] == '_');
         int i = atoi(&key[strlen("PedNotIntWalkWithTraffic") + 1]) - 1;
         m_fileContent->conditions[i].PedNotIntWalkWithTraffic = atoi(value);
-    }
-    else if (!_strnicmp(key, "PedNotIntOtherText", strlen("PedNotIntOtherText")))
-    {
-        ASSERT(key[strlen("PedNotIntOtherText")] == '_');
-        int i = atoi(&key[strlen("PedNotIntOtherText") + 1]) - 1;
-        m_fileContent->conditions[i].PedNotIntOtherText = atoi(value);
     }
     else if (!_strnicmp(key, "ConditionAmputee", strlen("ConditionAmputee")))
     {
