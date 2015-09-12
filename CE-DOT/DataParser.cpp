@@ -1675,6 +1675,12 @@ int CDataParser::FillConditions(const char* key, const char* value)
         int i = atoi(&key[strlen("ConditionNoAppDefects") + 1]) - 1;
         m_fileContent->conditions[i].ConditionNoAppDefects = atoi(value);
     }
+    else if (!_strnicmp(key, "ConditionOtherText", strlen("ConditionOtherText")))
+    {
+        ASSERT(key[strlen("ConditionOtherText")] == '_');
+        int i = atoi(&key[strlen("ConditionOtherText") + 1]) - 1;
+        m_fileContent->conditions[i].ConditionOtherText = atoi(value);
+    }
     else if (!_strnicmp(key, "ConditionOther", strlen("ConditionOther")))
     {
         ASSERT(key[strlen("ConditionOther")] == '_');
@@ -1686,12 +1692,6 @@ int CDataParser::FillConditions(const char* key, const char* value)
         ASSERT(key[strlen("ConditionUnknown")] == '_');
         int i = atoi(&key[strlen("ConditionUnknown") + 1]) - 1;
         m_fileContent->conditions[i].ConditionUnknown = atoi(value);
-    }
-    else if (!_strnicmp(key, "ConditionOtherText", strlen("ConditionOtherText")))
-    {
-        ASSERT(key[strlen("ConditionOtherText")] == '_');
-        int i = atoi(&key[strlen("ConditionOtherText") + 1]) - 1;
-        m_fileContent->conditions[i].ConditionOtherText = atoi(value);
     }
     else if (!_strnicmp(key, "SobrietyBAC", strlen("SobrietyBAC")))
     {
