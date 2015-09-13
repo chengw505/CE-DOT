@@ -933,6 +933,16 @@ int CMainFormView::ScheduleProc()
 {
     TRACE(_T("Schedule Proc Fired\n"));
 
+    int total_count = 0;
+    int err_count = 0;
+    int err_files_idx = 0;
+    char err_files_info[2048] = {0};
+    char email_info[2048 + 512] = {0};
+
+    char szStartTime[128];
+    char szEndTime[128];
+    CurrentTime(szStartTime);
+
     CString strRoot = _T("/");
     CString strRemoteFullPath;
 
@@ -943,12 +953,6 @@ int CMainFormView::ScheduleProc()
         SendOutputMessage(strText);
         return 1;
     }
-
-    int total_count = 0;
-    int err_count = 0;
-    int err_files_idx = 0;
-    char err_files_info[2048] = {0};
-    char email_info[2048 + 512] = {0};
 
     TFTPFileStatusShPtrVec vFileList;
     m_ftpClient.List(static_cast<LPCTSTR>(strRoot), vFileList);
@@ -995,8 +999,16 @@ int CMainFormView::ScheduleProc()
         // delete file from FTP server
         DeleteFileFromFtp(strRemoteFullPath);
     }
+    CurrentTime(szEndTime);
 
-    _snprintf_c(email_info, sizeof(email_info), "Total files: %d\r\nSucceed: %d\r\nFailed: %d, %s\r\n", 
+    _snprintf_c(email_info, sizeof(email_info),
+        "Summary For Importing Tracs Data Into Database"
+        "---------------------------------------------------"
+        "Task started at %s, ended at %s\r\n"
+        "FTP Server: %s"
+        "Total files: %d\r\nSucceed: %d\r\nFailed: %d, %s\r\n",
+        szStartTime, szEndTime,
+        m_ftpLogonInfo.Hostname().c_str(),
         total_count, (total_count - err_count), err_count, err_files_info);
 
     sendEmail(email_info);
@@ -1052,4 +1064,19 @@ void CMainFormView::OnTimer(UINT_PTR nIDEvent)
     }
 
     CFormView::OnTimer(nIDEvent);
+}
+
+int CMainFormView::CurrentTime(char* buffer)
+{
+    SYSTEMTIME currentTime;
+    GetLocalTime(&currentTime);
+
+    _snprintf_c(buffer, 128, "%d-%d-%d %d:%d",
+        currentTime.wYear,
+        currentTime.wMonth,
+        currentTime.wDay,
+        currentTime.wHour,
+        currentTime.wMinute);
+
+    return 0;
 }

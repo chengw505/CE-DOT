@@ -151,6 +151,7 @@ public:
     int StoptSchedule(UINT nIDEvent);
     int ScheduleProc();
     int GetSetSettings(BOOL bLoad = TRUE);
+    int CurrentTime(char* buffer);
 };
 
 #ifndef _DEBUG  // debug version in CMainFormView.cpp

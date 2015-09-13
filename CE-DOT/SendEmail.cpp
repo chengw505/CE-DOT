@@ -23,8 +23,6 @@ static char *payload_text[] = {
     "Message-ID: <dcd7cb36-11db-487a-9f3a-e652a9458efd@rfcpedant.example.org>\r\n",
     "Subject: TracsData Import Report\r\n",
     "\r\n", /* empty line to divide headers from body, see RFC5322 */
-    "Failed to extract from raw data or import data into database for following files:\r\n",
-    "\r\n",
     payload_body,
     NULL
 };
