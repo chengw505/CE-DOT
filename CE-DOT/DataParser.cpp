@@ -170,7 +170,7 @@ int CDataParser::FillForm(const char* key, const char* value)
     }
     else if (!_stricmp(key, "OfficerAtScene"))
     {
-        m_fileContent->OfficerAtScene = value;
+        m_fileContent->OfficerAtScene = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "BadgeNumber"))
     {
@@ -231,7 +231,7 @@ int CDataParser::FillSummary(const char* key, const char* value)
 {
     if (!_stricmp(key, "Agency"))
     {
-        m_fileContent->summary.Agency = value;
+        m_fileContent->summary.Agency = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "UCRNumber"))
     {
@@ -259,11 +259,11 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "CrashDate"))
     {
-        m_fileContent->summary.CrashDate = value;
+        m_fileContent->summary.CrashDate = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "MilitaryTime"))
     {
-        m_fileContent->summary.MilitaryTime = value;
+        m_fileContent->summary.MilitaryTime = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "County"))
     {
@@ -271,11 +271,11 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "City"))
     {
-        m_fileContent->summary.City = value;
+        m_fileContent->summary.City = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "TribalJurisdiction"))
     {
-        m_fileContent->summary.TribalJurisdiction = value;
+        m_fileContent->summary.TribalJurisdiction = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "WeekDay"))
     {
@@ -283,11 +283,11 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "STREETA"))
     {
-        m_fileContent->summary.STREETA = value;
+        m_fileContent->summary.STREETA = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "INTERSECTING_STREETB"))
     {
-        m_fileContent->summary.INTERSECTING_STREETB = value;
+        m_fileContent->summary.INTERSECTING_STREETB = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "Measurement"))
     {
@@ -295,55 +295,55 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "MeasurementUnit"))
     {
-        m_fileContent->summary.MeasurementUnit = value;
+        m_fileContent->summary.MeasurementUnit = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "DirectionFromLandmark"))
     {
-        m_fileContent->summary.DirectionFromLandmark = value;
+        m_fileContent->summary.DirectionFromLandmark = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "Landmark"))
     {
-        m_fileContent->summary.Landmark = value;
+        m_fileContent->summary.Landmark = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "Milepost"))
     {
-        m_fileContent->summary.Milepost = value;
+        m_fileContent->summary.Milepost = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "Latitude"))
     {
-        m_fileContent->summary.Latitude = value;
+        m_fileContent->summary.Latitude = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "Longitude"))
     {
-        m_fileContent->summary.Longitude = value;
+        m_fileContent->summary.Longitude = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "CRASHOCCURRENCE"))
     {
-        m_fileContent->summary.CRASHOCCURRENCE = value;
+        m_fileContent->summary.CRASHOCCURRENCE = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "CrashClassification"))
     {
-        m_fileContent->summary.CrashClassification = value;
+        m_fileContent->summary.CrashClassification = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "AnalysisCode"))
     {
-        m_fileContent->summary.Agency = value;
+        m_fileContent->summary.Agency = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "Lighting"))
     {
-        m_fileContent->summary.Lighting = value;
+        m_fileContent->summary.Lighting = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "WEATHER"))
     {
-        m_fileContent->summary.WEATHER = value;
+        m_fileContent->summary.WEATHER = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "RoadCharacter"))
     {
-        m_fileContent->summary.RoadCharacter = value;
+        m_fileContent->summary.RoadCharacter = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "RoadGrade"))
     {
-        m_fileContent->summary.RoadGrade = value;
+        m_fileContent->summary.RoadGrade = EscapeSQLString(CString(value));
     }
     else
     {
@@ -392,37 +392,37 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("DrSex")] == '_');
         int i = atoi(&key[strlen("DrSex") + 1]) - 1;
-        m_fileContent->vehicles[i].DrSex = value;
+        m_fileContent->vehicles[i].DrSex = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrRace", strlen("DrRace")))
     {
         ASSERT(key[strlen("DrRace")] == '_');
         int i = atoi(&key[strlen("DrRace") + 1]) - 1;
-        m_fileContent->vehicles[i].DrRace = value;
+        m_fileContent->vehicles[i].DrRace = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VehDirection", strlen("VehDirection")))
     {
         ASSERT(key[strlen("VehDirection")] == '_');
         int i = atoi(&key[strlen("VehDirection") + 1]) - 1;
-        m_fileContent->vehicles[i].VehDirection = value;
+        m_fileContent->vehicles[i].VehDirection = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "StreetOn", strlen("StreetOn")))
     {
         ASSERT(key[strlen("StreetOn")] == '_');
         int i = atoi(&key[strlen("StreetOn") + 1]) - 1;
-        m_fileContent->vehicles[i].StreetOn = value;
+        m_fileContent->vehicles[i].StreetOn = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "LeftScene", strlen("LeftScene")))
     {
         ASSERT(key[strlen("LeftScene")] == '_');
         int i = atoi(&key[strlen("LeftScene") + 1]) - 1;
-        m_fileContent->vehicles[i].LeftScene = value;
+        m_fileContent->vehicles[i].LeftScene = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "UnitType", strlen("UnitType")))
     {
         ASSERT(key[strlen("UnitType")] == '_');
         int i = atoi(&key[strlen("UnitType") + 1]) - 1;
-        m_fileContent->vehicles[i].UnitType = value;
+        m_fileContent->vehicles[i].UnitType = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "PostedSpeed", strlen("PostedSpeed")))
     {
@@ -440,79 +440,79 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("DRFIRSTNAME")] == '_');
         int i = atoi(&key[strlen("DRFIRSTNAME") + 1]) - 1;
-        m_fileContent->vehicles[i].DRFIRSTNAME = value;
+        m_fileContent->vehicles[i].DRFIRSTNAME = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DRLASTNAME", strlen("DRLASTNAME")))
     {
         ASSERT(key[strlen("DRLASTNAME")] == '_');
         int i = atoi(&key[strlen("DRLASTNAME") + 1]) - 1;
-        m_fileContent->vehicles[i].DRLASTNAME = value;
+        m_fileContent->vehicles[i].DRLASTNAME = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DRMIDDLENAME", strlen("DRMIDDLENAME")))
     {
         ASSERT(key[strlen("DRMIDDLENAME")] == '_');
         int i = atoi(&key[strlen("DRMIDDLENAME") + 1]) - 1;
-        m_fileContent->vehicles[i].DRMIDDLENAME = value;
+        m_fileContent->vehicles[i].DRMIDDLENAME = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DRADDRESS", strlen("DRADDRESS")))
     {
         ASSERT(key[strlen("DRADDRESS")] == '_');
         int i = atoi(&key[strlen("DRADDRESS") + 1]) - 1;
-        m_fileContent->vehicles[i].DRADDRESS = value;
+        m_fileContent->vehicles[i].DRADDRESS = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DLNUMBER", strlen("DLNUMBER")))
     {
         ASSERT(key[strlen("DLNUMBER")] == '_');
         int i = atoi(&key[strlen("DLNUMBER") + 1]) - 1;
-        m_fileContent->vehicles[i].DLNUMBER = value;
+        m_fileContent->vehicles[i].DLNUMBER = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DLState", strlen("DLState")))
     {
         ASSERT(key[strlen("DLState")] == '_');
         int i = atoi(&key[strlen("DLState") + 1]) - 1;
-        m_fileContent->vehicles[i].DLState = value;
+        m_fileContent->vehicles[i].DLState = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DLType", strlen("DLType")))
     {
         ASSERT(key[strlen("DLType")] == '_');
         int i = atoi(&key[strlen("DLType") + 1]) - 1;
-        m_fileContent->vehicles[i].DLType = value;
+        m_fileContent->vehicles[i].DLType = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DLStatus", strlen("DLStatus")))
     {
         ASSERT(key[strlen("DLStatus")] == '_');
         int i = atoi(&key[strlen("DLStatus") + 1]) - 1;
-        m_fileContent->vehicles[i].DLStatus = value;
+        m_fileContent->vehicles[i].DLStatus = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DLRestrictions", strlen("DLRestrictions")))
     {
         ASSERT(key[strlen("DLRestrictions")] == '_');
         int i = atoi(&key[strlen("DLRestrictions") + 1]) - 1;
-        m_fileContent->vehicles[i].DLRestrictions = value;
+        m_fileContent->vehicles[i].DLRestrictions = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DLEndorsements", strlen("DLEndorsements")))
     {
         ASSERT(key[strlen("DLEndorsements")] == '_');
         int i = atoi(&key[strlen("DLEndorsements") + 1]) - 1;
-        m_fileContent->vehicles[i].DLEndorsements = value;
+        m_fileContent->vehicles[i].DLEndorsements = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DLExpires", strlen("DLExpires")))
     {
         ASSERT(key[strlen("DLExpires")] == '_');
         int i = atoi(&key[strlen("DLExpires") + 1]) - 1;
-        m_fileContent->vehicles[i].DLExpires = value;
+        m_fileContent->vehicles[i].DLExpires = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DRCITY", strlen("DRCITY")))
     {
         ASSERT(key[strlen("DRCITY")] == '_');
         int i = atoi(&key[strlen("DRCITY") + 1]) - 1;
-        m_fileContent->vehicles[i].DRCITY = value;
+        m_fileContent->vehicles[i].DRCITY = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DRSTATE", strlen("DRSTATE")))
     {
         ASSERT(key[strlen("DRSTATE")] == '_');
         int i = atoi(&key[strlen("DRSTATE") + 1]) - 1;
-        m_fileContent->vehicles[i].DRSTATE = value;
+        m_fileContent->vehicles[i].DRSTATE = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DRZIP", strlen("DRZIP")))
     {
@@ -524,31 +524,31 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("DRPHONE")] == '_');
         int i = atoi(&key[strlen("DRPHONE") + 1]) - 1;
-        m_fileContent->vehicles[i].DRPHONE = value;
+        m_fileContent->vehicles[i].DRPHONE = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DLDoB", strlen("DLDoB")))
     {
         ASSERT(key[strlen("DLDoB")] == '_');
         int i = atoi(&key[strlen("DLDoB") + 1]) - 1;
-        m_fileContent->vehicles[i].DLDoB = value;
+        m_fileContent->vehicles[i].DLDoB = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrOccupation", strlen("DrOccupation")))
     {
         ASSERT(key[strlen("DrOccupation")] == '_');
         int i = atoi(&key[strlen("DrOccupation") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrOccupation = value;
+        m_fileContent->vehicles[i].Driver.DrOccupation = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DRSeatPos", strlen("DRSeatPos")))
     {
         ASSERT(key[strlen("DRSeatPos")] == '_');
         int i = atoi(&key[strlen("DRSeatPos") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DRSeatPos = value;
+        m_fileContent->vehicles[i].Driver.DRSeatPos = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DRSSN", strlen("DRSSN")))
     {
         ASSERT(key[strlen("DRSSN")] == '_');
         int i = atoi(&key[strlen("DRSSN") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DRSSN = value;
+        m_fileContent->vehicles[i].Driver.DRSSN = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrAge", strlen("DrAge")))
     {
@@ -560,55 +560,55 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("DrSex")] == '_');
         int i = atoi(&key[strlen("DrSex") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrSex = value;
+        m_fileContent->vehicles[i].Driver.DrSex = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrRace", strlen("DrRace")))
     {
         ASSERT(key[strlen("DrRace")] == '_');
         int i = atoi(&key[strlen("DrRace") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrRace = value;
+        m_fileContent->vehicles[i].Driver.DrRace = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrInjuryCode", strlen("DrInjuryCode")))
     {
         ASSERT(key[strlen("DrInjuryCode")] == '_');
         int i = atoi(&key[strlen("DrInjuryCode") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrInjuryCode = value;
+        m_fileContent->vehicles[i].Driver.DrInjuryCode = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DROPCODE", strlen("DROPCODE")))
     {
         ASSERT(key[strlen("DROPCODE")] == '_');
         int i = atoi(&key[strlen("DROPCODE") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DROPCODE = value;
+        m_fileContent->vehicles[i].Driver.DROPCODE = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrOPProperlyUsed", strlen("DrOPProperlyUsed")))
     {
         ASSERT(key[strlen("DrOPProperlyUsed")] == '_');
         int i = atoi(&key[strlen("DrOPProperlyUsed") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrOPProperlyUsed = value;
+        m_fileContent->vehicles[i].Driver.DrOPProperlyUsed = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrAirbagDeployed", strlen("DrAirbagDeployed")))
     {
         ASSERT(key[strlen("DrAirbagDeployed")] == '_');
         int i = atoi(&key[strlen("DrAirbagDeployed") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrAirbagDeployed = value;
+        m_fileContent->vehicles[i].Driver.DrAirbagDeployed = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrEjected", strlen("DrEjected")))
     {
         ASSERT(key[strlen("DrEjected")] == '_');
         int i = atoi(&key[strlen("DrEjected") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrEjected = value;
+        m_fileContent->vehicles[i].Driver.DrEjected = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrEMSNum", strlen("DrEMSNum")))
     {
         ASSERT(key[strlen("DrEMSNum")] == '_');
         int i = atoi(&key[strlen("DrEMSNum") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrEMSNum = value;
+        m_fileContent->vehicles[i].Driver.DrEMSNum = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "DrMedTrans", strlen("DrMedTrans")))
     {
         ASSERT(key[strlen("DrMedTrans")] == '_');
         int i = atoi(&key[strlen("DrMedTrans") + 1]) - 1;
-        m_fileContent->vehicles[i].Driver.DrMedTrans = value;
+        m_fileContent->vehicles[i].Driver.DrMedTrans = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oSeatPos", strlen("oSeatPos")))
     {
@@ -623,7 +623,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oSeatPos_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oSeatPos = value;
+        m_fileContent->vehicles[i].Occupant[j].oSeatPos = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oLastName", strlen("oLastName")))
     {
@@ -638,7 +638,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oLastName_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oLastName = value;
+        m_fileContent->vehicles[i].Occupant[j].oLastName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oFirstName", strlen("oFirstName")))
     {
@@ -653,7 +653,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oFirstName_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oFirstName = value;
+        m_fileContent->vehicles[i].Occupant[j].oFirstName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oMiddleName", strlen("oMiddleName")))
     {
@@ -668,7 +668,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oMiddleName_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oMiddleName = value;
+        m_fileContent->vehicles[i].Occupant[j].oMiddleName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oAge", strlen("oAge")))
     {
@@ -698,7 +698,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oSex_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oSex = value;
+        m_fileContent->vehicles[i].Occupant[j].oSex = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oRace", strlen("oRace")))
     {
@@ -713,7 +713,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oRace_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oRace = value;
+        m_fileContent->vehicles[i].Occupant[j].oRace = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oInjuryCode", strlen("oInjuryCode")))
     {
@@ -728,7 +728,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oInjuryCode_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oInjuryCode = value;
+        m_fileContent->vehicles[i].Occupant[j].oInjuryCode = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oOPCode", strlen("oOPCode")))
     {
@@ -743,7 +743,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oOPCode_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oOPCode = value;
+        m_fileContent->vehicles[i].Occupant[j].oOPCode = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "OOPPROPERLYUSED", strlen("OOPPROPERLYUSED")))
     {
@@ -758,7 +758,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("OOPPROPERLYUSED_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].OOPPROPERLYUSED = value;
+        m_fileContent->vehicles[i].Occupant[j].OOPPROPERLYUSED = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oAirBagDeploy", strlen("oAirBagDeploy")))
     {
@@ -773,7 +773,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oAirBagDeploy_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oAirBagDeploy = value;
+        m_fileContent->vehicles[i].Occupant[j].oAirBagDeploy = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oEjected", strlen("oEjected")))
     {
@@ -788,7 +788,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oEjected_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oEjected = value;
+        m_fileContent->vehicles[i].Occupant[j].oEjected = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oEMSNum", strlen("oEMSNum")))
     {
@@ -803,7 +803,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oEMSNum_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oEMSNum = value;
+        m_fileContent->vehicles[i].Occupant[j].oEMSNum = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oMedTrans", strlen("oMedTrans")))
     {
@@ -818,7 +818,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oMedTrans_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oMedTrans = value;
+        m_fileContent->vehicles[i].Occupant[j].oMedTrans = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oAddress", strlen("oAddress")))
     {
@@ -833,7 +833,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oAddress_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oAddress = value;
+        m_fileContent->vehicles[i].Occupant[j].oAddress = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oCity", strlen("oCity")))
     {
@@ -848,7 +848,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oCity_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oCity = value;
+        m_fileContent->vehicles[i].Occupant[j].oCity = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oState", strlen("oState")))
     {
@@ -863,7 +863,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oState_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oState = value;
+        m_fileContent->vehicles[i].Occupant[j].oState = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "oZip", strlen("oZip")))
     {
@@ -878,7 +878,7 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         {
             i = atoi(&key[strlen("oZip_")]) - 1;
         }
-        m_fileContent->vehicles[i].Occupant[j].oZip = value;
+        m_fileContent->vehicles[i].Occupant[j].oZip = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "veYear", strlen("veYear")))
     {
@@ -890,103 +890,103 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("VeMake")] == '_');
         int i = atoi(&key[strlen("VeMake") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeMake = value;
+        m_fileContent->vehicles[i].Vehicle.VeMake = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeColor", strlen("VeColor")))
     {
         ASSERT(key[strlen("VeColor")] == '_');
         int i = atoi(&key[strlen("VeColor") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeColor = value;
+        m_fileContent->vehicles[i].Vehicle.VeColor = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeBodystyle", strlen("VeBodystyle")))
     {
         ASSERT(key[strlen("VeBodystyle")] == '_');
         int i = atoi(&key[strlen("VeBodystyle") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeBodystyle = value;
+        m_fileContent->vehicles[i].Vehicle.VeBodystyle = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeCargoBody", strlen("VeCargoBody")))
     {
         ASSERT(key[strlen("VeCargoBody")] == '_');
         int i = atoi(&key[strlen("VeCargoBody") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeCargoBody = value;
+        m_fileContent->vehicles[i].Vehicle.VeCargoBody = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeUse1", strlen("VeUse1")))
     {
         ASSERT(key[strlen("VeUse1")] == '_');
         int i = atoi(&key[strlen("VeUse1") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeUse1 = value;
+        m_fileContent->vehicles[i].Vehicle.VeUse1 = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeUse2", strlen("VeUse2")))
     {
         ASSERT(key[strlen("VeUse2")] == '_');
         int i = atoi(&key[strlen("VeUse2") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeUse2 = value;
+        m_fileContent->vehicles[i].Vehicle.VeUse2 = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "ICCCarrierCode", strlen("ICCCarrierCode")))
     {
         ASSERT(key[strlen("ICCCarrierCode")] == '_');
         int i = atoi(&key[strlen("ICCCarrierCode") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.ICCCarrierCode = value;
+        m_fileContent->vehicles[i].Vehicle.ICCCarrierCode = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VELICPLATEREGYR", strlen("VELICPLATEREGYR")))
     {
         ASSERT(key[strlen("VELICPLATEREGYR")] == '_');
         int i = atoi(&key[strlen("VELICPLATEREGYR") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VELICPLATEREGYR = value;
+        m_fileContent->vehicles[i].Vehicle.VELICPLATEREGYR = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VELICPLATESTATE", strlen("VELICPLATESTATE")))
     {
         ASSERT(key[strlen("VELICPLATESTATE")] == '_');
         int i = atoi(&key[strlen("VELICPLATESTATE") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VELICPLATESTATE = value;
+        m_fileContent->vehicles[i].Vehicle.VELICPLATESTATE = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VELICPLATENUM", strlen("VELICPLATENUM")))
     {
         ASSERT(key[strlen("VELICPLATENUM")] == '_');
         int i = atoi(&key[strlen("VELICPLATENUM") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VELICPLATENUM = value;
+        m_fileContent->vehicles[i].Vehicle.VELICPLATENUM = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "veVin", strlen("veVin")))
     {
         ASSERT(key[strlen("veVin")] == '_');
         int i = atoi(&key[strlen("veVin") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.veVin = value;
+        m_fileContent->vehicles[i].Vehicle.veVin = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "veTowedBy", strlen("veTowedBy")))
     {
         ASSERT(key[strlen("veTowedBy")] == '_');
         int i = atoi(&key[strlen("veTowedBy") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.veTowedBy = value;
+        m_fileContent->vehicles[i].Vehicle.veTowedBy = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "veTowedTo", strlen("veTowedTo")))
     {
         ASSERT(key[strlen("veTowedTo")] == '_');
         int i = atoi(&key[strlen("veTowedTo") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.veTowedTo = value;
+        m_fileContent->vehicles[i].Vehicle.veTowedTo = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeTowedDisabled", strlen("VeTowedDisabled")))
     {
         ASSERT(key[strlen("VeTowedDisabled")] == '_');
         int i = atoi(&key[strlen("VeTowedDisabled") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeTowedDisabled = value;
+        m_fileContent->vehicles[i].Vehicle.VeTowedDisabled = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeTowed", strlen("VeTowed")))
     {
         ASSERT(key[strlen("VeTowed")] == '_');
         int i = atoi(&key[strlen("VeTowed") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeTowed = value;
+        m_fileContent->vehicles[i].Vehicle.VeTowed = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeDamageSeverity", strlen("VeDamageSeverity")))
     {
         ASSERT(key[strlen("VeDamageSeverity")] == '_');
         int i = atoi(&key[strlen("VeDamageSeverity") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeDamageSeverity = value;
+        m_fileContent->vehicles[i].Vehicle.VeDamageSeverity = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeDamageExtent", strlen("VeDamageExtent")))
     {
         ASSERT(key[strlen("VeDamageExtent")] == '_');
         int i = atoi(&key[strlen("VeDamageExtent") + 1]) - 1;
-        m_fileContent->vehicles[i].Vehicle.VeDamageExtent = value;
+        m_fileContent->vehicles[i].Vehicle.VeDamageExtent = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "VeDamageAll", strlen("VeDamageAll")))
     {
@@ -1040,19 +1040,19 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("GrossVehicleWeight")] == '_');
         int i = atoi(&key[strlen("GrossVehicleWeight") + 1]) - 1;
-        m_fileContent->vehicles[i].GrossVehicleWeight = value;
+        m_fileContent->vehicles[i].GrossVehicleWeight = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "HazmatPlacard", strlen("HazmatPlacard")))
     {
         ASSERT(key[strlen("HazmatPlacard")] == '_');
         int i = atoi(&key[strlen("HazmatPlacard") + 1]) - 1;
-        m_fileContent->vehicles[i].HazmatPlacard = value;
+        m_fileContent->vehicles[i].HazmatPlacard = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "HazmatReleased", strlen("HazmatReleased")))
     {
         ASSERT(key[strlen("HazmatReleased")] == '_');
         int i = atoi(&key[strlen("HazmatReleased") + 1]) - 1;
-        m_fileContent->vehicles[i].HazmatReleased = value;
+        m_fileContent->vehicles[i].HazmatReleased = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "USDOTNum", strlen("USDOTNum")))
     {
@@ -1064,31 +1064,31 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("InterstateCarrier")] == '_');
         int i = atoi(&key[strlen("InterstateCarrier") + 1]) - 1;
-        m_fileContent->vehicles[i].InterstateCarrier = value;
+        m_fileContent->vehicles[i].InterstateCarrier = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "NumberofAxles", strlen("NumberofAxles")))
     {
         ASSERT(key[strlen("NumberofAxles")] == '_');
         int i = atoi(&key[strlen("NumberofAxles") + 1]) - 1;
-        m_fileContent->vehicles[i].NumberofAxles = value;
+        m_fileContent->vehicles[i].NumberofAxles = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "HazmatName", strlen("HazmatName")))
     {
         ASSERT(key[strlen("HazmatName")] == '_');
         int i = atoi(&key[strlen("HazmatName") + 1]) - 1;
-        m_fileContent->vehicles[i].HazmatName = value;
+        m_fileContent->vehicles[i].HazmatName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "CarrierName", strlen("CarrierName")))
     {
         ASSERT(key[strlen("CarrierName")] == '_');
         int i = atoi(&key[strlen("CarrierName") + 1]) - 1;
-        m_fileContent->vehicles[i].CarrierName = value;
+        m_fileContent->vehicles[i].CarrierName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "CarrierAddress", strlen("CarrierAddress")))
     {
         ASSERT(key[strlen("CarrierAddress")] == '_');
         int i = atoi(&key[strlen("CarrierAddress") + 1]) - 1;
-        m_fileContent->vehicles[i].CarrierAddress = value;
+        m_fileContent->vehicles[i].CarrierAddress = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "CarrierZip", strlen("CarrierZip")))
     {
@@ -1100,19 +1100,19 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("OwnersName")] == '_');
         int i = atoi(&key[strlen("OwnersName") + 1]) - 1;
-        m_fileContent->vehicles[i].Owner.OwnersFirstName = value;
+        m_fileContent->vehicles[i].Owner.OwnersFirstName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "OwnersCompany", strlen("OwnersCompany")))
     {
         ASSERT(key[strlen("OwnersCompany")] == '_');
         int i = atoi(&key[strlen("OwnersCompany") + 1]) - 1;
-        m_fileContent->vehicles[i].Owner.OwnersCompany = value;
+        m_fileContent->vehicles[i].Owner.OwnersCompany = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "OwnersAddress", strlen("OwnersAddress")))
     {
         ASSERT(key[strlen("OwnersAddress")] == '_');
         int i = atoi(&key[strlen("OwnersAddress") + 1]) - 1;
-        m_fileContent->vehicles[i].Owner.OwnersAddress = value;
+        m_fileContent->vehicles[i].Owner.OwnersAddress = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "OwnersZip", strlen("OwnersZip")))
     {
@@ -1124,19 +1124,19 @@ int CDataParser::FillVehicles(const char* key, const char* value)
     {
         ASSERT(key[strlen("OWNERSPHONE")] == '_');
         int i = atoi(&key[strlen("OWNERSPHONE") + 1]) - 1;
-        m_fileContent->vehicles[i].Owner.OWNERSPHONE = value;
+        m_fileContent->vehicles[i].Owner.OWNERSPHONE = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "InsuredBy", strlen("InsuredBy")))
     {
         ASSERT(key[strlen("InsuredBy")] == '_');
         int i = atoi(&key[strlen("InsuredBy") + 1]) - 1;
-        m_fileContent->vehicles[i].Owner.InsuredBy = value;
+        m_fileContent->vehicles[i].Owner.InsuredBy = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "PolicyNumber", strlen("PolicyNumber")))
     {
         ASSERT(key[strlen("PolicyNumber")] == '_');
         int i = atoi(&key[strlen("PolicyNumber") + 1]) - 1;
-        m_fileContent->vehicles[i].Owner.PolicyNumber = value;
+        m_fileContent->vehicles[i].Owner.PolicyNumber = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "Trailer", strlen("Trailer")))
     {
@@ -1144,27 +1144,27 @@ int CDataParser::FillVehicles(const char* key, const char* value)
         int j = key[strlen("Trailer")] - '0';
         if (!_strnicmp(&key[strlen("Trailer?")], "Type", strlen("Type")))
         {
-            m_fileContent->vehicles[i].Trailer[j].Type = value;
+            m_fileContent->vehicles[i].Trailer[j].Type = EscapeSQLString(CString(value));
         }
         else if (!_strnicmp(&key[strlen("Trailer?")], "Year", strlen("Year")))
         {
-            m_fileContent->vehicles[i].Trailer[j].Year = value;
+            m_fileContent->vehicles[i].Trailer[j].Year = EscapeSQLString(CString(value));
         }
         else if (!_strnicmp(&key[strlen("Trailer?")], "Make", strlen("Make")))
         {
-            m_fileContent->vehicles[i].Trailer[j].Make = value;
+            m_fileContent->vehicles[i].Trailer[j].Make = EscapeSQLString(CString(value));
         }
         else if (!_strnicmp(&key[strlen("Trailer?")], "LicYear", strlen("LicYear")))
         {
-            m_fileContent->vehicles[i].Trailer[j].LicYear = value;
+            m_fileContent->vehicles[i].Trailer[j].LicYear = EscapeSQLString(CString(value));
         }
         else if (!_strnicmp(&key[strlen("Trailer?")], "LicState", strlen("LicState")))
         {
-            m_fileContent->vehicles[i].Trailer[j].LicState = value;
+            m_fileContent->vehicles[i].Trailer[j].LicState = EscapeSQLString(CString(value));
         }
         else if (!_strnicmp(&key[strlen("Trailer?")], "LicNumber", strlen("LicNumber")))
         {
-            m_fileContent->vehicles[i].Trailer[j].LicNumber = value;
+            m_fileContent->vehicles[i].Trailer[j].LicNumber = EscapeSQLString(CString(value));
         }
         else
         {
@@ -1211,37 +1211,37 @@ int CDataParser::FillConditions(const char* key, const char* value)
     {
         ASSERT(key[strlen("RoadConditionsVe")] == '_');
         int i = atoi(&key[strlen("RoadConditionsVe") + 1]) - 1;
-        m_fileContent->conditions[i].RoadConditionsVe = value;
+        m_fileContent->conditions[i].RoadConditionsVe = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "RoadSurfaceVe", strlen("RoadSurfaceVe")))
     {
         ASSERT(key[strlen("RoadSurfaceVe")] == '_');
         int i = atoi(&key[strlen("RoadSurfaceVe") + 1]) - 1;
-        m_fileContent->conditions[i].RoadSurfaceVe = value;
+        m_fileContent->conditions[i].RoadSurfaceVe = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "TrafficControlDevice", strlen("TrafficControlDevice")))
     {
         ASSERT(key[strlen("TrafficControlDevice")] == '_');
         int i = atoi(&key[strlen("TrafficControlDevice") + 1]) - 1;
-        m_fileContent->conditions[i].TrafficControlDevice = value;
+        m_fileContent->conditions[i].TrafficControlDevice = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "RoadDesignLanes", strlen("RoadDesignLanes")))
     {
         ASSERT(key[strlen("RoadDesignLanes")] == '_');
         int i = atoi(&key[strlen("RoadDesignLanes") + 1]) - 1;
-        m_fileContent->conditions[i].RoadDesignLanes = value;
+        m_fileContent->conditions[i].RoadDesignLanes = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "RoadDesignDivider", strlen("RoadDesignDivider")))
     {
         ASSERT(key[strlen("RoadDesignDivider")] == '_');
         int i = atoi(&key[strlen("RoadDesignDivider") + 1]) - 1;
-        m_fileContent->conditions[i].RoadDesignDivider = value;
+        m_fileContent->conditions[i].RoadDesignDivider = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "RoadDesign", strlen("RoadDesign")))
     {
         ASSERT(key[strlen("RoadDesign")] == '_');
         int i = atoi(&key[strlen("RoadDesign") + 1]) - 1;
-        m_fileContent->conditions[i].RoadDesign = value;
+        m_fileContent->conditions[i].RoadDesign = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "ACFAvoidNoContactOther", strlen("ACFAvoidNoContactOther")))
     {
@@ -1782,7 +1782,9 @@ int CDataParser::FillNarrative(TiXmlNode* root)
         {
             value = NULL;
         }
-        TRACE("K = %s, V = %s\n", key, value);
+
+        // sometime the length of value is very big, which will call general protection error
+        //TRACE("K = %s, V = %s\n", key, value);
         if (value)
         {
             FillNarrative(key, value);
@@ -1797,7 +1799,7 @@ int CDataParser::FillNarrative(const char* key, const char* value)
 {
     if (!_stricmp(key, "Narrative"))
     {
-        m_fileContent->narrative.Narrative = value;
+        m_fileContent->narrative.Narrative = EscapeSQLString(CString(value));
     }
     else
     {
@@ -1839,49 +1841,49 @@ int CDataParser::FillProperties(const char* key, const char* value)
     {
         ASSERT(key[strlen("pType")] == '_');
         int i = atoi(&key[strlen("pType") + 1]) - 1;
-        m_fileContent->properties[i].pType = value;
+        m_fileContent->properties[i].pType = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "pDesc", strlen("pDesc")))
     {
         ASSERT(key[strlen("pDesc")] == '_');
         int i = atoi(&key[strlen("pDesc") + 1]) - 1;
-        m_fileContent->properties[i].pDesc = value;
+        m_fileContent->properties[i].pDesc = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "pLastName", strlen("pLastName")))
     {
         ASSERT(key[strlen("pLastName")] == '_');
         int i = atoi(&key[strlen("pLastName") + 1]) - 1;
-        m_fileContent->properties[i].pLastName = value;
+        m_fileContent->properties[i].pLastName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "pFirstName", strlen("pFirstName")))
     {
         ASSERT(key[strlen("pFirstName")] == '_');
         int i = atoi(&key[strlen("pFirstName") + 1]) - 1;
-        m_fileContent->properties[i].pFirstName = value;
+        m_fileContent->properties[i].pFirstName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "pMiddleName", strlen("pMiddleName")))
     {
         ASSERT(key[strlen("pMiddleName")] == '_');
         int i = atoi(&key[strlen("pMiddleName") + 1]) - 1;
-        m_fileContent->properties[i].pMiddleName = value;
+        m_fileContent->properties[i].pMiddleName = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "pAddress", strlen("pAddress")))
     {
         ASSERT(key[strlen("pAddress")] == '_');
         int i = atoi(&key[strlen("pAddress") + 1]) - 1;
-        m_fileContent->properties[i].pAddress = value;
+        m_fileContent->properties[i].pAddress = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "pCity", strlen("pCity")))
     {
         ASSERT(key[strlen("pCity")] == '_');
         int i = atoi(&key[strlen("pCity") + 1]) - 1;
-        m_fileContent->properties[i].pCity = value;
+        m_fileContent->properties[i].pCity = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "pState", strlen("pState")))
     {
         ASSERT(key[strlen("pState")] == '_');
         int i = atoi(&key[strlen("pState") + 1]) - 1;
-        m_fileContent->properties[i].pState = value;
+        m_fileContent->properties[i].pState = EscapeSQLString(CString(value));
     }
     else if (!_strnicmp(key, "pZip", strlen("pZip")))
     {
@@ -1893,7 +1895,7 @@ int CDataParser::FillProperties(const char* key, const char* value)
     {
         ASSERT(key[strlen("pPhone")] == '_');
         int i = atoi(&key[strlen("pPhone") + 1]) - 1;
-        m_fileContent->properties[i].pPhone = value;
+        m_fileContent->properties[i].pPhone = EscapeSQLString(CString(value));
     }
     else
     {
@@ -1934,27 +1936,27 @@ int CDataParser::FillViolations(const char* key, const char* value)
     if (!_stricmp(key, "vLastName"))
     {
         int i = atoi(&key[strlen("vLastName")]) - 1;
-        m_fileContent->violations[i].vLastName = value;
+        m_fileContent->violations[i].vLastName = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "vFirstName"))
     {
         int i = atoi(&key[strlen("vFirstName")]) - 1;
-        m_fileContent->violations[i].vFirstName = value;
+        m_fileContent->violations[i].vFirstName = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "vMiddleName"))
     {
         int i = atoi(&key[strlen("vMiddleName")]) - 1;
-        m_fileContent->violations[i].vMiddleName = value;
+        m_fileContent->violations[i].vMiddleName = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "vAction"))
     {
         int i = atoi(&key[strlen("vAction")]) - 1;
-        m_fileContent->violations[i].vAction = value;
+        m_fileContent->violations[i].vAction = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "vViolation"))
     {
         int i = atoi(&key[strlen("vViolation")]) - 1;
-        m_fileContent->violations[i].vViolation = value;
+        m_fileContent->violations[i].vViolation = EscapeSQLString(CString(value));
     }
     else
     {
@@ -1994,23 +1996,23 @@ int CDataParser::FillConclusion(const char* key, const char* value)
 {
     if (!_stricmp(key, "TimeNotified"))
     {
-        m_fileContent->conclusion.TimeNotified = value;
+        m_fileContent->conclusion.TimeNotified = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "TimeArrived"))
     {
-        m_fileContent->conclusion.TimeArrived = value;
+        m_fileContent->conclusion.TimeArrived = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "NotifiedBy"))
     {
-        m_fileContent->conclusion.NotifiedBy = value;
+        m_fileContent->conclusion.NotifiedBy = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "SupervisorOnScene"))
     {
-        m_fileContent->conclusion.SupervisorOnScene = value;
+        m_fileContent->conclusion.SupervisorOnScene = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "Checkedby"))
     {
-        m_fileContent->conclusion.Checkedby = value;
+        m_fileContent->conclusion.Checkedby = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "OfficersSignaturePresent"))
     {
@@ -2022,7 +2024,7 @@ int CDataParser::FillConclusion(const char* key, const char* value)
     }
     else if (!_stricmp(key, "ReportDate"))
     {
-        m_fileContent->conclusion.ReportDate = value;
+        m_fileContent->conclusion.ReportDate = EscapeSQLString(CString(value));
     }
     else
     {
@@ -2062,11 +2064,11 @@ int CDataParser::FillDiagram(const char* key, const char* value)
 {
     if (!_stricmp(key, "DrawingsBy"))
     {
-        m_fileContent->diagram.DrawingsBy = value;
+        m_fileContent->diagram.DrawingsBy = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "MeasurementsTakenBy"))
     {
-        m_fileContent->diagram.MeasurementsTakenBy = value;
+        m_fileContent->diagram.MeasurementsTakenBy = EscapeSQLString(CString(value));
     }
     else
     {
@@ -2107,15 +2109,15 @@ int CDataParser::FillLocation(const char* key, const char* value)
 {
     if (!_stricmp(key, "LiteralDescription"))
     {
-        m_fileContent->location.LiteralDescription = value;
+        m_fileContent->location.LiteralDescription = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "XCoordinate"))
     {
-        m_fileContent->location.XCoordinate = value;
+        m_fileContent->location.XCoordinate = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "YCoordinate"))
     {
-        m_fileContent->location.YCoordinate = value;
+        m_fileContent->location.YCoordinate = EscapeSQLString(CString(value));
     }
     else
     {
@@ -2380,7 +2382,7 @@ int CDataParser::GetSQL_crash(CString& strSql)
         _T(""), // batchnumber
         m_fileContent->summary.STREETA,
         m_fileContent->summary.INTERSECTING_STREETB,
-        m_fileContent->summary.Landmark,
+        EscapeSQLString(m_fileContent->summary.Landmark),
         m_fileContent->summary.Milepost,
         m_fileContent->summary.CADNumber,
         m_fileContent->CaseNumber,
@@ -2391,7 +2393,7 @@ int CDataParser::GetSQL_crash(CString& strSql)
         _T(""), // Classification_Result
         m_fileContent->summary.CrashClassification,
         m_fileContent->summary.CRASHOCCURRENCE,
-        m_fileContent->summary.DirectionFromLandmark,
+        EscapeSQLString(m_fileContent->summary.DirectionFromLandmark),
         m_fileContent->conclusion.District,
         m_fileContent->summary.Fatal_Injury,
         _T(""), // FormID
@@ -2424,7 +2426,7 @@ int CDataParser::GetSQL_crash(CString& strSql)
         m_fileContent->WitnessPresent,
         m_fileContent->properties[0].pDesc,
         m_fileContent->properties[0].pType,
-        m_fileContent->properties[0].pAddress,
+        EscapeSQLString(m_fileContent->properties[0].pAddress),
         m_fileContent->properties[0].pCity,
         m_fileContent->properties[0].pState,
         m_fileContent->properties[0].pZip,
@@ -2568,7 +2570,7 @@ int CDataParser::GetSQL_occupant(CString& strSql)
                 m_fileContent->vehicles[i].Occupant[j].oEjected,
                 m_fileContent->vehicles[i].Occupant[j].oEMSNum,
                 m_fileContent->vehicles[i].Occupant[j].oMedTrans,
-                m_fileContent->vehicles[i].Occupant[j].oAddress,
+                EscapeSQLString(m_fileContent->vehicles[i].Occupant[j].oAddress),
                 m_fileContent->vehicles[i].Occupant[j].oCity,
                 m_fileContent->vehicles[i].Occupant[j].oState,
                 m_fileContent->vehicles[i].Occupant[j].oZip

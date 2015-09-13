@@ -281,6 +281,8 @@ int CMainFormView::ConnectDB()
 
 int CMainFormView::ExecuteSQL(const CString& strSql)
 {
+    if (strSql.IsEmpty())   return 0;
+
     try {
         _variant_t recordsAffected;
         HRESULT hr = m_pConnection->Execute((_bstr_t)strSql, &recordsAffected, adCmdText);
@@ -288,7 +290,9 @@ int CMainFormView::ExecuteSQL(const CString& strSql)
     }
     catch (_com_error e) 
     {
-        TRACE(_T("ExecuteSQL error: %s\n"), CString((LPCTSTR)e.Description()));
+        CString strErr = _T("SQL Err: \n") + CString((LPCTSTR)e.Description()) + _T("-> ") + strSql;
+        TRACE(strErr);
+        OutputDebugString(strErr);
         return 1;
     }
 
@@ -567,7 +571,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
 
     // get occupant data and import into database
     strSql.Empty();
-    if (!m_dataParser.GetSQL_occupant(strSql))
+    if (!m_dataParser.GetSQL_occupant(strSql) && !strSql.IsEmpty())
     {
         ExecuteSQL(strSql);
     }
@@ -940,8 +944,11 @@ int CMainFormView::ScheduleProc()
         return 1;
     }
 
-    int email_body_start = 0;
-    char email_body[4096];
+    int total_count = 0;
+    int err_count = 0;
+    int err_files_idx = 0;
+    char err_files_info[2048] = {0};
+    char email_info[2048 + 512] = {0};
 
     TFTPFileStatusShPtrVec vFileList;
     m_ftpClient.List(static_cast<LPCTSTR>(strRoot), vFileList);
@@ -964,18 +971,24 @@ int CMainFormView::ScheduleProc()
             continue;
         }
 
+        ++total_count;
+
+        int err_code;
         strRemoteFullPath = strRoot + strFileName;
-        if (CheckContent(strRemoteFullPath, strFileName) != XMLDATA_OK)
+        if ((err_code = CheckContent(strRemoteFullPath, strFileName)) != XMLDATA_OK)
         {
-            int len = _snprintf_c(&email_body[email_body_start], sizeof(email_body), "%s\r\n", strFileName.GetString());
+            ++err_count;
+
+            int len = _snprintf_c(&err_files_info[err_files_idx], sizeof(err_files_info), "%s : %d\r\n", 
+                strFileName.GetString(), err_code);
             
-            if (len < sizeof(email_body)) {
-                email_body_start = len - 1;     // remove the non-terminator
+            if (len < sizeof(err_files_info)) {
+                err_files_idx = len - 1;     // remove the non-terminator
             }
             else 
             {
                 // buffer overflow
-                email_body[sizeof(email_body) - 1] = 0;
+                err_files_info[sizeof(err_files_info) - 1] = 0;
             }
         }
 
@@ -983,10 +996,10 @@ int CMainFormView::ScheduleProc()
         DeleteFileFromFtp(strRemoteFullPath);
     }
 
-    if (email_body_start)
-    {
-        sendEmail(email_body);
-    }
+    _snprintf_c(email_info, sizeof(email_info), "Total files: %d\r\nSucceed: %d\r\nFailed: %d, %s\r\n", 
+        total_count, (total_count - err_count), err_count, err_files_info);
+
+    sendEmail(email_info);
 
     return 0;
 }
