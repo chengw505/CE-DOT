@@ -1002,10 +1002,10 @@ int CMainFormView::ScheduleProc()
     CurrentTime(szEndTime);
 
     _snprintf_c(email_info, sizeof(email_info),
-        "Summary For Importing Tracs Data Into Database"
-        "---------------------------------------------------"
+        "Summary For Importing Tracs Data Into Database\r\n"
+        "---------------------------------------------------\r\n"
         "Task started at %s, ended at %s\r\n"
-        "FTP Server: %s"
+        "FTP Server: %s\r\n\r\n"
         "Total files: %d\r\nSucceed: %d\r\nFailed: %d, %s\r\n",
         szStartTime, szEndTime,
         m_ftpLogonInfo.Hostname().c_str(),
