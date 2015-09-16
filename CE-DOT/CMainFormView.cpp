@@ -979,7 +979,8 @@ int CMainFormView::ScheduleProc()
 
         int err_code;
         strRemoteFullPath = strRoot + strFileName;
-        if ((err_code = CheckContent(strRemoteFullPath, strFileName)) != XMLDATA_OK)
+        err_code = CheckContent(strRemoteFullPath, strFileName);
+        if (err_code != XMLDATA_OK && err_code != XMLDATA_URC_DUPLICATE)
         {
             ++err_count;
 
