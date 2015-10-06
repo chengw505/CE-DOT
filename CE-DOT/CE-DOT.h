@@ -9,6 +9,8 @@
 
 #include "resource.h"       // main symbols
 
+#define LOCAL_BACKUP_DIR    _T("./data_backup/")
+#define REMOTE_DATA_DIR     _T("../data_server")
 
 // CCEDOTApp:
 // See CE-DOT.cpp for the implementation of this class

@@ -199,53 +199,32 @@ void CFileView::OnChangeVisualStyle()
 }
 
 
-void CFileView::ResetFileList(CFTPClient* ftpClient, CLogonInfo* ftpLogonInfo)
+void CFileView::ResetFileList()
 {
-    ASSERT(ftpClient);
-    ASSERT(ftpLogonInfo);
+    m_wndFileView.DeleteAllItems();
 
-    if (ftpClient->Login(*ftpLogonInfo))
-    {
-        m_wndFileView.DeleteAllItems();
+    HTREEITEM hRoot = m_wndFileView.InsertItem(_T("/"), 0, 0);
+    m_RootInfo.m_cszDisplayName = _T("/");
+    m_RootInfo.m_cszRoot = REMOTE_DATA_DIR;
+    m_RootInfo.m_htiRoot = hRoot;
 
-        HTREEITEM hRoot = m_wndFileView.InsertItem(_T("/"), 0, 0);
-        m_RootInfo.m_cszDisplayName = ftpClient->LastLogonInfo().Hostname().c_str();
-        m_RootInfo.m_cszRoot = _T("/");
-        m_RootInfo.m_htiRoot = hRoot;
+    WIN32_FIND_DATA search_data;
+    memset(&search_data, 0, sizeof(search_data));
 
-        TFTPFileStatusShPtrVec vFileList;
-        GetDirectoryListing(ftpClient, hRoot, vFileList);
-        std::sort(vFileList.begin(), vFileList.end(), CFTPFileStatusContainerSort(CFTPFileStatusContainerSort::CName(), true, true));
+    HANDLE handle = FindFirstFile(m_RootInfo.m_cszRoot + _T("/*.xml"), &search_data);
+    while (handle != INVALID_HANDLE_VALUE) {
+        CString strFileName = search_data.cFileName;
+        TRACE(_T("%s\t"), strFileName);
 
-        for (TFTPFileStatusShPtrVec::iterator it = vFileList.begin(); it != vFileList.end(); it++)
-        {
-            TFTPFileStatusShPtr ftpFile = *it;
-            if (ftpFile->IsDot())   continue;
+        BOOL isDir = FALSE;
+        int nImage = isDir ? 0 : 2;
+        m_wndFileView.InsertItem(strFileName, nImage, nImage, hRoot);
 
-            CString strFileName = ftpFile->Name().c_str();
-            TRACE(_T("%s\t"), strFileName);
-
-            CString strAttr = ftpFile->Attributes().c_str();
-            BOOL isDir = strAttr[0] == 'd';
-            int nImage = isDir ? 0 : 2;
-
-            m_wndFileView.InsertItem(strFileName, nImage, nImage, hRoot);
-        }
-        m_wndFileView.Expand(hRoot, TVE_EXPAND);
-
-        //ftpClient->Logout();
+        if (FindNextFile(handle, &search_data) == FALSE)    break;
     }
-}
+    FindClose(handle);
 
-void CFileView::GetDirectoryListing(CFTPClient* ftpClient, HTREEITEM hItem, TFTPFileStatusShPtrVec& vFileList) const
-{
-    ASSERT(ftpClient);
-    if (m_RootInfo.m_htiRoot == hItem) {
-        ftpClient->List(static_cast<LPCTSTR>(m_RootInfo.m_cszRoot), vFileList);
-        return;
-    }
-
-    ftpClient->List(static_cast<LPCTSTR>(GetFullPath(hItem)), vFileList);
+    m_wndFileView.Expand(hRoot, TVE_EXPAND);
 }
 
 CString CFileView::GetFullPath(HTREEITEM hItem) const

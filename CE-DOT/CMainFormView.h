@@ -112,8 +112,8 @@ public:
     BOOL m_bFtpReady;
     BOOL m_bDBReady;
 
-    CFtpSetting m_ftpSettingDlg;
     CSqlSetting m_sqlSettingDlg;
+    CFtpSetting m_ftpSettingDlg;
     CLogonInfo  m_ftpLogonInfo;
     CFTPClient  m_ftpClient;
 
@@ -135,7 +135,7 @@ public:
     int LoadSqlSettings();
     void FillFtpFileView();
 
-    int DownloadFile(CString& remoteFilename, CString& localFilename);
+    int DownloadFile(const CString& remoteFilename, CString& localFilename);
     int DeleteFileFromFtp(CString& strRemoteFileFullPath);
     int Rollback(UINT urcNumber);
     void UpdateModeUI();

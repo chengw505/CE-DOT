@@ -184,10 +184,13 @@ CCEDOTDoc* CMainFormView::GetDocument() const // non-debug version is inline
 
 void CMainFormView::Initialize()
 {
+#if 0
     if (LoadFtpSettings()) 
     {
         OnBnClickedBtnSetupFtpAccount();
     }
+#endif
+    FillFtpFileView();
 
     InitialAdoInstance();
     if (LoadSqlSettings())
@@ -198,11 +201,6 @@ void CMainFormView::Initialize()
     if (!m_iManualMode)
     {
         StartSchedule();
-    }
-
-    if (m_bFtpReady)
-    {
-        FillFtpFileView();
     }
 
     UpdateModeUI();
@@ -411,7 +409,7 @@ void CMainFormView::FillFtpFileView()
         CFileView* fileView = (CFileView*)pMainWnd->GetFileView();
         if (NULL != fileView)
         {
-            fileView->ResetFileList(&m_ftpClient, &m_ftpLogonInfo);
+            fileView->ResetFileList();
         }
     }
 }
@@ -421,37 +419,25 @@ void CMainFormView::FillFtpFileView()
 * and save it into local subdirectory, called .\Data\, 
 * each time it tries to login to the server first, and then logout after downloading.
 */
-int CMainFormView::DownloadFile(CString& remoteFilename, CString& localFilename)
+int CMainFormView::DownloadFile(const CString& remoteFilename, CString& localFilename)
 {
-    int err = 1;
-
     CString strText;
     strText.Format(_T("Downlaoding file %s ..."), remoteFilename);
     SendOutputMessage(strText);
 
-    TCHAR currentDir[MAX_PATH];
-    GetCurrentDirectory(MAX_PATH, currentDir);
-    CString strLocalFile = currentDir + CString(_T("\\Data\\"));
-    if (!CreateDirectory(strLocalFile.GetString(), NULL))
+    CString strLocalDir = CString(LOCAL_BACKUP_DIR);
+    if (!CreateDirectory(strLocalDir.GetString(), NULL))
     {
         if (GetLastError() != ERROR_ALREADY_EXISTS)
         {
-            return err;
+            return 1;
         }
     }
-    strLocalFile += localFilename;
+    localFilename = strLocalDir + localFilename;
 
-    if (m_ftpClient.Login(m_ftpLogonInfo))
-    {
-        if (m_ftpClient.DownloadFile(remoteFilename.GetString(), strLocalFile.GetString()))
-        {
-            localFilename = strLocalFile;
-            err = 0;
-        }
-        m_ftpClient.Logout();
-    }
+    CopyFile(remoteFilename, localFilename, FALSE);
 
-    return err;
+    return 0;
 }
 
 /*
@@ -943,43 +929,23 @@ int CMainFormView::ScheduleProc()
     char szEndTime[128];
     CurrentTime(szStartTime);
 
-    CString strRoot = _T("/");
+    CString strRoot = REMOTE_DATA_DIR;
     CString strRemoteFullPath;
 
-    if (!m_ftpClient.Login(m_ftpLogonInfo))
-    {
-        CString strText;
-        strText.Format(_T("FAILURE: fail to login ftp %s:%d"), m_ftpLogonInfo.Hostname().c_str(), m_ftpLogonInfo.Hostport());
-        SendOutputMessage(strText);
-        return 1;
-    }
+    WIN32_FIND_DATA search_data;
+    memset(&search_data, 0, sizeof(search_data));
 
-    TFTPFileStatusShPtrVec vFileList;
-    m_ftpClient.List(static_cast<LPCTSTR>(strRoot), vFileList);
-    std::sort(vFileList.begin(), vFileList.end(), CFTPFileStatusContainerSort(CFTPFileStatusContainerSort::CName(), true, true));
-
-    for (TFTPFileStatusShPtrVec::iterator it = vFileList.begin(); it != vFileList.end(); it++)
-    {
-        TFTPFileStatusShPtr ftpFile = *it;
-        if (ftpFile->IsDot())   continue;
-
-        CString strFileName = ftpFile->Name().c_str();
+    HANDLE handle = FindFirstFile(strRoot + _T("/*.xml"), &search_data);
+    while (handle != INVALID_HANDLE_VALUE) {
+        CString strFileName = search_data.cFileName;
         TRACE(_T("%s\t"), strFileName);
 
-        CString strAttr = ftpFile->Attributes().c_str();
-        BOOL isDir = strAttr[0] == 'd';
-
-        if (isDir)
-        {
-            // TODO fix me in the future!
-            continue;
-        }
+        if (FindNextFile(handle, &search_data) == FALSE)    break;
 
         ++total_count;
 
-        int err_code;
         strRemoteFullPath = strRoot + strFileName;
-        if ((err_code = CheckContent(strRemoteFullPath, strFileName)) != XMLDATA_OK)
+        if (int err_code = CheckContent(strRemoteFullPath, strFileName) != XMLDATA_OK)
         {
             ++err_count;
 
@@ -999,16 +965,15 @@ int CMainFormView::ScheduleProc()
         // delete file from FTP server
         DeleteFileFromFtp(strRemoteFullPath);
     }
+    FindClose(handle);
     CurrentTime(szEndTime);
 
     _snprintf_c(email_info, sizeof(email_info),
         "Summary For Importing Tracs Data Into Database\r\n"
         "---------------------------------------------------\r\n"
         "Task started at %s, ended at %s\r\n"
-        "FTP Server: %s\r\n\r\n"
         "Total files: %d\r\nSucceed: %d\r\nFailed: %d, %s\r\n",
         szStartTime, szEndTime,
-        m_ftpLogonInfo.Hostname().c_str(),
         total_count, (total_count - err_count), err_count, err_files_info);
 
     sendEmail(email_info);
@@ -1018,12 +983,7 @@ int CMainFormView::ScheduleProc()
 
 int CMainFormView::DeleteFileFromFtp(CString& strRemoteFileFullPath)
 {
-    if (m_ftpClient.Login(m_ftpLogonInfo))
-    {
-        m_ftpClient.Delete(strRemoteFileFullPath.GetString());
-
-        m_ftpClient.Logout();
-    }
+    DeleteFile(strRemoteFileFullPath);
 
     return 0;
 }

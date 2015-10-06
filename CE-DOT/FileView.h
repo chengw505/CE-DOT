@@ -40,8 +40,7 @@ public:
 // Implementation
 public:
 	virtual ~CFileView();
-    void ResetFileList(CFTPClient* ftpClient, CLogonInfo* ftpLogonInfo);
-    void GetDirectoryListing(CFTPClient* ftpClient, HTREEITEM hItem, TFTPFileStatusShPtrVec& vFileList) const;
+    void ResetFileList();
     CString GetFullPath(HTREEITEM hItem) const;
     HTREEITEM GetSelectedItem();
     CString GetFileName(HTREEITEM hSelected);

@@ -294,7 +294,7 @@ BEGIN
     CONTROL         "Repeat",IDC_AUTO_PERIOD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,147,43,38,12
     PUSHBUTTON      "Display Content",IDC_BTN_DISPLAY_CONTENT,255,51,67,14
     PUSHBUTTON      "Check Content",IDC_BTN_CHECK_CONTENT,255,74,67,14
-    PUSHBUTTON      "Setup FTP Account",IDC_BTN_SETUP_FTP_ACCOUNT,69,145,74,14
+    PUSHBUTTON      "Setup FTP Account",IDC_BTN_SETUP_FTP_ACCOUNT,69,145,74,14,WS_DISABLED
     PUSHBUTTON      "Setup DB Account",IDC_BTN_SETUP_DB_ACCOUNT,223,145,74,14
     GROUPBOX        "",IDC_STATIC,20,30,175,87
     LTEXT           "Run at: ",IDC_STATIC,27,44,26,12
@@ -441,6 +441,17 @@ BEGIN
     IDC_DB_AUTH, 0x403, 23, 0
 0x6957, 0x646e, 0x776f, 0x2073, 0x7541, 0x6874, 0x6e65, 0x6974, 0x6163, 
 0x6974, 0x6e6f, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_CEDOT_FORM AFX_DIALOG_LAYOUT
+BEGIN
     0
 END
 

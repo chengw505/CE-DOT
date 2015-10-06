@@ -76,7 +76,7 @@ int sendEmail(char* urcNumbers)
         curl_easy_setopt(curl, CURLOPT_MAIL_FROM, FROM);
 
         recipients = curl_slist_append(recipients, TO);
-        recipients = curl_slist_append(recipients, CC);
+        //recipients = curl_slist_append(recipients, CC);
         curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 
         curl_easy_setopt(curl, CURLOPT_READFUNCTION, payload_source);
