@@ -950,8 +950,10 @@ int CMainFormView::ScheduleProc()
         {
             ++err_count;
 
-            int len = _snprintf_c(&err_files_info[err_files_idx], sizeof(err_files_info), "%s : %d\r\n", 
-                strFileName.GetString(), err_code);
+            char szBuf[128];
+            wcstombs(szBuf, search_data.cFileName, 128);
+            int len = _snprintf_c(&err_files_info[err_files_idx], sizeof(err_files_info), "%s(%d), ", 
+                szBuf, err_code);
             
             if (len < sizeof(err_files_info)) {
                 err_files_idx = len - 1;     // remove the non-terminator
@@ -989,7 +991,7 @@ int CMainFormView::ScheduleProc()
 
     _snprintf_c(email_info, sizeof(email_info),
         "Summary For Importing Tracs Data Into Database\r\n"
-        "---------------------------------------------------\r\n"
+        "------------------------------------------------------\r\n"
         "Task started at %s, ended at %s\r\n"
         "Total files: %d\r\n"
         "Succeed: %d\r\n"
