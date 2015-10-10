@@ -235,6 +235,7 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "UCRNumber"))
     {
+        m_ucrNumer = value;
         m_fileContent->summary.UCRNumber = atoi(value);
     }
     else if (!_stricmp(key, "PrivateProperty"))

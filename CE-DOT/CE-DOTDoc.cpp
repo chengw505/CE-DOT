@@ -49,8 +49,6 @@ BOOL CCEDOTDoc::OnNewDocument()
 }
 
 
-
-
 // CCEDOTDoc serialization
 
 void CCEDOTDoc::Serialize(CArchive& ar)

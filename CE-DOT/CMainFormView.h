@@ -117,7 +117,7 @@ public:
     CLogonInfo  m_ftpLogonInfo;
     CFTPClient  m_ftpClient;
 
-    CDataParser m_dataParser;
+    
 
     _ConnectionPtr  m_pConnection;
     _RecordsetPtr   m_pRecordset;
@@ -135,9 +135,6 @@ public:
     int LoadSqlSettings();
     void FillFtpFileView();
 
-    int DownloadFile(const CString& remoteFilename, CString& localFilename);
-    int DeleteFileFromFtp(CString& strRemoteFileFullPath);
-    int Rollback(UINT urcNumber);
     void UpdateModeUI();
     afx_msg void OnBnClickedBtnDisplayContent();
     afx_msg void OnBnClickedBtnCheckContent();
@@ -145,13 +142,19 @@ public:
     afx_msg void OnBnClickedAutoMode();
     afx_msg void OnBnClickedBtnConfirmSchedule();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
+    afx_msg void OnBnClickedBtnSetupDbAccount2();
     void SendOutputMessage(CString& strText);
-    int CheckContent(CString& strRemoteFullPath, CString& strLocalFileName);
     int StartSchedule();
     int StoptSchedule(UINT nIDEvent);
-    int ScheduleProc();
     int GetSetSettings(BOOL bLoad = TRUE);
+    int DownloadFile(const CString& remoteFilename, CString& localFilename);
+    int DeleteFileFromFtp(CString& strRemoteFileFullPath);
+    int Rollback(UINT urcNumber);
+    int CheckContent(CDataParser& dataParser, CString& strRemoteFullPath, CString& strLocalFileName);
+    int ScheduleProc();
     int CurrentTime(char* buffer);
+    BOOL CheckReportCriteria(CDataParser& parser);
+    void UploadReports(CStringList& reportFileList);
 };
 
 #ifndef _DEBUG  // debug version in CMainFormView.cpp

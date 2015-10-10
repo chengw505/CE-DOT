@@ -7,7 +7,7 @@ typedef struct
     CString Agency;
     UINT UCRNumber;
     UINT PrivateProperty;
-    UINT Fatal_Injury;
+    UINT Fatal_Injury;          // TODO report if this value > 0
     UINT Hit_Run;
     UINT NMDOTNumber;
     UINT CADNumber;
@@ -702,11 +702,15 @@ public:
     ~CDataParser();
 
     CString m_strFileName;
+    CString m_ucrNumer;
     T_Form* m_fileContent;
 
     void Reset();
     int Parse(CString& strLocalFileName);
+
+    UINT GetFatalInjury() { return m_fileContent->summary.Fatal_Injury; }
     int GetUCRNumber(UINT& ucrNumber);
+    CString GetUCRNumber() { return m_ucrNumer; }
     int GetSQL_crash(CString& strSql);
     int GetSQL_occupant(CString& strSql);
     int GetSQL_vehicle(CString& strSql);

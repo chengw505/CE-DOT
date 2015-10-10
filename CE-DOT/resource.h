@@ -93,6 +93,7 @@
 #define IDC_SAT                         1016
 #define IDC_DB_USER_PASSWD              1016
 #define IDC_SUN                         1017
+#define IDC_BTN_SETUP_DB_ACCOUNT2       1018
 
 // Next default values for new objects
 // 

@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CMainFormView, CFormView)
     ON_MESSAGE(WM_DOUBLE_CLICK_FTP_FILE, &CMainFormView::OnFtpFileDoubleClick)
     ON_BN_CLICKED(IDC_BTN_CONFIRM_SCHEDULE, &CMainFormView::OnBnClickedBtnConfirmSchedule)
     ON_WM_TIMER()
+    ON_BN_CLICKED(IDC_BTN_SETUP_DB_ACCOUNT2, &CMainFormView::OnBnClickedBtnSetupDbAccount2)
 END_MESSAGE_MAP()
 
 // CMainFormView construction/destruction
@@ -142,6 +143,10 @@ void CMainFormView::OnInitialUpdate()
     ResizeParentToFit();
 
     Initialize();
+
+    if (((CCEDOTApp*)AfxGetApp())->m_background) {
+        ScheduleProc();
+    }
 }
 
 void CMainFormView::OnRButtonUp(UINT /* nFlags */, CPoint point)
@@ -184,12 +189,6 @@ CCEDOTDoc* CMainFormView::GetDocument() const // non-debug version is inline
 
 void CMainFormView::Initialize()
 {
-#if 0
-    if (LoadFtpSettings()) 
-    {
-        OnBnClickedBtnSetupFtpAccount();
-    }
-#endif
     FillFtpFileView();
 
     InitialAdoInstance();
@@ -257,7 +256,6 @@ int CMainFormView::ConnectDB()
 
     CString strServerName;
     strServerName = m_sqlSettingDlg.m_strDbServerName;
-    //strServerName.Replace(_T("\\"), _T("\\\\"));
 
     CString strConnect;
     strConnect .Format(_T("Provider=SQLOLEDB; \
@@ -477,7 +475,7 @@ void CMainFormView::OnBnClickedBtnDisplayContent()
 * Download a single file from ftp server, 
 * Check its content and then import its content into the database.
 */
-int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFileName)
+int CMainFormView::CheckContent(CDataParser& dataParser, CString& strRemoteFullPath, CString& strLocalFileName)
 {
     if (DownloadFile(strRemoteFullPath, strLocalFileName))
     {
@@ -489,7 +487,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
         return XMLDATA_DOWNLOAD_ERR;
     }
 
-    if (m_dataParser.Parse(strLocalFileName))
+    if (dataParser.Parse(strLocalFileName))
     {
         // parse file failed
         CString strText;
@@ -500,7 +498,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
     }
      
     UINT urcNumber;
-    m_dataParser.GetUCRNumber(urcNumber);
+    dataParser.GetUCRNumber(urcNumber);
     if (RecordExisted(urcNumber))
     {
         // case already exists
@@ -513,7 +511,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
 
     // get crash data and import into database
     CString strSql;
-    if (m_dataParser.GetSQL_crash(strSql))
+    if (dataParser.GetSQL_crash(strSql))
     {
         CString strText;
         strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
@@ -533,7 +531,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
 
     // get vehicle data and import into database
     strSql.Empty();
-    if (m_dataParser.GetSQL_vehicle(strSql))
+    if (dataParser.GetSQL_vehicle(strSql))
     {
         Rollback(urcNumber);
 
@@ -557,7 +555,7 @@ int CMainFormView::CheckContent(CString& strRemoteFullPath, CString& strLocalFil
 
     // get occupant data and import into database
     strSql.Empty();
-    if (!m_dataParser.GetSQL_occupant(strSql) && !strSql.IsEmpty())
+    if (!dataParser.GetSQL_occupant(strSql) && !strSql.IsEmpty())
     {
         ExecuteSQL(strSql);
     }
@@ -613,7 +611,8 @@ void CMainFormView::OnBnClickedBtnCheckContent()
             CString strLocalFileName = fileView->GetFileName(hSelected);
             CString strRemoteFullPath = fileView->GetFullPath(hSelected);
 
-            CheckContent(strRemoteFullPath, strLocalFileName);
+            CDataParser dataParser;
+            CheckContent(dataParser, strRemoteFullPath, strLocalFileName);
         }
     }
 }
@@ -929,6 +928,8 @@ int CMainFormView::ScheduleProc()
     char szEndTime[128];
     CurrentTime(szStartTime);
 
+    CStringList reportFileList;
+
     CString strRoot = REMOTE_DATA_DIR;
     CString strRemoteFullPath;
 
@@ -940,12 +941,12 @@ int CMainFormView::ScheduleProc()
         CString strFileName = search_data.cFileName;
         TRACE(_T("%s\t"), strFileName);
 
-        if (FindNextFile(handle, &search_data) == FALSE)    break;
-
         ++total_count;
 
         strRemoteFullPath = strRoot + strFileName;
-        if (int err_code = CheckContent(strRemoteFullPath, strFileName) != XMLDATA_OK)
+
+        CDataParser dataParser;
+        if (int err_code = CheckContent(dataParser, strRemoteFullPath, strFileName) != XMLDATA_OK)
         {
             ++err_count;
 
@@ -962,19 +963,43 @@ int CMainFormView::ScheduleProc()
             }
         }
 
+        if (CheckReportCriteria(dataParser)) {
+            reportFileList.AddHead(dataParser.GetUCRNumber());
+        }
+
         // delete file from FTP server
         DeleteFileFromFtp(strRemoteFullPath);
+
+        if (FindNextFile(handle, &search_data) == FALSE)    break;
     }
     FindClose(handle);
     CurrentTime(szEndTime);
+
+    if (!reportFileList.IsEmpty()) {
+        UploadReports(reportFileList);
+    }
+
+    CString strBuffer;
+    POSITION pos;
+    for (pos = reportFileList.GetHeadPosition(); pos != NULL;) {
+        strBuffer = strBuffer + _T(" ") + reportFileList.GetNext(pos).GetString();
+    }
+    char szReportList[128];
+    wcstombs(szReportList, strBuffer.GetString(), 128);
 
     _snprintf_c(email_info, sizeof(email_info),
         "Summary For Importing Tracs Data Into Database\r\n"
         "---------------------------------------------------\r\n"
         "Task started at %s, ended at %s\r\n"
-        "Total files: %d\r\nSucceed: %d\r\nFailed: %d, %s\r\n",
+        "Total files: %d\r\n"
+        "Succeed: %d\r\n"
+        "Failed: %d, %s\r\n"
+        "Reports Need Attention: %s\r\n",
         szStartTime, szEndTime,
-        total_count, (total_count - err_count), err_count, err_files_info);
+        total_count, 
+        (total_count - err_count), 
+        err_count, err_files_info, 
+        szReportList);
 
     sendEmail(email_info);
 
@@ -1015,7 +1040,7 @@ void CMainFormView::OnTimer(UINT_PTR nIDEvent)
         if (m_btnRepeat.GetCheck())
         {
             TRACE(_T("Re-Schedule Proc %d\n"), nIDEvent);
-            SetTimer(nIDEvent, 7 * 24 * 3600, NULL);
+            SetTimer(nIDEvent, 7 * 24 * 3600 * 1000, NULL);
         }
         break;
 
@@ -1039,4 +1064,32 @@ int CMainFormView::CurrentTime(char* buffer)
         currentTime.wMinute);
 
     return 0;
+}
+
+
+void CMainFormView::OnBnClickedBtnSetupDbAccount2()
+{
+    ScheduleProc();
+}
+
+void CMainFormView::UploadReports(CStringList& reportFileList)
+{
+    CString strBuffer;
+    POSITION pos;
+    for (pos = reportFileList.GetHeadPosition(); pos != NULL;) {
+        strBuffer = strBuffer + _T(" ") + reportFileList.GetNext(pos).GetString();
+    }
+    char szReportList[128];
+    wcstombs(szReportList, strBuffer.GetString(), 128);
+
+    char szCmd[256];
+    snprintf(szCmd, sizeof(szCmd), "java -jar %s -upload %s", REPORT_FILE_CMD, szReportList);
+    system(szCmd);
+}
+
+BOOL CMainFormView::CheckReportCriteria(CDataParser& parser)
+{
+    // if (parser.GetFatalInjury() > 0)    return TRUE;
+
+    return FALSE;
 }

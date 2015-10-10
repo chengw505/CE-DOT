@@ -114,6 +114,9 @@ BOOL CCEDOTApp::InitInstance()
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
 
+    if (CString(m_lpCmdLine).Find(_T("/background"), 0) != -1) {
+        m_background = 1;
+    }
 
 	// Dispatch commands specified on the command line.  Will return FALSE if
 	// app was launched with /RegServer, /Register, /Unregserver or /Unregister.
@@ -121,8 +124,13 @@ BOOL CCEDOTApp::InitInstance()
 		return FALSE;
 
 	// The one and only window has been initialized, so show and update it
-	m_pMainWnd->ShowWindow(SW_SHOW);
-	m_pMainWnd->UpdateWindow();
+    if (m_background) {
+        m_pMainWnd->ShowWindow(SW_HIDE);
+    }
+    else {
+        m_pMainWnd->ShowWindow(SW_SHOW);
+        m_pMainWnd->UpdateWindow();
+    }
 	return TRUE;
 }
 
