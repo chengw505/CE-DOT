@@ -928,6 +928,7 @@ int CMainFormView::ScheduleProc()
     char szEndTime[128];
     CurrentTime(szStartTime);
 
+    CStringList reportFileContent;
     CStringList reportFileList;
 
     CString strRoot = REMOTE_DATA_DIR;
@@ -965,7 +966,9 @@ int CMainFormView::ScheduleProc()
             }
         }
 
-        if (CheckReportCriteria(dataParser)) {
+        CString strReportContent = CheckReportCriteria(dataParser);
+        if (!strReportContent.IsEmpty()) {
+            reportFileContent.AddHead(strReportContent);
             reportFileList.AddHead(dataParser.GetUCRNumber());
         }
 
@@ -977,14 +980,14 @@ int CMainFormView::ScheduleProc()
     FindClose(handle);
     CurrentTime(szEndTime);
 
-    if (!reportFileList.IsEmpty()) {
+    if (!reportFileContent.IsEmpty()) {
         UploadReports(reportFileList);
     }
 
     CString strBuffer;
     POSITION pos;
-    for (pos = reportFileList.GetHeadPosition(); pos != NULL;) {
-        strBuffer = strBuffer + _T(" ") + reportFileList.GetNext(pos).GetString();
+    for (pos = reportFileContent.GetHeadPosition(); pos != NULL;) {
+        strBuffer = strBuffer + _T(" ") + reportFileContent.GetNext(pos).GetString();
     }
     char szReportList[128];
     wcstombs(szReportList, strBuffer.GetString(), 128);
@@ -1089,9 +1092,42 @@ void CMainFormView::UploadReports(CStringList& reportFileList)
     system(szCmd);
 }
 
-BOOL CMainFormView::CheckReportCriteria(CDataParser& parser)
+CString CMainFormView::CheckReportCriteria(CDataParser& parser)
 {
-    // if (parser.GetFatalInjury() > 0)    return TRUE;
+    enum {
+        FATAL = 1, 
+        INJURY = 2
+    };
 
-    return FALSE;
+    CString strReportContent;
+
+    // fatality
+    if (parser.GetFatalInjury() == FATAL) {
+        strReportContent = "Fatal Injury";
+    }
+    // animal or train involved
+    if (parser.GetClassification() == "ANIMAL") {
+        if (!strReportContent.IsEmpty())  strReportContent += ", ";
+        strReportContent += "Animal Involved";
+    }
+    else if (parser.GetClassification() == "RAILROAD TRAIN") {
+        if (!strReportContent.IsEmpty())  strReportContent += ", ";
+        strReportContent += "Train Involved";
+    }
+    // Commercial or business
+    if (parser.CommercialVehicle()) {
+        if (!strReportContent.IsEmpty())  strReportContent += ", ";
+        strReportContent += "Commercial Vehicle Involved";
+    }
+    // state property
+    if (parser.StateHighwayPropertyDamage()) {
+        if (!strReportContent.IsEmpty())  strReportContent += ", ";
+        strReportContent += "State Highway Property Damage Involved";
+    }
+    
+    if (!strReportContent.IsEmpty()) {
+        strReportContent = parser.GetUCRNumber() + ": " + strReportContent;
+    }
+
+    return strReportContent;
 }

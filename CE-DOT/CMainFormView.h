@@ -153,7 +153,7 @@ public:
     int CheckContent(CDataParser& dataParser, CString& strRemoteFullPath, CString& strLocalFileName);
     int ScheduleProc();
     int CurrentTime(char* buffer);
-    BOOL CheckReportCriteria(CDataParser& parser);
+    CString CheckReportCriteria(CDataParser& parser);
     void UploadReports(CStringList& reportFileList);
 };
 

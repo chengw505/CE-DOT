@@ -11,7 +11,7 @@
 
 #define LOCAL_BACKUP_DIR    _T("./data_backup/")
 #define REMOTE_DATA_DIR     _T("../data_server/")
-#define REPORT_FILE_CMD     _T("../sftp_client/sftp_client.jar")
+#define REPORT_FILE_CMD     "../sftp_client/sftp_client.jar"
 
 // CCEDOTApp:
 // See CE-DOT.cpp for the implementation of this class

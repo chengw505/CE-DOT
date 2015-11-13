@@ -709,6 +709,20 @@ public:
     int Parse(CString& strLocalFileName);
 
     UINT GetFatalInjury() { return m_fileContent->summary.Fatal_Injury; }
+    CString GetClassification() { return m_fileContent->summary.CrashClassification; }
+    BOOL CommercialVehicle() {
+        for (int i = 0; i < m_fileContent->NumberofVehicles; ++i) {
+            if (m_fileContent->vehicles[i].Vehicle.VeUse2 == "Commercial or business")    return TRUE;
+        }
+        return FALSE;
+    }
+    BOOL StateHighwayPropertyDamage() {
+        for (int i = 0; i < m_fileContent->PropertyDamage; ++i) {
+            if (m_fileContent->properties[i].pType == "H")   return TRUE;
+        }
+        return FALSE;
+    }
+
     int GetUCRNumber(UINT& ucrNumber);
     CString GetUCRNumber() { return m_ucrNumer; }
     int GetSQL_crash(CString& strSql);
