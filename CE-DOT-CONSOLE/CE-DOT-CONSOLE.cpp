@@ -100,7 +100,7 @@ private:
     {
         closeDB();
 
-        CString strServerName = _T("localhost");
+        CString strServerName = _T("LOCALHOST\\SQLEXPRESS");
 
         CString strConnect;
         strConnect.Format(_T("Provider=SQLOLEDB; \
@@ -167,24 +167,24 @@ private:
                 m_strUploadReports.AddTail(dataParser.GetUCRNumber());
             }
 
-            //DeleteFile(strReportFileName);
+            DeleteFile(strReportFileName);
             if (FindNextFile(handle, &search_data) == FALSE)    break;
         }
         FindClose(handle);
 
         strReports.Format(_T("Total Reports Number: %d\n\n"), strSucceed.GetSize() + strFail.GetSize());
         strReports += _T("Succeed: ");
-        for (POSITION i = 0; i != NULL; ) {
+        for (POSITION i = strSucceed.GetHeadPosition(); i != NULL; ) {
             strReports += strSucceed.GetNext(i).GetString() + CString("    ");
         }
 
         strReports += _T("\n\nFailed: ");
-        for (POSITION i = 0; i != NULL; ) {
+        for (POSITION i = strFail.GetHeadPosition(); i != NULL; ) {
             strReports += strFail.GetNext(i).GetString() + CString("    ");
         }
 
         strReports += _T("\n\nNeed Review: ");
-        for (POSITION i = 0; i != NULL; ) {
+        for (POSITION i = strAttention.GetHeadPosition(); i != NULL; ) {
             strReports += strAttention.GetNext(i).GetString() + CString("    ");
         }
         strReports += _T("\n\n");
