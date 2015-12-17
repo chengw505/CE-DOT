@@ -53,7 +53,7 @@ static size_t payload_source(void *ptr, size_t size, size_t nmemb, void *userp)
 
 int sendEmail(char* urcNumbers)
 {
-    _snprintf(payload_body, sizeof(payload_body), "%s\r\n", urcNumbers);
+    _snprintf_s(payload_body, sizeof(payload_body), "%s\r\n", urcNumbers);
 
     CURL *curl;
     CURLcode res = CURLE_OK;

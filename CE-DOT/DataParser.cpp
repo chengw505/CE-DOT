@@ -51,7 +51,8 @@ int CDataParser::Parse(CString& strLocalFileName)
 
     // load file
     char fileName[MAX_PATH];
-    wcstombs(fileName, strLocalFileName.GetString(), MAX_PATH);
+    size_t i = sizeof(fileName);
+    wcstombs_s(&i, fileName, strLocalFileName.GetString(), MAX_PATH);
 
     TiXmlDocument doc(fileName);
     if (!doc.LoadFile()) 
