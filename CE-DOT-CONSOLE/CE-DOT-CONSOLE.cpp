@@ -172,7 +172,7 @@ private:
         FindClose(handle);
 
         strReports.Format(_T("Total Reports Number: %d\n"), strSucceed.GetSize() + strFail.GetSize());
-        strReports += _T("Succeed: ");
+        strReports += _T("Succeeded: ");
         for (POSITION i = strSucceed.GetHeadPosition(); i != NULL; ) {
             strReports += strSucceed.GetNext(i).GetString() + CString("    ");
         }
