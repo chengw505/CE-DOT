@@ -144,9 +144,10 @@ private:
         WIN32_FIND_DATA search_data;
         memset(&search_data, 0, sizeof(search_data));
 
-        HANDLE handle = FindFirstFile(CString(REPORTS_LOCAL_DIR) + _T("/*.xml"), &search_data);
+        HANDLE handle = FindFirstFile(CString(REPORTS_LOCAL_DIR) + _T("/UCR*.xml"), &search_data);
         while (handle != INVALID_HANDLE_VALUE) {
             CString strReportFileName = CString(REPORTS_LOCAL_DIR) + search_data.cFileName;
+            if (search_data.cFileName[3] < '0' || search_data.cFileName[3] > '9')    continue;
 
             CDataParser dataParser;
             switch (checkContent(dataParser, strReportFileName)) {
