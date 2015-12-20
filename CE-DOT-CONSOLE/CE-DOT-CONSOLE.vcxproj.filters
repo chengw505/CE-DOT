@@ -16,6 +16,9 @@
     <Filter Include="TinyXML">
       <UniqueIdentifier>{65548185-f2a6-41ff-b709-4c455a38346c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libcurl">
+      <UniqueIdentifier>{f9a3c3e0-f87a-41e4-ac16-600523fa7ecf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -38,6 +41,33 @@
     </ClInclude>
     <ClInclude Include="..\CE-DOT\SendEmail.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\curl.h">
+      <Filter>libcurl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\curlbuild.h">
+      <Filter>libcurl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\curlrules.h">
+      <Filter>libcurl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\curlver.h">
+      <Filter>libcurl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\easy.h">
+      <Filter>libcurl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\mprintf.h">
+      <Filter>libcurl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\multi.h">
+      <Filter>libcurl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\stdcheaders.h">
+      <Filter>libcurl</Filter>
+    </ClInclude>
+    <ClInclude Include="libcurl\include\curl\typecheck-gcc.h">
+      <Filter>libcurl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

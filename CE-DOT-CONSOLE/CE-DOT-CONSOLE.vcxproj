@@ -152,6 +152,15 @@
   <ItemGroup>
     <ClInclude Include="..\CE-DOT\DataParser.h" />
     <ClInclude Include="..\CE-DOT\SendEmail.h" />
+    <ClInclude Include="libcurl\include\curl\curl.h" />
+    <ClInclude Include="libcurl\include\curl\curlbuild.h" />
+    <ClInclude Include="libcurl\include\curl\curlrules.h" />
+    <ClInclude Include="libcurl\include\curl\curlver.h" />
+    <ClInclude Include="libcurl\include\curl\easy.h" />
+    <ClInclude Include="libcurl\include\curl\mprintf.h" />
+    <ClInclude Include="libcurl\include\curl\multi.h" />
+    <ClInclude Include="libcurl\include\curl\stdcheaders.h" />
+    <ClInclude Include="libcurl\include\curl\typecheck-gcc.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TinyXML\tinystr.h" />

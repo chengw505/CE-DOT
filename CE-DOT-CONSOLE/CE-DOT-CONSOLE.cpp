@@ -12,7 +12,6 @@
 using namespace std;
 
 #define REPORTS_LOCAL_DIR   "../data_server/"
-#define REPORT_FILE_CMD     "../sftp_client/sftp_client.jar"
 
 class TracsSolution {
 public:
@@ -46,7 +45,6 @@ private:
 
     _ConnectionPtr  m_pConnection;
     _RecordsetPtr   m_pRecordset;
-    CStringList     m_strUploadReports;
 
 private:
     int initDB() 
@@ -164,50 +162,39 @@ private:
             CString str = checkReportCriteria(dataParser);
             if (!str.IsEmpty()) {
                 strAttention.AddTail(dataParser.GetUCRNumber() + CString(_T(", ")) + str);
-                m_strUploadReports.AddTail(dataParser.GetUCRNumber());
+            }
+            else {
+                deleteFromLocal(dataParser.GetUCRNumber());
             }
 
-            DeleteFile(strReportFileName);
             if (FindNextFile(handle, &search_data) == FALSE)    break;
         }
         FindClose(handle);
 
-        strReports.Format(_T("Total Reports Number: %d\n\n"), strSucceed.GetSize() + strFail.GetSize());
+        strReports.Format(_T("Total Reports Number: %d\n"), strSucceed.GetSize() + strFail.GetSize());
         strReports += _T("Succeed: ");
         for (POSITION i = strSucceed.GetHeadPosition(); i != NULL; ) {
             strReports += strSucceed.GetNext(i).GetString() + CString("    ");
         }
 
-        strReports += _T("\n\nFailed: ");
+        strReports += _T("\nFailed: ");
         for (POSITION i = strFail.GetHeadPosition(); i != NULL; ) {
             strReports += strFail.GetNext(i).GetString() + CString("    ");
         }
 
-        strReports += _T("\n\nNeed Review: ");
+        strReports += _T("\nNeed Review: ");
         for (POSITION i = strAttention.GetHeadPosition(); i != NULL; ) {
             strReports += strAttention.GetNext(i).GetString() + CString("    ");
         }
-        strReports += _T("\n\n");
+        strReports += _T("\n");
 
         return strReports;
     }
 
-    int uploadReports()
+    void deleteFromLocal(CString& ucrNumber)
     {
-        CString strBuffer;
-        POSITION pos;
-        for (pos = m_strUploadReports.GetHeadPosition(); pos != NULL;) {
-            strBuffer = strBuffer + m_strUploadReports.GetNext(pos).GetString() + _T(" ");
-        }
-        char szReportList[128];
-        size_t i = sizeof(szReportList);
-        wcstombs_s(&i, szReportList, strBuffer.GetString(), sizeof(szReportList));
-
-        char szCmd[256];
-        snprintf(szCmd, sizeof(szCmd), "java -jar %s -upload %s", REPORT_FILE_CMD, szReportList);
-        system(szCmd);
-
-        return 0;
+        CString strFiles = CString(REPORTS_LOCAL_DIR) + _T("*") + ucrNumber + _T("*.*");
+        DeleteFile(strFiles);
     }
 
     int email(CString& strReports) 
