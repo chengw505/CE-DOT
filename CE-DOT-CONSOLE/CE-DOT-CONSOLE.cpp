@@ -28,7 +28,9 @@ public:
         CString strReports = checkReports();
 
         // report results by email
-        email(strReports);
+        if (!strReports.IsEmpty()) {
+            email(strReports);
+        }
     }
 
 private:
@@ -172,7 +174,10 @@ private:
         }
         FindClose(handle);
 
-        strReports.Format(_T("Total Reports Number: %d\n"), strSucceed.GetSize() + strFail.GetSize());
+        int totalReports = strSucceed.GetSize() + strFail.GetSize();
+        if (0 == totalReports)  return strReports;
+
+        strReports.Format(_T("Total Reports Number: %d\n"), totalReports);
         strReports += _T("Succeeded: ");
         for (POSITION i = strSucceed.GetHeadPosition(); i != NULL; ) {
             strReports += strSucceed.GetNext(i).GetString() + CString("    ");
