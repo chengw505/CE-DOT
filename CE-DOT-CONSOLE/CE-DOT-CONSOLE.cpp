@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define REPORTS_LOCAL_DIR   "../data_server/"
+#define REPORTS_LOCAL_DIR   "..\\data_server\\"
 
 class TracsSolution {
 public:
@@ -149,25 +149,26 @@ private:
         HANDLE handle = FindFirstFile(CString(REPORTS_LOCAL_DIR) + _T("/UCR*.xml"), &search_data);
         while (handle != INVALID_HANDLE_VALUE) {
             CString strReportFileName = CString(REPORTS_LOCAL_DIR) + search_data.cFileName;
-            if (search_data.cFileName[3] < '0' || search_data.cFileName[3] > '9')    continue;
+            if (search_data.cFileName[3] >= '0' && search_data.cFileName[3] <= '9') {
 
-            CDataParser dataParser;
-            switch (checkContent(dataParser, strReportFileName)) {
-            case XMLDATA_OK:
-                strSucceed.AddTail(dataParser.GetUCRNumber());
-                break;
+                CDataParser dataParser;
+                switch (checkContent(dataParser, strReportFileName)) {
+                case XMLDATA_OK:
+                    strSucceed.AddTail(dataParser.GetUCRNumber());
+                    break;
 
-            default:
-                strFail.AddTail(dataParser.GetUCRNumber());
-                break;
-            }
-            
-            CString str = checkReportCriteria(dataParser);
-            if (!str.IsEmpty()) {
-                strAttention.AddTail(dataParser.GetUCRNumber() + CString(_T(", ")) + str);
-            }
-            else {
-                deleteFromLocal(dataParser.GetUCRNumber());
+                default:
+                    strFail.AddTail(dataParser.GetUCRNumber());
+                    break;
+                }
+
+                CString str = checkReportCriteria(dataParser);
+                if (!str.IsEmpty()) {
+                    strAttention.AddTail(dataParser.GetUCRNumber() + CString(_T(", ")) + str);
+                }
+                else {
+                    deleteFromLocal(dataParser.GetUCRNumber());
+                }
             }
 
             if (FindNextFile(handle, &search_data) == FALSE)    break;
@@ -199,8 +200,22 @@ private:
 
     void deleteFromLocal(CString& ucrNumber)
     {
+        TCHAR curDir[MAX_PATH];
+        GetCurrentDirectory(MAX_PATH, curDir);
         CString strFiles = CString(REPORTS_LOCAL_DIR) + _T("*") + ucrNumber + _T("*.*");
-        DeleteFile(strFiles);
+
+        WIN32_FIND_DATA search_data;
+        memset(&search_data, 0, sizeof(search_data));
+
+        HANDLE handle = FindFirstFile(strFiles, &search_data);
+        while (handle != INVALID_HANDLE_VALUE) {
+            CString strReportFileName = CString(REPORTS_LOCAL_DIR) + search_data.cFileName;
+            DeleteFile(strReportFileName);
+            int err = GetLastError();
+
+            if (FindNextFile(handle, &search_data) == FALSE)    break;
+        }
+        FindClose(handle);
     }
 
     int email(CString& strReports) 
