@@ -11,13 +11,14 @@
 
 #define FROM            "<chengw505@yahoo.com>"
 #define TO              FROM
-#define CC              FROM
+#define CC              "<chengw505@gmail.com>"
 
 static char payload_body[4096 + 1024];
 
 static char *payload_text[] = {
     "To: " TO "\r\n",
-    "From: " FROM "(TracsDataChecker)\r\n",
+    "From: " FROM "(TracsDataReport)\r\n",
+    "Cc:" CC "\r\n",
     "Message-ID: <dcd7cb36-11db-487a-9f3a-e652a9458efd@rfcpedant.example.org>\r\n",
     "Subject: TracsData Import Report\r\n",
     "\r\n", /* empty line to divide headers from body, see RFC5322 */
