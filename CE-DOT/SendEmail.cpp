@@ -10,8 +10,8 @@
 #define MYSMPT_URL      "smtp.mail.yahoo.com:587"
 
 #define FROM            "<chengw505@yahoo.com>"
-#define TO              FROM
-#define CC              "<chengw505@gmail.com>"
+#define TO              "<chengw505@gmail.com>"
+#define CC              FROM
 
 static char payload_body[4096 + 1024];
 
