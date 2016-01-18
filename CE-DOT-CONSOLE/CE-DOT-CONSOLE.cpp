@@ -232,7 +232,7 @@ private:
             currentTime.wMinute);
         
         s = strReports + s;
-        char body[512];
+        char body[4096*2];
         size_t i = sizeof(body);
         wcstombs_s(&i, body, s.GetString(), sizeof(body));
         
