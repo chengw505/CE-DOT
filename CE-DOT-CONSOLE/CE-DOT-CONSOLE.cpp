@@ -29,7 +29,7 @@ public:
 
         // report results by email
         if (!strReports.IsEmpty()) {
-            email(strReports);
+            //email(strReports);
         }
     }
 
@@ -164,7 +164,7 @@ private:
 
                 CString str = checkReportCriteria(dataParser);
                 if (!str.IsEmpty()) {
-                    strAttention.AddTail(dataParser.GetUCRNumber() + CString(_T(", ")) + str);
+                    strAttention.AddTail(str);
                 }
                 else {
                     deleteFromLocal(dataParser.GetUCRNumber());
@@ -270,7 +270,7 @@ private:
         if (dataParser.GetSQL_crash(strSql))
         {
             CString strText;
-            strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+            strText.Format(_T("ERROR: GetSQL_crash failed, file %s"), strLocalFileName);
             sendOutputMessage(strText);
 
             return XMLDATA_PARSE_CRASH_DATA_ERR;
@@ -279,7 +279,7 @@ private:
         if (executeSQL(strSql))
         {
             CString strText;
-            strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+            strText.Format(_T("ERROR: fail to execute %s from file %s"), strSql, strLocalFileName);
             sendOutputMessage(strText);
 
             return XMLDATA_IMPORT_CRASH_DATA_ERR;
@@ -292,7 +292,7 @@ private:
             rollback(urcNumber);
 
             CString strText;
-            strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+            strText.Format(_T("ERROR: GetSQL_vehicle failed for file %s"), strLocalFileName);
             sendOutputMessage(strText);
 
             return XMLDATA_PARSE_VEH_DATA_ERR;
@@ -303,7 +303,7 @@ private:
             rollback(urcNumber);
 
             CString strText;
-            strText.Format(_T("ERROR: fail to import data into database from file %s"), strLocalFileName);
+            strText.Format(_T("ERROR: fail to execute %s from file %s"), strSql, strLocalFileName);
             sendOutputMessage(strText);
 
             return XMLDATA_IMPORT_VEH_DATA_ERR;
@@ -330,6 +330,7 @@ private:
 
     void sendOutputMessage(CString& s) 
     {
+        OutputDebugString(s);
     }
 
     int recordExisted(UINT urcNumber)
