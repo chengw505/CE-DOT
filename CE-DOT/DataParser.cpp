@@ -168,6 +168,9 @@ int CDataParser::FillForm(const char* key, const char* value)
     if (!_stricmp(key, "CaseNumber"))
     {
         m_fileContent->CaseNumber = atoi(value);
+
+        m_ucrNumer = value;
+        m_fileContent->summary.UCRNumber = atoi(value);
     }
     else if (!_stricmp(key, "OfficerAtScene"))
     {
@@ -2133,7 +2136,7 @@ int CDataParser::GetUCRNumber(UINT& ucrNumber)
 {
     if (!m_strFileName.IsEmpty())
     {
-        ucrNumber = m_fileContent->summary.UCRNumber;
+        ucrNumber = m_fileContent->CaseNumber;
         return 0;
     }
 

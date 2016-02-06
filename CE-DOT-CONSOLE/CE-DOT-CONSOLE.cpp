@@ -5,6 +5,7 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "DataParser.h"
 #include "SendEmail.h"
@@ -29,7 +30,7 @@ public:
 
         // report results by email
         if (!strReports.IsEmpty()) {
-            //email(strReports);
+            email(strReports);
         }
     }
 
@@ -330,7 +331,19 @@ private:
 
     void sendOutputMessage(CString& s) 
     {
-        OutputDebugString(s);
+        SYSTEMTIME currentTime;
+        GetLocalTime(&currentTime);
+        char logfile[256];
+        snprintf(logfile, sizeof(logfile), "%d-%2d-%2d.log", currentTime.wYear, currentTime.wMonth, currentTime.wDay);
+
+        ofstream log;
+        log.open(logfile, ofstream::out | ofstream::app);
+
+        char body[1024 * 2];
+        size_t i = sizeof(body);
+        wcstombs_s(&i, body, s.GetString(), sizeof(body));
+
+        log << body << endl;
     }
 
     int recordExisted(UINT urcNumber)
