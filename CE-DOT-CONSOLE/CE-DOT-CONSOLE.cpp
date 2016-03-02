@@ -159,7 +159,7 @@ private:
                     break;
 
                 default:
-                    strFail.AddTail(dataParser.GetUCRNumber());
+                    strFail.AddTail(search_data.cFileName);
                     break;
                 }
 
@@ -219,29 +219,6 @@ private:
         FindClose(handle);
     }
 
-    int email(CString& strReports) 
-    {
-        SYSTEMTIME currentTime;
-        GetLocalTime(&currentTime);
-
-        CString s;
-        s.Format(_T("\n\n\n%d-%d-%d %d:%d\n"),
-            currentTime.wYear,
-            currentTime.wMonth,
-            currentTime.wDay,
-            currentTime.wHour,
-            currentTime.wMinute);
-        
-        s = strReports + s;
-        char body[4096*2];
-        size_t i = sizeof(body);
-        wcstombs_s(&i, body, s.GetString(), sizeof(body));
-        
-        sendEmail(body);
-
-        return 0;
-    }
-
     int checkContent(CDataParser& dataParser, CString& strLocalFileName)
     {
         if (dataParser.Parse(strLocalFileName))
@@ -256,11 +233,11 @@ private:
 
         UINT urcNumber;
         dataParser.GetUCRNumber(urcNumber);
-        if (recordExisted(urcNumber))
+        if (urcNumber == 0 || recordExisted(urcNumber))
         {
             // case already exists
             CString strText;
-            strText.Format(_T("WARNING: case %d already exists"), urcNumber);
+            strText.Format(_T("WARNING: invalid or existed case: %d"), urcNumber);
             sendOutputMessage(strText);
 
             return XMLDATA_URC_DUPLICATE;
@@ -334,16 +311,21 @@ private:
         SYSTEMTIME currentTime;
         GetLocalTime(&currentTime);
         char logfile[256];
-        snprintf(logfile, sizeof(logfile), "%d-%2d-%2d.log", currentTime.wYear, currentTime.wMonth, currentTime.wDay);
+        snprintf(logfile, sizeof(logfile), "%d-%02d-%02d.log", currentTime.wYear, currentTime.wMonth, currentTime.wDay);
 
         ofstream log;
         log.open(logfile, ofstream::out | ofstream::app);
 
-        char body[1024 * 2];
-        size_t i = sizeof(body);
-        wcstombs_s(&i, body, s.GetString(), sizeof(body));
+        int bodySize = s.GetLength() + 1;
+        char* body = new char[bodySize];
+        if (body) {
+            size_t retSize = bodySize;
+            wcstombs_s(&retSize, body, bodySize, s.GetString(), bodySize);
 
-        log << body << endl;
+            log << body << endl;
+
+            delete[] body;
+        }
     }
 
     int recordExisted(UINT urcNumber)
@@ -446,10 +428,39 @@ private:
         return strResult;
     }
 
+public:
+    int email(CString& strReports)
+    {
+        SYSTEMTIME currentTime;
+        GetLocalTime(&currentTime);
+
+        CString strTime;
+        strTime.Format(_T("\n\n\n%d-%d-%d %d:%d\n"),
+            currentTime.wYear,
+            currentTime.wMonth,
+            currentTime.wDay,
+            currentTime.wHour,
+            currentTime.wMinute);
+
+        strReports = strReports + strTime;
+
+        // generate local report.
+        sendOutputMessage(strReports);
+
+        char body[4096 * 2] = { 0 };
+        size_t i = sizeof(body);
+        if (i <= strReports.GetLength()) {
+            strReports = CString(_T("Email body is too big (>8K), please see log file generated for today.")) + strTime;
+        }
+        wcstombs_s(&i, body, strReports.GetString(), sizeof(body));
+
+        sendEmail(body);
+
+        return 0;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////
-
 int main()
 {
     TracsSolution().run();
