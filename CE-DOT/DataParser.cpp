@@ -332,7 +332,7 @@ int CDataParser::FillSummary(const char* key, const char* value)
     }
     else if (!_stricmp(key, "AnalysisCode"))
     {
-        m_fileContent->summary.Agency = EscapeSQLString(CString(value));
+        m_fileContent->summary.AnalysisCode = EscapeSQLString(CString(value));
     }
     else if (!_stricmp(key, "Lighting"))
     {
@@ -2362,14 +2362,14 @@ int CDataParser::GetSQL_crash(CString& strSql)
         _T(",'%s'")  //<GIS_CityE911, nvarchar(max),>    ")
         _T(",'%s'")  //<GIS_CityUSCensus, nvarchar(max),>")
         _T(",'%s'")  //<GIS_NatAmer_USCensus, nvarchar(ma")
-        _T(",%d")  //<GIS_TransDist, float,>           ")
-        _T(",%d")  //<GIS_MaintDist, float,>           ")
-        _T(",%d")  //<GIS_UTM_X, float,>               ")
-        _T(",%d")  //<GIS_UTM_Y, float,>               ")
-        _T(",%d")  //<GIS_LAT, float,>                 ")
-        _T(",%d")  //<GIS_LONG, float,>                ")
-        _T(",%d")  //<source, nvarchar(max),>          ")
-        _T(",%d")  //<NMDOTID, float,>                 ")
+        _T(",'%s'")  //<GIS_TransDist, float,>           ")
+        _T(",'%s'")  //<GIS_MaintDist, float,>           ")
+        _T(",'%s'")  //<GIS_UTM_X, float,>               ")
+        _T(",'%s'")  //<GIS_UTM_Y, float,>               ")
+        _T(",'%s'")  //<GIS_LAT, float,>                 ")
+        _T(",'%s'")  //<GIS_LONG, float,>                ")
+        _T(",'%s'")  //<source, nvarchar(max),>          ")
+        _T(",'%s'")  //<NMDOTID, float,>                 ")
         _T(",'%s'")  //<SysBatchNumber, nvarchar(max),>  ")
         _T(",'%s')"), //<SysScanDate, nvarchar(255),>)    "), 
 
